@@ -8,6 +8,8 @@ export interface ClaudeConfig extends AdapterConfig {
   apiKey?: string;
   /** OAuth token for authentication (from CLAUDE_CODE_OAUTH_TOKEN env var) */
   oauthToken?: string;
+  /** Enable verbose logging to see CLI commands and arguments */
+  verbose?: boolean;
 }
 
 /**
@@ -42,4 +44,10 @@ export interface ClaudeExecutionOptions extends ExecutionOptions {
   includePartialMessages?: boolean;
   /** Fallback model if primary model is overloaded */
   fallbackModel?: string;
+  /** Enable verbose logging to see CLI commands and arguments */
+  verbose?: boolean;
+  /** Skip permission prompts (use with caution) */
+  dangerouslySkipPermissions?: boolean;
+  /** Working directory for CLI execution */
+  workingDir?: string;
 }

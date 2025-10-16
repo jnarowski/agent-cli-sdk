@@ -1,6 +1,8 @@
 import { spawn, type ChildProcess } from 'child_process';
 import type { ClaudeExecutionOptions } from '../../types/claude.js';
 import { ExecutionError, TimeoutError } from '../../core/errors.js';
+import boxen from 'boxen';
+import chalk from 'chalk';
 
 export interface CLIResult {
   stdout: string;
@@ -20,10 +22,32 @@ export async function executeClaudeCLI(
   const args = buildCLIArguments(prompt, options);
   const startTime = Date.now();
 
+  // Show verbose logging if enabled
+  if (options.verbose) {
+    const debugInfo = [
+      `${chalk.bold('CLI Path:')} ${chalk.cyan(cliPath)}`,
+      `${chalk.bold('Args:')} ${chalk.dim(args.join(' '))}`,
+      `${chalk.bold('Working Dir:')} ${chalk.yellow(options.workingDir || process.cwd())}`,
+      `${chalk.bold('Model:')} ${chalk.green(options.model || 'sonnet')}`,
+    ].join('\n');
+
+    const debugBox = boxen(debugInfo, {
+      title: '🔧 Executing Claude Code CLI',
+      titleAlignment: 'center',
+      padding: 1,
+      margin: { top: 1, bottom: 1, left: 0, right: 0 },
+      borderStyle: 'round',
+      borderColor: 'blue',
+    });
+
+    console.log(debugBox);
+  }
+
   return new Promise((resolve, reject) => {
     const child: ChildProcess = spawn(cliPath, args, {
-      stdio: ['pipe', 'pipe', 'pipe'],
+      stdio: ['ignore', 'pipe', 'pipe'], // Ignore stdin since we're in -p mode
       shell: false,
+      cwd: options.workingDir,
     });
 
     let stdout = '';
@@ -120,17 +144,22 @@ export async function executeClaudeCLI(
 function buildCLIArguments(prompt: string, options: ClaudeExecutionOptions): string[] {
   const args: string[] = [];
 
-  // Always use --print mode for programmatic usage
-  args.push('--print');
-
-  // Output format
-  const outputFormat = options.streaming ? 'stream-json' : (options.outputFormat || 'json');
-  args.push('--output-format', outputFormat);
+  // Use -p flag with prompt (this is the key difference!)
+  args.push('-p', prompt);
 
   // Model
   if (options.model) {
     args.push('--model', options.model);
   }
+
+  // Always use project settings
+  args.push('--setting-sources', 'project');
+
+  // Output format - always use stream-json for programmatic usage
+  args.push('--output-format', 'stream-json');
+
+  // Verbose is required when using stream-json output format
+  args.push('--verbose');
 
   // Fallback model
   if (options.fallbackModel) {
@@ -155,6 +184,11 @@ function buildCLIArguments(prompt: string, options: ClaudeExecutionOptions): str
     args.push('--permission-mode', options.permissionMode);
   }
 
+  // Skip permissions if enabled
+  if (options.dangerouslySkipPermissions) {
+    args.push('--dangerously-skip-permissions');
+  }
+
   // Allowed/disallowed tools
   if (options.allowedTools && options.allowedTools.length > 0) {
     args.push('--allowed-tools', options.allowedTools.join(' '));
@@ -167,9 +201,6 @@ function buildCLIArguments(prompt: string, options: ClaudeExecutionOptions): str
   if (options.streaming && options.includePartialMessages) {
     args.push('--include-partial-messages');
   }
-
-  // Finally, add the prompt
-  args.push(prompt);
 
   return args;
 }

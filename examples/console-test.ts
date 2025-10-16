@@ -23,7 +23,8 @@ import type { ClaudeConfig, CodexConfig } from '../src/types/index.js';
 
 const CLAUDE_CONFIG: Partial<ClaudeConfig> = {
   // apiKey: process.env.ANTHROPIC_API_KEY, // Optional
-  // cliPath: '/custom/path/to/claude', // Optional
+  cliPath: '/Users/jnarowski/.claude/local/claude', // Explicit path since 'claude' is an alias
+  verbose: true, // Enable verbose logging to see CLI commands
 };
 
 const CODEX_CONFIG: Partial<CodexConfig> = {
@@ -31,11 +32,13 @@ const CODEX_CONFIG: Partial<CodexConfig> = {
   // cliPath: '/custom/path/to/codex', // Optional
 };
 
-const TEST_PROMPT = 'What is 2 + 2? Please explain briefly.';
+const TEST_PROMPT_SIMPLE = 'What is 2 + 2? Please explain briefly.';
+const TEST_PROMPT_WITH_TOOLS = 'Read the package.json file and tell me the package name and version.';
 
 // Execution options
-const ENABLE_STREAMING = false; // Disable streaming for initial test
+const ENABLE_STREAMING = true; // Enable streaming to test real-time output
 const TIMEOUT_MS = 60000; // Increase timeout
+const VERBOSE = true; // Enable verbose mode to see CLI commands and arguments
 
 // ============================================================================
 // TEST FUNCTIONS
@@ -53,8 +56,8 @@ async function testClaude() {
     console.log('Capabilities:', claude.getCapabilities());
     console.log('\n' + '-'.repeat(80) + '\n');
 
-    // Execute prompt
-    console.log(`Prompt: "${TEST_PROMPT}"\n`);
+    // Execute simple prompt
+    console.log(`Prompt: "${TEST_PROMPT_SIMPLE}"\n`);
 
     const startTime = Date.now();
 
@@ -65,19 +68,33 @@ async function testClaude() {
     if (ENABLE_STREAMING) {
       execOptions.streaming = true;
       execOptions.onStream = (event: any) => {
-        if (event.type === 'message.chunk') {
-          process.stdout.write(event.data.content || '');
-        } else if (event.type === 'tool.started') {
-          console.log(`\n🔧 Tool: ${event.data.toolName}`);
-        } else if (event.type === 'tool.completed') {
-          console.log(`✅ Tool completed: ${event.data.toolName}`);
-        } else if (event.type === 'error') {
-          console.error(`❌ Error: ${event.data.message}`);
+        // Handle different event types
+        if (event.type === 'system' && event.subtype === 'init') {
+          console.log(`\n📡 Session initialized: ${event.session_id}`);
+          console.log(`   Model: ${event.model}`);
+          console.log(`   Available tools: ${event.tools.length}`);
+        } else if (event.type === 'assistant') {
+          console.log('\n💬 Assistant response received');
+          if (event.message?.content) {
+            const textContent = event.message.content
+              .filter((c: any) => c.type === 'text')
+              .map((c: any) => c.text)
+              .join('\n');
+            if (textContent) {
+              console.log(`   ${textContent.slice(0, 100)}${textContent.length > 100 ? '...' : ''}`);
+            }
+          }
+        } else if (event.type === 'result') {
+          console.log(`\n✅ Result (${event.subtype})`);
+          console.log(`   Duration: ${event.duration_ms}ms`);
+          console.log(`   API Duration: ${event.duration_api_ms}ms`);
+          console.log(`   Cost: $${event.total_cost_usd?.toFixed(6) || '0'}`);
+          console.log(`   Tokens: ${event.usage?.input_tokens || 0} in, ${event.usage?.output_tokens || 0} out`);
         }
       };
     }
 
-    const response = await claude.execute(TEST_PROMPT, execOptions);
+    const response = await claude.execute(TEST_PROMPT_SIMPLE, execOptions);
 
     const duration = Date.now() - startTime;
 
@@ -88,6 +105,11 @@ async function testClaude() {
     console.log('Session ID:', response.sessionId);
     console.log('Duration:', duration + 'ms');
     console.log('Actions:', response.actions?.length || 0);
+
+    console.log('\nOutput:');
+    console.log('-'.repeat(80));
+    console.log(response.output || '(no output)');
+    console.log('-'.repeat(80));
 
     if (response.actions && response.actions.length > 0) {
       console.log('\nActions taken:');

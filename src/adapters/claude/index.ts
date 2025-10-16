@@ -31,8 +31,9 @@ export class ClaudeAdapter extends BaseAdapter {
     // Check authentication if needed
     await this.checkAuthentication();
 
-    // Merge config with options
+    // Merge config with options (options take precedence)
     const mergedOptions: ClaudeExecutionOptions = {
+      verbose: this.config.verbose,
       ...options,
     };
 
@@ -41,17 +42,17 @@ export class ClaudeAdapter extends BaseAdapter {
       mergedOptions.model = 'sonnet'; // Default to latest Sonnet
     }
 
+    // Default dangerouslySkipPermissions to true for better UX
+    if (mergedOptions.dangerouslySkipPermissions === undefined) {
+      mergedOptions.dangerouslySkipPermissions = true;
+    }
+
     try {
       // Execute CLI
       const result = await executeClaudeCLI(this.cliPath, prompt, mergedOptions);
 
-      // Parse output based on streaming mode
-      let response: AdapterResponse;
-      if (mergedOptions.streaming) {
-        response = parseStreamOutput(result.stdout, result.duration, result.exitCode);
-      } else {
-        response = parseJSONOutput(result.stdout, result.duration, result.exitCode);
-      }
+      // Parse output - always use parseStreamOutput since we use stream-json format
+      const response = parseStreamOutput(result.stdout, result.duration, result.exitCode);
 
       // Add stderr to raw output
       if (response.raw) {

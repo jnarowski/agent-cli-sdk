@@ -47,7 +47,9 @@ describeE2E('E2E Smoke Tests', () => {
 
     it('should support streaming mode', async () => {
       const streamEvents: any[] = [];
-      let receivedContent = false;
+      let receivedSystemInit = false;
+      let receivedAssistantMessage = false;
+      let receivedResult = false;
 
       const response = await claudeAdapter.execute(
         'Count from 1 to 3, one number per line',
@@ -56,8 +58,14 @@ describeE2E('E2E Smoke Tests', () => {
           timeout: 60000,
           onStream: (event) => {
             streamEvents.push(event);
-            if (event.type === 'message.chunk' && event.data.content) {
-              receivedContent = true;
+            if (event.type === 'system' && event.subtype === 'init') {
+              receivedSystemInit = true;
+            }
+            if (event.type === 'assistant' && event.message?.content) {
+              receivedAssistantMessage = true;
+            }
+            if (event.type === 'result') {
+              receivedResult = true;
             }
           },
         }
@@ -65,7 +73,9 @@ describeE2E('E2E Smoke Tests', () => {
 
       expect(response.status).toBe('success');
       expect(streamEvents.length).toBeGreaterThan(0);
-      expect(receivedContent).toBe(true);
+      expect(receivedSystemInit).toBe(true);
+      expect(receivedAssistantMessage).toBe(true);
+      expect(receivedResult).toBe(true);
     }, 90000);
 
     it('should handle file operations', async () => {

@@ -82,13 +82,33 @@ export function parseStreamOutput(
       if (event.sessionId || event.session_id) {
         sessionId = event.sessionId || event.session_id;
       }
+      if (event.session_id) {
+        sessionId = event.session_id;
+      }
 
       // Extract model
       if (event.model) {
         model = event.model;
       }
 
-      // Extract final message content
+      // Extract final result message (this is the key output from Claude CLI)
+      if (event.type === 'result' && event.result) {
+        finalOutput = event.result;
+      }
+
+      // Extract message content from assistant messages
+      if (event.type === 'assistant' && event.message?.content) {
+        const content = event.message.content;
+        if (Array.isArray(content)) {
+          for (const block of content) {
+            if (block.type === 'text' && block.text) {
+              finalOutput += block.text;
+            }
+          }
+        }
+      }
+
+      // Legacy: Extract final message content
       if (event.type === 'message.chunk' && event.content) {
         finalOutput += event.content;
       }
