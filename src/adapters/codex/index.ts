@@ -85,7 +85,11 @@ export class CodexAdapter extends BaseAdapter {
 
         throw new ExecutionError(
           `Codex execution failed: ${error.message}`,
-          error
+          {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          }
         );
       }
 

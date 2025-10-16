@@ -37,7 +37,7 @@ export interface CodexExecutionOptions extends ExecutionOptions {
   /** Image inputs for multi-modal execution */
   images?: string[];
   /** Configuration overrides */
-  configOverrides?: Record<string, any>;
+  configOverrides?: Record<string, unknown>;
   /** Configuration profile to use */
   profile?: string;
 }

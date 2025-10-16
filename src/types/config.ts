@@ -27,7 +27,7 @@ export interface StreamEvent {
     /** Tool being executed (for tool events) */
     toolName?: string;
     /** Additional metadata */
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   };
 }
 
@@ -46,7 +46,7 @@ export interface ActionLog {
   /** Result of the action */
   result?: 'success' | 'error';
   /** Additional metadata */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -97,7 +97,7 @@ export interface AdapterResponse {
     /** Error message */
     message: string;
     /** Additional error details */
-    details?: any;
+    details?: Record<string, unknown>;
   };
 }
 
@@ -114,7 +114,7 @@ export interface ExecutionOptions {
   /** Timeout in milliseconds */
   timeout?: number;
   /** CLI-specific options (passed through to adapter) */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -124,5 +124,5 @@ export interface AdapterConfig {
   /** CLI binary path (auto-detected if not specified) */
   cliPath?: string;
   /** Additional configuration options */
-  [key: string]: any;
+  [key: string]: unknown;
 }

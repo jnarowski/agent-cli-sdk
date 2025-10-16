@@ -85,7 +85,11 @@ export class ClaudeAdapter extends BaseAdapter {
 
         throw new ExecutionError(
           `Claude execution failed: ${error.message}`,
-          error
+          {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          }
         );
       }
 

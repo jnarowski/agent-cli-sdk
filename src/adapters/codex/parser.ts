@@ -120,13 +120,13 @@ export function parseStreamOutput(
 /**
  * Normalize stream event to standard format
  */
-function normalizeStreamEvent(event: any): StreamEvent {
+function normalizeStreamEvent(event: Record<string, unknown>): StreamEvent {
   return {
-    type: mapCodexEventType(event.type),
-    timestamp: event.timestamp || Date.now(),
+    type: mapCodexEventType(event.type as string),
+    timestamp: (event.timestamp as number) || Date.now(),
     data: {
-      content: event.content || event.message || event.output,
-      toolName: event.tool || event.operation,
+      content: (event.content || event.message || event.output) as string | undefined,
+      toolName: (event.tool || event.operation) as string | undefined,
       metadata: event,
     },
   };

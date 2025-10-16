@@ -4,7 +4,7 @@ import type { ExecutionOptions } from '../types/config.js';
 /**
  * Validate adapter configuration
  */
-export function validateConfig(_adapter: 'claude' | 'codex', config: any): void {
+export function validateConfig(_adapter: 'claude' | 'codex', config: unknown): void {
   if (config === null || config === undefined) {
     return; // Empty config is allowed
   }
@@ -13,7 +13,8 @@ export function validateConfig(_adapter: 'claude' | 'codex', config: any): void 
     throw new ValidationError('Config must be an object');
   }
 
-  if (config.cliPath !== undefined && typeof config.cliPath !== 'string') {
+  const configObj = config as Record<string, unknown>;
+  if (configObj.cliPath !== undefined && typeof configObj.cliPath !== 'string') {
     throw new ValidationError('cliPath must be a string');
   }
 }

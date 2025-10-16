@@ -5,11 +5,11 @@ export class AdapterError extends Error {
   /** Error code for programmatic handling */
   code: string;
   /** Additional error details */
-  details?: any;
+  details?: Record<string, unknown>;
   /** Recovery suggestion for the user */
   recovery?: string;
 
-  constructor(message: string, code: string = 'ADAPTER_ERROR', details?: any, recovery?: string) {
+  constructor(message: string, code: string = 'ADAPTER_ERROR', details?: Record<string, unknown>, recovery?: string) {
     super(message);
     this.name = 'AdapterError';
     this.code = code;
@@ -23,7 +23,7 @@ export class AdapterError extends Error {
  * Error thrown when configuration is invalid
  */
 export class ConfigurationError extends AdapterError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: Record<string, unknown>) {
     super(message, 'CONFIGURATION_ERROR');
     this.name = 'ConfigurationError';
     this.details = details;
@@ -35,7 +35,7 @@ export class ConfigurationError extends AdapterError {
  * Error thrown during CLI execution
  */
 export class ExecutionError extends AdapterError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: Record<string, unknown>) {
     super(message, 'EXECUTION_ERROR', details);
     this.name = 'ExecutionError';
     Object.setPrototypeOf(this, ExecutionError.prototype);
@@ -46,7 +46,7 @@ export class ExecutionError extends AdapterError {
  * Error thrown when input validation fails
  */
 export class ValidationError extends AdapterError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: Record<string, unknown>) {
     super(message, 'VALIDATION_ERROR');
     this.name = 'ValidationError';
     this.details = details;
