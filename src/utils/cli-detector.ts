@@ -17,6 +17,7 @@ export function findCLI(command: 'claude' | 'codex'): string | null {
       return envPath;
     } else {
       console.warn(`${envVar} is set but path does not exist: ${envPath}`);
+      return null; // Don't fall through to PATH detection if env var is explicitly set
     }
   }
 

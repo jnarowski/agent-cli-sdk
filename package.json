@@ -15,8 +15,11 @@
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "test": "vitest",
+    "test:console": "tsx examples/console-test.ts",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "check": "vitest run && npm run typecheck && npm run lint"
   },
   "keywords": [
     "ai",

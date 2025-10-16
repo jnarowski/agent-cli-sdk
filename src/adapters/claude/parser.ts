@@ -200,15 +200,21 @@ function extractActions(parsed: any): ActionLog[] {
 function extractMetadata(parsed: any): any {
   const metadata: any = {};
 
-  if (parsed.model) metadata.model = parsed.model;
-  if (parsed.tokensUsed || parsed.tokens_used) {
-    metadata.tokensUsed = parsed.tokensUsed || parsed.tokens_used;
+  // Check if metadata is nested in a metadata object
+  const metaSource = parsed.metadata || parsed;
+
+  if (metaSource.model) metadata.model = metaSource.model;
+  if (metaSource.tokensUsed || metaSource.tokens_used) {
+    metadata.tokensUsed = metaSource.tokensUsed || metaSource.tokens_used;
   }
-  if (parsed.toolsUsed || parsed.tools_used) {
-    metadata.toolsUsed = parsed.toolsUsed || parsed.tools_used;
+  if (metaSource.toolsUsed || metaSource.tools_used) {
+    metadata.toolsUsed = metaSource.toolsUsed || metaSource.tools_used;
   }
-  if (parsed.filesModified || parsed.files_modified) {
-    metadata.filesModified = parsed.filesModified || parsed.files_modified;
+  if (metaSource.filesModified || metaSource.files_modified) {
+    metadata.filesModified = metaSource.filesModified || metaSource.files_modified;
+  }
+  if (metaSource.duration) {
+    metadata.duration = metaSource.duration;
   }
 
   return metadata;

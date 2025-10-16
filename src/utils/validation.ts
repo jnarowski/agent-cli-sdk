@@ -1,10 +1,18 @@
 import { ValidationError } from '../core/errors.js';
-import type { AdapterConfig, ExecutionOptions } from '../types/config.js';
+import type { ExecutionOptions } from '../types/config.js';
 
 /**
  * Validate adapter configuration
  */
-export function validateConfig(config: AdapterConfig): void {
+export function validateConfig(_adapter: 'claude' | 'codex', config: any): void {
+  if (config === null || config === undefined) {
+    return; // Empty config is allowed
+  }
+
+  if (typeof config !== 'object' || Array.isArray(config)) {
+    throw new ValidationError('Config must be an object');
+  }
+
   if (config.cliPath !== undefined && typeof config.cliPath !== 'string') {
     throw new ValidationError('cliPath must be a string');
   }
@@ -28,9 +36,7 @@ export function validateExecutionOptions(options: ExecutionOptions): void {
     if (typeof options.onStream !== 'function') {
       throw new ValidationError('onStream must be a function');
     }
-    if (!options.streaming) {
-      throw new ValidationError('onStream callback requires streaming to be enabled');
-    }
+    // Note: onStream without streaming is allowed, just won't be called
   }
 
   if (options.sessionId !== undefined && typeof options.sessionId !== 'string') {
@@ -44,6 +50,23 @@ export function validateExecutionOptions(options: ExecutionOptions): void {
 export function sanitizeInput(input: string): string {
   // Remove null bytes
   return input.replace(/\0/g, '');
+}
+
+/**
+ * Sanitize and validate prompt input
+ */
+export function sanitizePrompt(prompt: string): string {
+  const trimmed = prompt.trim();
+
+  if (trimmed.length === 0) {
+    throw new ValidationError('Prompt cannot be empty');
+  }
+
+  if (trimmed.length > 50000) {
+    throw new ValidationError('Prompt is too long (maximum 50000 characters)');
+  }
+
+  return trimmed;
 }
 
 /**

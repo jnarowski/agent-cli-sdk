@@ -9,10 +9,12 @@ export class AdapterError extends Error {
   /** Recovery suggestion for the user */
   recovery?: string;
 
-  constructor(message: string, code: string = 'ADAPTER_ERROR') {
+  constructor(message: string, code: string = 'ADAPTER_ERROR', details?: any, recovery?: string) {
     super(message);
     this.name = 'AdapterError';
     this.code = code;
+    this.details = details;
+    this.recovery = recovery;
     Object.setPrototypeOf(this, AdapterError.prototype);
   }
 }
@@ -34,9 +36,8 @@ export class ConfigurationError extends AdapterError {
  */
 export class ExecutionError extends AdapterError {
   constructor(message: string, details?: any) {
-    super(message, 'EXECUTION_ERROR');
+    super(message, 'EXECUTION_ERROR', details);
     this.name = 'ExecutionError';
-    this.details = details;
     Object.setPrototypeOf(this, ExecutionError.prototype);
   }
 }
@@ -110,7 +111,7 @@ export class ModelOverloadError extends AdapterError {
   constructor(message: string = 'Model is currently overloaded') {
     super(message, 'MODEL_OVERLOAD');
     this.name = 'ModelOverloadError';
-    this.recovery = 'Try again in a few moments or use a fallback model';
+    this.recovery = 'Retry the request in a few moments or use a fallback model';
     Object.setPrototypeOf(this, ModelOverloadError.prototype);
   }
 }

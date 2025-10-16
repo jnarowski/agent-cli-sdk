@@ -1,0 +1,10 @@
+{
+  "sessionId": "test-session-error",
+  "status": "error",
+  "exitCode": 1,
+  "error": {
+    "code": "AUTH_REQUIRED",
+    "message": "Claude CLI is not authenticated",
+    "details": "Please run 'claude setup-token' to authenticate"
+  }
+}
