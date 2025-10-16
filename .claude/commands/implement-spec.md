@@ -21,8 +21,8 @@ $spec-name-or-path = $1 (provide a spec name like "config-sync-cli" or a full fi
 
 1. Read $spec_path file, think hard about the plan
 2. Implement the plan, one phase at a time, running validation after each step
-3. Update the markdown tasks as you complete them
-4. When you complete an entire phase, fill in completion notes with context and notes for the reviewer
+3. **IMPORTANT** Update the markdown tasks in $spec_path as you complete them
+4. When you complete an entire phase, fill in completion notes with context and notes for the reviewer in $spec_path
 
 ## Report
 

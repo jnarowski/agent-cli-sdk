@@ -4,9 +4,16 @@
   "description": "TypeScript SDK for orchestrating AI-powered CLI tools (Claude Code, OpenAI Codex) in development workflows",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
+    "dev": "tsx watch src/index.ts",
     "test": "vitest",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\""
@@ -14,12 +21,29 @@
   "keywords": [
     "ai",
     "claude",
+    "codex",
     "openai",
     "cli",
     "automation",
     "development",
     "sdk",
-    "typescript"
+    "typescript",
+    "adapter",
+    "workflow",
+    "orchestration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourceborn/agent-cli-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sourceborn/agent-cli-sdk/issues"
+  },
+  "homepage": "https://github.com/sourceborn/agent-cli-sdk#readme",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "author": "Sourceborn",
   "license": "MIT",
@@ -32,10 +56,8 @@
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
     "prettier": "^3.3.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.5.0",
     "vitest": "^2.0.0"
-  },
-  "dependencies": {
-    "openai": "^4.0.0"
   }
 }
