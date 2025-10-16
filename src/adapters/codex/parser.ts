@@ -24,7 +24,8 @@ export function parseTextOutput(output: string, duration: number, exitCode: numb
 export function parseStreamOutput(
   output: string,
   duration: number,
-  exitCode: number
+  exitCode: number,
+  modelName?: string
 ): AdapterResponse {
   const lines = output.split('\n').filter(line => line.trim());
   const events: StreamEvent[] = [];
@@ -32,7 +33,12 @@ export function parseStreamOutput(
   const filesModified = new Set<string>();
   let finalOutput = '';
   let sessionId = '';
-  let model = '';
+  let model = modelName || ''; // Use provided model name, or try to detect from events
+
+  // Usage tracking
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let cachedInputTokens = 0;
 
   for (const line of lines) {
     try {
@@ -40,6 +46,11 @@ export function parseStreamOutput(
 
       // Store raw event
       events.push(normalizeStreamEvent(event));
+
+      // Extract thread ID (Codex's equivalent of session ID)
+      if (event.thread_id) {
+        sessionId = event.thread_id;
+      }
 
       // Extract session ID
       if (event.sessionId || event.session_id) {
@@ -55,6 +66,13 @@ export function parseStreamOutput(
       if (event.type === 'turn.started') {
         // Turn started
       } else if (event.type === 'turn.completed') {
+        // Extract usage information from turn.completed event
+        if (event.usage) {
+          inputTokens += event.usage.input_tokens || 0;
+          outputTokens += event.usage.output_tokens || 0;
+          cachedInputTokens += event.usage.cached_input_tokens || 0;
+        }
+
         // Extract final output
         if (event.output || event.message || event.content) {
           finalOutput = event.output || event.message || event.content;
@@ -67,18 +85,29 @@ export function parseStreamOutput(
       // Handle item events (tool calls, operations)
       if (event.type === 'item.started') {
         // Item started - track as action
+        const item = event.item || event;
         actions.push({
           timestamp: event.timestamp || Date.now(),
-          type: mapOperationToActionType(event.operation || event.tool),
-          target: event.target || event.path || event.command,
-          content: event.content,
+          type: mapOperationToActionType(item.type || event.operation || event.tool),
+          target: item.command || event.target || event.path || event.command,
+          content: item.text || event.content,
           result: 'success',
           metadata: event,
         });
       } else if (event.type === 'item.completed') {
         // Item completed - update action result
-        if (event.path) {
-          filesModified.add(event.path);
+        const item = event.item || event;
+
+        // Extract file modifications from commands or paths
+        if (item.path || event.path) {
+          filesModified.add(item.path || event.path);
+        }
+
+        // Capture final output from agent messages
+        if (item.type === 'agent_message' && item.text) {
+          if (!finalOutput) {
+            finalOutput = item.text;
+          }
         }
       }
 
@@ -98,6 +127,16 @@ export function parseStreamOutput(
     }
   }
 
+  const totalTokens = inputTokens + outputTokens;
+
+  // Calculate usage
+  const usage = totalTokens > 0 ? {
+    inputTokens,
+    outputTokens,
+    cacheReadInputTokens: cachedInputTokens,
+    totalTokens,
+  } : undefined;
+
   return {
     output: finalOutput,
     sessionId,
@@ -108,7 +147,9 @@ export function parseStreamOutput(
     metadata: {
       model,
       filesModified: Array.from(filesModified),
+      tokensUsed: totalTokens > 0 ? totalTokens : undefined,
     },
+    usage,
     raw: {
       stdout: output,
       stderr: '',
@@ -119,6 +160,7 @@ export function parseStreamOutput(
 
 /**
  * Normalize stream event to standard format
+ * Preserves the complete original event in metadata
  */
 function normalizeStreamEvent(event: Record<string, unknown>): StreamEvent {
   return {
@@ -127,6 +169,7 @@ function normalizeStreamEvent(event: Record<string, unknown>): StreamEvent {
     data: {
       content: (event.content || event.message || event.output) as string | undefined,
       toolName: (event.tool || event.operation) as string | undefined,
+      // Preserve the complete original event object for full transparency
       metadata: event,
     },
   };

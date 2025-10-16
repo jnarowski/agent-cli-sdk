@@ -55,6 +55,34 @@ export interface ActionLog {
 export type ResponseStatus = 'success' | 'error' | 'timeout';
 
 /**
+ * Token usage details
+ */
+export interface TokenUsage {
+  /** Input tokens used */
+  inputTokens?: number;
+  /** Output tokens generated */
+  outputTokens?: number;
+  /** Cached input tokens (prompt caching) */
+  cacheReadInputTokens?: number;
+  /** Cache creation input tokens */
+  cacheCreationInputTokens?: number;
+  /** Total tokens (input + output) */
+  totalTokens?: number;
+  /** Web search requests made (if applicable) */
+  webSearchRequests?: number;
+}
+
+/**
+ * Per-model usage breakdown
+ */
+export interface ModelUsage extends TokenUsage {
+  /** Cost in USD for this model */
+  costUSD?: number;
+  /** Context window size */
+  contextWindow?: number;
+}
+
+/**
  * Standard response from an adapter
  */
 export interface AdapterResponse {
@@ -81,6 +109,12 @@ export interface AdapterResponse {
     /** Files that were modified */
     filesModified?: string[];
   };
+  /** Detailed token usage information */
+  usage?: TokenUsage;
+  /** Per-model usage breakdown (for multi-model scenarios) */
+  modelUsage?: Record<string, ModelUsage>;
+  /** Total cost in USD */
+  totalCostUSD?: number;
   /** Raw CLI output */
   raw?: {
     /** Raw stdout from CLI */

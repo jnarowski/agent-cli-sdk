@@ -341,7 +341,7 @@ npm run lint
 npm run format
 ```
 
-## Validation
+## Validationgs
 
 ```bash
 npm run check

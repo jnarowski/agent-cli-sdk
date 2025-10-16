@@ -3,7 +3,7 @@ import type { AdapterCapabilities } from '../../core/interfaces.js';
 import type { AdapterResponse } from '../../types/config.js';
 import type { CodexConfig, CodexExecutionOptions } from '../../types/codex.js';
 import { executeCodexCLI } from './cli-wrapper.js';
-import { parseTextOutput, parseStreamOutput } from './parser.js';
+import { parseStreamOutput } from './parser.js';
 import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors.js';
 import { detectCodexCLI } from './cli-detector.js';
 
@@ -60,13 +60,13 @@ export class CodexAdapter extends BaseAdapter {
         ...mergedOptions,
       });
 
-      // Parse output based on streaming mode
-      let response: AdapterResponse;
-      if (mergedOptions.streaming) {
-        response = parseStreamOutput(result.stdout, result.duration, result.exitCode);
-      } else {
-        response = parseTextOutput(result.stdout, result.duration, result.exitCode);
-      }
+      // Always parse as stream output (JSON) to get detailed information
+      const response = parseStreamOutput(
+        result.stdout,
+        result.duration,
+        result.exitCode,
+        mergedOptions.model
+      );
 
       // Add stderr to raw output
       if (response.raw) {

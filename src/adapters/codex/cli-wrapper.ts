@@ -203,10 +203,8 @@ function buildCLIArguments(prompt: string, options: CodexExecutionOptions): stri
     args.push('-p', options.profile);
   }
 
-  // Add JSON output flag if streaming
-  if (options.streaming) {
-    args.push('--json');
-  }
+  // Always add JSON output flag to get detailed information
+  args.push('--json');
 
   // Finally, add the prompt
   args.push(prompt);
