@@ -1,0 +1,6 @@
+{"type":"turn.started","timestamp":1704067200000,"data":{"turnId":"turn-123"}}
+{"type":"item.started","timestamp":1704067201000,"data":{"itemId":"item-1","type":"message"}}
+{"type":"item.updated","timestamp":1704067201100,"data":{"itemId":"item-1","content":"Analyzing the code for security issues...\n\n"}}
+{"type":"item.updated","timestamp":1704067201200,"data":{"itemId":"item-1","content":"I found the following issues:\n\n1. SQL Injection vulnerability in user query\n2. Missing input validation\n3. No CSRF protection\n"}}
+{"type":"item.completed","timestamp":1704067201500,"data":{"itemId":"item-1"}}
+{"type":"turn.completed","timestamp":1704067202000,"data":{"turnId":"turn-123","exitCode":0}}

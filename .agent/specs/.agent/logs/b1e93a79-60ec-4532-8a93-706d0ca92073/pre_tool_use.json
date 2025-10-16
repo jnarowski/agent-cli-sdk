@@ -1,0 +1,219 @@
+[
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd .agent/specs && sed -i '' 's/^- \\[ \\] 5\\.1 /- [x] 5.1 /' init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.2 /- [x] 5.2 /' init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.3 /- [x] 5.3 /' init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.4 /- [x] 5.4 /' init-spec.md && sed -i '' 's/^- \\[ \\] 6\\.1 /- [x] 6.1 /' init-spec.md && sed -i '' 's/^- \\[ \\] 6\\.2 /- [x] 6.2 /' init-spec.md",
+      "description": "Mark Phase 5 and 6 tasks complete"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd .agent/specs && sed -i '' 's/^- \\[ \\] 7\\.1 /- [x] 7.1 /' init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.2 /- [x] 7.2 /' init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.3 /- [x] 7.3 /' init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.4 /- [x] 7.4 /' init-spec.md",
+      "description": "Mark Phase 7 tasks complete"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "sed -i '' 's/^- \\[ \\] 5\\.1 /- [x] 5.1 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.2 /- [x] 5.2 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.3 /- [x] 5.3 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.4 /- [x] 5.4 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 6\\.1 /- [x] 6.1 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 6\\.2 /- [x] 6.2 /' .agent/specs/init-spec.md",
+      "description": "Mark Phase 5 and 6 tasks complete"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "sed -i '' 's/^- \\[ \\] 7\\.1 /- [x] 7.1 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.2 /- [x] 7.2 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.3 /- [x] 7.3 /' .agent/specs/init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.4 /- [x] 7.4 /' .agent/specs/init-spec.md",
+      "description": "Mark Phase 7 tasks complete"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ls -la .agent/specs/",
+      "description": "Check .agent/specs directory"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "find . -name \"init-spec.md\" -type f 2>/dev/null",
+      "description": "Find init-spec.md file"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "sed -i '' 's/^- \\[ \\] 5\\.1 /- [x] 5.1 /' init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.2 /- [x] 5.2 /' init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.3 /- [x] 5.3 /' init-spec.md && sed -i '' 's/^- \\[ \\] 5\\.4 /- [x] 5.4 /' init-spec.md && sed -i '' 's/^- \\[ \\] 6\\.1 /- [x] 6.1 /' init-spec.md && sed -i '' 's/^- \\[ \\] 6\\.2 /- [x] 6.2 /' init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.1 /- [x] 7.1 /' init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.2 /- [x] 7.2 /' init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.3 /- [x] 7.3 /' init-spec.md && sed -i '' 's/^- \\[ \\] 7\\.4 /- [x] 7.4 /' init-spec.md",
+      "description": "Mark Phase 5, 6, and 7 tasks complete"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "grep -c \"^\\- \\[x\\]\" init-spec.md",
+      "description": "Count completed tasks"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Write",
+    "tool_input": {
+      "file_path": "LICENSE",
+      "content": "MIT License\n\nCopyright (c) 2025 Sourceborn\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Write",
+    "tool_input": {
+      "file_path": "CONTRIBUTING.md",
+      "content": "# Contributing to Agent CLI SDK\n\nThank you for your interest in contributing! This document provides guidelines for contributing to the project.\n\n## Development Setup\n\n### Prerequisites\n\n- Node.js 22 or higher\n- Claude Code CLI (optional, for testing Claude adapter)\n- Codex CLI (optional, for testing Codex adapter)\n- Git\n\n### Getting Started\n\n1. Clone the repository:\n   ```bash\n   git clone https://github.com/sourceborn/agent-cli-sdk.git\n   cd agent-cli-sdk\n   ```\n\n2. Install dependencies:\n   ```bash\n   npm install\n   ```\n\n3. Build the project:\n   ```bash\n   npm run build\n   ```\n\n4. Run tests:\n   ```bash\n   npm test\n   ```\n\n## Project Structure\n\n```\nagent-cli-sdk/\n\u251c\u2500\u2500 src/\n\u2502   \u251c\u2500\u2500 core/              # Core interfaces, base classes, errors\n\u2502   \u251c\u2500\u2500 adapters/          # Adapter implementations\n\u2502   \u2502   \u251c\u2500\u2500 claude/        # Claude Code adapter\n\u2502   \u2502   \u2514\u2500\u2500 codex/         # Codex adapter\n\u2502   \u251c\u2500\u2500 types/             # TypeScript type definitions\n\u2502   \u2514\u2500\u2500 utils/             # Utility functions\n\u251c\u2500\u2500 examples/              # Example usage\n\u251c\u2500\u2500 tests/                 # Test files\n\u2514\u2500\u2500 dist/                  # Build output (generated)\n```\n\n## Development Workflow\n\n### Making Changes\n\n1. Create a new branch:\n   ```bash\n   git checkout -b feature/your-feature-name\n   ```\n\n2. Make your changes\n\n3. Run linting and formatting:\n   ```bash\n   npm run lint\n   npm run format\n   ```\n\n4. Build the project:\n   ```bash\n   npm run build\n   ```\n\n5. Test your changes:\n   ```bash\n   npm test\n   ```\n\n6. Commit your changes:\n   ```bash\n   git add .\n   git commit -m \"Description of changes\"\n   ```\n\n7. Push your branch:\n   ```bash\n   git push origin feature/your-feature-name\n   ```\n\n8. Open a Pull Request\n\n## Code Style\n\n- Use TypeScript for all source code\n- Follow existing code style and conventions\n- Use meaningful variable and function names\n- Add JSDoc comments for public APIs\n- Keep functions focused and single-purpose\n- Prefer composition over inheritance\n\n## Testing\n\n### Unit Tests\n\n- Write unit tests for new functionality\n- Use mocks for CLI interactions\n- Aim for >80% code coverage\n- Place unit tests in `tests/unit/`\n\n### E2E Tests\n\n- E2E tests require actual CLIs installed\n- These are optional and run with `RUN_E2E_TESTS=true npm test`\n- Place E2E tests in `tests/e2e/`\n\n### Running Tests\n\n```bash\n# Run all tests\nnpm test\n\n# Run with coverage\nnpm run test:coverage\n\n# Run E2E tests (requires CLIs installed)\nRUN_E2E_TESTS=true npm test\n```\n\n## Adding a New Adapter\n\nTo add support for a new AI CLI tool:\n\n1. Create adapter directory:\n   ```\n   src/adapters/your-tool/\n   \u251c\u2500\u2500 index.ts           # Main adapter class\n   \u251c\u2500\u2500 cli-wrapper.ts     # CLI process spawning\n   \u2514\u2500\u2500 parser.ts          # Output parsing\n   ```\n\n2. Implement the `AIAdapter` interface:\n   ```typescript\n   export class YourToolAdapter extends BaseAdapter implements AIAdapter {\n     async execute(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse> {\n       // Implementation\n     }\n\n     getCapabilities(): AdapterCapabilities {\n       // Return capabilities\n     }\n   }\n   ```\n\n3. Add types in `src/types/your-tool.ts`\n\n4. Create factory function in `src/utils/factory.ts`\n\n5. Export from `src/index.ts`\n\n6. Add tests in `tests/unit/adapters/your-tool.test.ts`\n\n7. Add example in `examples/your-tool-example.ts`\n\n8. Update README.md with usage instructions\n\n## Documentation\n\n- Update README.md for user-facing changes\n- Add JSDoc comments for new public APIs\n- Include examples for new features\n- Update CHANGELOG.md (if exists)\n\n## Pull Request Guidelines\n\n### Before Submitting\n\n- Ensure all tests pass\n- Update documentation\n- Add tests for new functionality\n- Follow code style guidelines\n- Rebase on latest main branch\n\n### PR Description\n\nInclude:\n- Summary of changes\n- Motivation and context\n- Breaking changes (if any)\n- Related issues\n\n### Review Process\n\n1. Automated checks must pass (lint, tests, build)\n2. At least one approving review required\n3. Address reviewer feedback\n4. Squash commits if requested\n\n## Reporting Issues\n\n### Bug Reports\n\nInclude:\n- Clear description of the bug\n- Steps to reproduce\n- Expected behavior\n- Actual behavior\n- Environment (Node version, OS, etc.)\n- Error messages and stack traces\n\n### Feature Requests\n\nInclude:\n- Clear description of the feature\n- Use case and motivation\n- Example usage (pseudocode)\n- Alternatives considered\n\n## Community Guidelines\n\n- Be respectful and inclusive\n- Provide constructive feedback\n- Help others when possible\n- Follow the Code of Conduct\n\n## License\n\nBy contributing, you agree that your contributions will be licensed under the MIT License.\n\n## Questions?\n\n- Open an issue for questions\n- Check existing issues and PRs first\n- Tag maintainers if needed\n\nThank you for contributing!\n"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "sed -i '' 's/^- \\[ \\] 9\\.1 /- [x] 9.1 /' init-spec.md && sed -i '' 's/^- \\[ \\] 9\\.2 /- [x] 9.2 /' init-spec.md && sed -i '' 's/^- \\[ \\] 9\\.3 /- [x] 9.3 /' init-spec.md",
+      "description": "Mark Phase 9 documentation tasks complete"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "TodoWrite",
+    "tool_input": {
+      "todos": [
+        {
+          "content": "Phase 1: Set up project structure and foundation",
+          "status": "completed",
+          "activeForm": "Setting up project structure and foundation"
+        },
+        {
+          "content": "Phase 2: Implement core types and interfaces",
+          "status": "completed",
+          "activeForm": "Implementing core types and interfaces"
+        },
+        {
+          "content": "Phase 3: Build Claude Code adapter",
+          "status": "completed",
+          "activeForm": "Building Claude Code adapter"
+        },
+        {
+          "content": "Phase 4: Build Codex adapter",
+          "status": "completed",
+          "activeForm": "Building Codex adapter"
+        },
+        {
+          "content": "Phase 5: Create utilities and factory functions",
+          "status": "completed",
+          "activeForm": "Creating utilities and factory functions"
+        },
+        {
+          "content": "Phase 6: Set up main entry point and exports",
+          "status": "completed",
+          "activeForm": "Setting up main entry point and exports"
+        },
+        {
+          "content": "Phase 7: Create example workflows",
+          "status": "completed",
+          "activeForm": "Creating example workflows"
+        },
+        {
+          "content": "Phase 8: Build testing infrastructure",
+          "status": "pending",
+          "activeForm": "Building testing infrastructure"
+        },
+        {
+          "content": "Phase 9: Write comprehensive documentation",
+          "status": "completed",
+          "activeForm": "Writing comprehensive documentation"
+        },
+        {
+          "content": "Phase 10: Prepare package for publishing",
+          "status": "in_progress",
+          "activeForm": "Preparing package for publishing"
+        }
+      ]
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk && pwd",
+      "description": "Navigate to project root"
+    }
+  },
+  {
+    "session_id": "b1e93a79-60ec-4532-8a93-706d0ca92073",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-cli-sdk/b1e93a79-60ec-4532-8a93-706d0ca92073.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/.agent/specs",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Read",
+    "tool_input": {
+      "file_path": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/package.json"
+    }
+  }
+]
