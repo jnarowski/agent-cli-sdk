@@ -4,7 +4,8 @@ import type { AdapterResponse } from '../../types/config.js';
 import type { CodexConfig, CodexExecutionOptions } from '../../types/codex.js';
 import { executeCodexCLI } from './cli-wrapper.js';
 import { parseTextOutput, parseStreamOutput } from './parser.js';
-import { ExecutionError, AuthenticationError } from '../../core/errors.js';
+import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors.js';
+import { detectCodexCLI } from './cli-detector.js';
 
 /**
  * Codex adapter implementation
@@ -12,8 +13,19 @@ import { ExecutionError, AuthenticationError } from '../../core/errors.js';
 export class CodexAdapter extends BaseAdapter {
   private config: CodexConfig;
 
-  constructor(cliPath: string, config: CodexConfig = {}) {
-    super(cliPath);
+  constructor(cliPath?: string, config: CodexConfig = {}) {
+    // Auto-detect CLI path if not provided
+    const resolvedPath = cliPath || detectCodexCLI();
+
+    if (!resolvedPath) {
+      throw new CLINotFoundError(
+        'codex',
+        'Codex CLI not found. Please install it or provide a cliPath.\n' +
+        'Visit https://github.com/openai/openai-codex-cli for installation instructions or set CODEX_CLI_PATH environment variable'
+      );
+    }
+
+    super(resolvedPath);
     this.config = config;
   }
 

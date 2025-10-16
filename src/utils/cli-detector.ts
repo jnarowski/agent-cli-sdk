@@ -1,40 +1,20 @@
-import { execSync } from 'child_process';
-import { existsSync } from 'fs';
+import { detectClaudeCLI } from '../adapters/claude/cli-detector.js';
+import { detectCodexCLI } from '../adapters/codex/cli-detector.js';
 
 /**
  * Find a CLI binary in the system PATH or use environment variable override
+ *
+ * This is a convenience wrapper that delegates to the adapter-specific detectors.
+ * For more control, use the adapter-specific detection functions directly.
+ *
  * @param command The CLI command name ('claude' or 'codex')
  * @returns Full path to the CLI binary or null if not found
  */
 export function findCLI(command: 'claude' | 'codex'): string | null {
-  // 1. Check environment variable override first
-  const envVar = command === 'claude' ? 'CLAUDE_CLI_PATH' : 'CODEX_CLI_PATH';
-  const envPath = process.env[envVar];
-
-  if (envPath) {
-    // Verify the path exists
-    if (existsSync(envPath)) {
-      return envPath;
-    } else {
-      console.warn(`${envVar} is set but path does not exist: ${envPath}`);
-      return null; // Don't fall through to PATH detection if env var is explicitly set
-    }
-  }
-
-  // 2. Auto-detect in PATH
-  try {
-    const whichCommand = process.platform === 'win32' ? 'where' : 'which';
-    const result = execSync(`${whichCommand} ${command}`, {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'ignore'], // Suppress stderr
-    }).trim();
-
-    // Return first match (in case multiple are found)
-    const paths = result.split('\n');
-    return paths[0] || null;
-  } catch {
-    // Command not found in PATH
-    return null;
+  if (command === 'claude') {
+    return detectClaudeCLI();
+  } else {
+    return detectCodexCLI();
   }
 }
 

@@ -116,7 +116,35 @@ export function parseStreamOutput(
         finalOutput = event.message;
       }
 
-      // Extract tool calls
+      // Extract tool calls from assistant message content
+      if (event.type === 'assistant' && event.message?.content) {
+        const content = event.message.content;
+        if (Array.isArray(content)) {
+          for (const block of content) {
+            if (block.type === 'tool_use' && block.name) {
+              toolsUsed.add(block.name);
+              actions.push({
+                timestamp: event.timestamp || Date.now(),
+                type: mapToolToActionType(block.name),
+                target: block.input?.file_path || block.input?.path || block.input?.command,
+                content: JSON.stringify(block.input),
+                result: 'success',
+                metadata: { toolName: block.name, toolId: block.id },
+              });
+
+              // Track file modifications for Write and Edit tools
+              if (block.name === 'Write' && block.input?.file_path) {
+                filesModified.add(block.input.file_path);
+              }
+              if (block.name === 'Edit' && block.input?.file_path) {
+                filesModified.add(block.input.file_path);
+              }
+            }
+          }
+        }
+      }
+
+      // Legacy: Extract tool calls from old event format
       if (event.type === 'tool.started' && event.toolName) {
         toolsUsed.add(event.toolName);
         actions.push({
@@ -129,7 +157,7 @@ export function parseStreamOutput(
         });
       }
 
-      // Extract file modifications
+      // Legacy: Extract file modifications from old event format
       if (event.type === 'tool.completed' && event.toolName === 'Edit' && event.path) {
         filesModified.add(event.path);
       }

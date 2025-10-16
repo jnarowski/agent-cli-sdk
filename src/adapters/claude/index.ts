@@ -3,8 +3,9 @@ import type { AdapterCapabilities } from '../../core/interfaces.js';
 import type { AdapterResponse } from '../../types/config.js';
 import type { ClaudeConfig, ClaudeExecutionOptions } from '../../types/claude.js';
 import { executeClaudeCLI } from './cli-wrapper.js';
-import { parseJSONOutput, parseStreamOutput } from './parser.js';
-import { ExecutionError, AuthenticationError } from '../../core/errors.js';
+import { parseStreamOutput } from './parser.js';
+import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors.js';
+import { detectClaudeCLI } from './cli-detector.js';
 
 /**
  * Claude Code adapter implementation
@@ -12,8 +13,19 @@ import { ExecutionError, AuthenticationError } from '../../core/errors.js';
 export class ClaudeAdapter extends BaseAdapter {
   private config: ClaudeConfig;
 
-  constructor(cliPath: string, config: ClaudeConfig = {}) {
-    super(cliPath);
+  constructor(cliPath?: string, config: ClaudeConfig = {}) {
+    // Auto-detect CLI path if not provided
+    const resolvedPath = cliPath || detectClaudeCLI();
+
+    if (!resolvedPath) {
+      throw new CLINotFoundError(
+        'claude',
+        'Claude CLI not found. Please install it or provide a cliPath.\n' +
+        'Visit https://docs.anthropic.com/claude/docs/claude-cli for installation instructions or set CLAUDE_CLI_PATH environment variable'
+      );
+    }
+
+    super(resolvedPath);
     this.config = config;
   }
 
