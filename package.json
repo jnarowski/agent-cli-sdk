@@ -17,10 +17,10 @@
     "dev": "tsx watch src/index.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint src --ext .ts",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:console": "tsx examples/console-test.ts",
     "test:e2e": "RUN_E2E_TESTS=true vitest run --config vitest.e2e.config.ts",
-    "test:e2e:examples": "tsx examples/console-test.ts claude && tsx examples/streaming-tools-test.ts && tsx examples/session-test.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
@@ -61,8 +61,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
     "eslint": "^8.57.0",
     "prettier": "^3.3.0",
     "tsx": "^4.7.0",

@@ -48,7 +48,11 @@ export function parseJSONOutput(output: string, duration: number, exitCode: numb
       error: {
         code: 'PARSE_ERROR',
         message: 'Failed to parse Claude CLI output',
-        details: error,
+        details: error instanceof Error ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+        } : typeof error === 'object' && error !== null ? error as Record<string, unknown> : { error: String(error) },
       },
     };
   }
@@ -228,7 +232,9 @@ function extractOutputText(parsed: unknown): string {
     return obj.messages.map((m: unknown) => {
       if (typeof m === 'object' && m !== null) {
         const msg = m as Record<string, unknown>;
-        return String(msg.content || msg.text || '');
+        const content = typeof msg.content === 'string' ? msg.content : '';
+        const text = typeof msg.text === 'string' ? msg.text : '';
+        return content || text;
       }
       return '';
     }).join('\n');
@@ -252,10 +258,14 @@ function extractActions(parsed: unknown): ActionLog[] {
   if (obj.actions && Array.isArray(obj.actions)) {
     return obj.actions.map((action: unknown) => {
       const act = action as Record<string, unknown>;
+      const typeStr = typeof act.type === 'string' ? act.type : 'think';
+      const targetStr = typeof act.target === 'string' ? act.target :
+                       typeof act.path === 'string' ? act.path :
+                       typeof act.command === 'string' ? act.command : '';
       return {
         timestamp: (typeof act.timestamp === 'number' ? act.timestamp : Date.now()),
-        type: mapToolToActionType(String(act.type || 'think')),
-        target: String(act.target || act.path || act.command || ''),
+        type: mapToolToActionType(typeStr),
+        target: targetStr,
         content: act.content as string | undefined,
         result: (act.result as ActionLog['result']) || 'success',
         metadata: act.metadata as Record<string, unknown> | undefined,
@@ -266,10 +276,13 @@ function extractActions(parsed: unknown): ActionLog[] {
   if (obj.toolCalls && Array.isArray(obj.toolCalls)) {
     return obj.toolCalls.map((tool: unknown) => {
       const t = tool as Record<string, unknown>;
+      const nameStr = typeof t.name === 'string' ? t.name : '';
+      const targetStr = typeof t.target === 'string' ? t.target :
+                       typeof t.path === 'string' ? t.path : '';
       return {
         timestamp: (typeof t.timestamp === 'number' ? t.timestamp : Date.now()),
-        type: mapToolToActionType(String(t.name || '')),
-        target: String(t.target || t.path || ''),
+        type: mapToolToActionType(nameStr),
+        target: targetStr,
         content: t.content as string | undefined,
         result: 'success' as const,
         metadata: { toolName: t.name },

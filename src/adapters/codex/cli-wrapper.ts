@@ -66,7 +66,7 @@ export async function executeCodexCLI(
                 // Not a JSON line, skip
               }
             }
-          } catch (error) {
+          } catch {
             // Ignore parsing errors during streaming
           }
         }
@@ -110,7 +110,11 @@ export async function executeCodexCLI(
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      reject(new ExecutionError(`Failed to spawn Codex CLI: ${error.message}`, error));
+      reject(new ExecutionError(`Failed to spawn Codex CLI: ${error.message}`, {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      }));
     });
   });
 }
