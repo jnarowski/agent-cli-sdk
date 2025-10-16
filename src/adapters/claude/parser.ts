@@ -149,7 +149,8 @@ function extractOutputText(parsed: any): string {
     return parsed;
   }
 
-  // Try various common fields
+  // Try various common fields (Claude CLI returns 'result')
+  if (parsed.result) return parsed.result;
   if (parsed.output) return parsed.output;
   if (parsed.message) return parsed.message;
   if (parsed.content) return parsed.content;

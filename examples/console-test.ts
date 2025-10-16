@@ -34,8 +34,8 @@ const CODEX_CONFIG: Partial<CodexConfig> = {
 const TEST_PROMPT = 'What is 2 + 2? Please explain briefly.';
 
 // Execution options
-const ENABLE_STREAMING = true;
-const TIMEOUT_MS = 30000;
+const ENABLE_STREAMING = false; // Disable streaming for initial test
+const TIMEOUT_MS = 60000; // Increase timeout
 
 // ============================================================================
 // TEST FUNCTIONS
@@ -58,10 +58,13 @@ async function testClaude() {
 
     const startTime = Date.now();
 
-    const response = await claude.execute(TEST_PROMPT, {
-      streaming: ENABLE_STREAMING,
+    const execOptions: any = {
       timeout: TIMEOUT_MS,
-      onStream: (event) => {
+    };
+
+    if (ENABLE_STREAMING) {
+      execOptions.streaming = true;
+      execOptions.onStream = (event: any) => {
         if (event.type === 'message.chunk') {
           process.stdout.write(event.data.content || '');
         } else if (event.type === 'tool.started') {
@@ -71,8 +74,10 @@ async function testClaude() {
         } else if (event.type === 'error') {
           console.error(`❌ Error: ${event.data.message}`);
         }
-      },
-    });
+      };
+    }
+
+    const response = await claude.execute(TEST_PROMPT, execOptions);
 
     const duration = Date.now() - startTime;
 
