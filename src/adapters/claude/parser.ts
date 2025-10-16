@@ -1,4 +1,4 @@
-import type { AdapterResponse, ActionLog, StreamEvent } from '../../types/config.js';
+import type { AdapterResponse, ActionLog, StreamEvent, StreamEventType } from '../../types/config.js';
 
 /**
  * Parse Claude CLI JSON output (from --output-format json)
@@ -56,12 +56,25 @@ export function parseJSONOutput(output: string, duration: number, exitCode: numb
 
 /**
  * Parse streaming JSONL output (from --output-format stream-json)
+ * Also handles single JSON object responses for testing/compatibility
  */
 export function parseStreamOutput(
   output: string,
   duration: number,
   exitCode: number
 ): AdapterResponse {
+  // First, try to parse as a single JSON object (for fixtures and some CLI responses)
+  try {
+    const parsed = JSON.parse(output);
+    // If it's a single object with expected fields, use JSON parser
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) &&
+        (parsed.output || parsed.messages || parsed.result || parsed.status)) {
+      return parseJSONOutput(output, duration, exitCode);
+    }
+  } catch {
+    // Not a single JSON object, continue with JSONL parsing
+  }
+
   const lines = output.split('\n').filter(line => line.trim());
   const events: StreamEvent[] = [];
   const actions: ActionLog[] = [];
@@ -192,21 +205,33 @@ export function parseStreamOutput(
 /**
  * Extract output text from various Claude response formats
  */
-function extractOutputText(parsed: any): string {
+function extractOutputText(parsed: unknown): string {
   if (typeof parsed === 'string') {
     return parsed;
   }
 
+  if (typeof parsed !== 'object' || parsed === null) {
+    return String(parsed);
+  }
+
+  const obj = parsed as Record<string, unknown>;
+
   // Try various common fields (Claude CLI returns 'result')
-  if (parsed.result) return parsed.result;
-  if (parsed.output) return parsed.output;
-  if (parsed.message) return parsed.message;
-  if (parsed.content) return parsed.content;
-  if (parsed.text) return parsed.text;
+  if (typeof obj.result === 'string') return obj.result;
+  if (typeof obj.output === 'string') return obj.output;
+  if (typeof obj.message === 'string') return obj.message;
+  if (typeof obj.content === 'string') return obj.content;
+  if (typeof obj.text === 'string') return obj.text;
 
   // If it's an array of messages, concatenate them
-  if (Array.isArray(parsed.messages)) {
-    return parsed.messages.map((m: any) => m.content || m.text || '').join('\n');
+  if (Array.isArray(obj.messages)) {
+    return obj.messages.map((m: unknown) => {
+      if (typeof m === 'object' && m !== null) {
+        const msg = m as Record<string, unknown>;
+        return String(msg.content || msg.text || '');
+      }
+      return '';
+    }).join('\n');
   }
 
   return JSON.stringify(parsed, null, 2);
@@ -215,29 +240,41 @@ function extractOutputText(parsed: any): string {
 /**
  * Extract actions from parsed output
  */
-function extractActions(parsed: any): ActionLog[] {
+function extractActions(parsed: unknown): ActionLog[] {
   const actions: ActionLog[] = [];
 
-  if (parsed.actions && Array.isArray(parsed.actions)) {
-    return parsed.actions.map((action: any) => ({
-      timestamp: action.timestamp || Date.now(),
-      type: action.type || 'think',
-      target: action.target || action.path || action.command,
-      content: action.content,
-      result: action.result || 'success',
-      metadata: action.metadata,
-    }));
+  if (typeof parsed !== 'object' || parsed === null) {
+    return actions;
   }
 
-  if (parsed.toolCalls && Array.isArray(parsed.toolCalls)) {
-    return parsed.toolCalls.map((tool: any) => ({
-      timestamp: tool.timestamp || Date.now(),
-      type: mapToolToActionType(tool.name),
-      target: tool.target || tool.path,
-      content: tool.content,
-      result: 'success',
-      metadata: { toolName: tool.name },
-    }));
+  const obj = parsed as Record<string, unknown>;
+
+  if (obj.actions && Array.isArray(obj.actions)) {
+    return obj.actions.map((action: unknown) => {
+      const act = action as Record<string, unknown>;
+      return {
+        timestamp: (typeof act.timestamp === 'number' ? act.timestamp : Date.now()),
+        type: mapToolToActionType(String(act.type || 'think')),
+        target: String(act.target || act.path || act.command || ''),
+        content: act.content as string | undefined,
+        result: (act.result as ActionLog['result']) || 'success',
+        metadata: act.metadata as Record<string, unknown> | undefined,
+      };
+    });
+  }
+
+  if (obj.toolCalls && Array.isArray(obj.toolCalls)) {
+    return obj.toolCalls.map((tool: unknown) => {
+      const t = tool as Record<string, unknown>;
+      return {
+        timestamp: (typeof t.timestamp === 'number' ? t.timestamp : Date.now()),
+        type: mapToolToActionType(String(t.name || '')),
+        target: String(t.target || t.path || ''),
+        content: t.content as string | undefined,
+        result: 'success' as const,
+        metadata: { toolName: t.name },
+      };
+    });
   }
 
   return actions;
@@ -246,14 +283,20 @@ function extractActions(parsed: any): ActionLog[] {
 /**
  * Extract metadata from parsed output
  */
-function extractMetadata(parsed: any): any {
-  const metadata: any = {};
+function extractMetadata(parsed: unknown): Record<string, unknown> {
+  const metadata: Record<string, unknown> = {};
+
+  if (typeof parsed !== 'object' || parsed === null) {
+    return metadata;
+  }
+
+  const obj = parsed as Record<string, unknown>;
 
   // Check if metadata is nested in a metadata object
-  const metaSource = parsed.metadata || parsed;
+  const metaSource = (obj.metadata as Record<string, unknown>) || obj;
 
-  if (metaSource.model) metadata.model = metaSource.model;
-  if (metaSource.tokensUsed || metaSource.tokens_used) {
+  if (typeof metaSource.model === 'string') metadata.model = metaSource.model;
+  if (typeof metaSource.tokensUsed === 'number' || typeof metaSource.tokens_used === 'number') {
     metadata.tokensUsed = metaSource.tokensUsed || metaSource.tokens_used;
   }
   if (metaSource.toolsUsed || metaSource.tools_used) {
@@ -262,7 +305,7 @@ function extractMetadata(parsed: any): any {
   if (metaSource.filesModified || metaSource.files_modified) {
     metadata.filesModified = metaSource.filesModified || metaSource.files_modified;
   }
-  if (metaSource.duration) {
+  if (typeof metaSource.duration === 'number') {
     metadata.duration = metaSource.duration;
   }
 
@@ -272,14 +315,24 @@ function extractMetadata(parsed: any): any {
 /**
  * Normalize stream event to standard format
  */
-function normalizeStreamEvent(event: any): StreamEvent {
+function normalizeStreamEvent(event: unknown): StreamEvent {
+  if (typeof event !== 'object' || event === null) {
+    return {
+      type: 'message.chunk',
+      timestamp: Date.now(),
+      data: {},
+    };
+  }
+
+  const evt = event as Record<string, unknown>;
+
   return {
-    type: event.type || 'message.chunk',
-    timestamp: event.timestamp || Date.now(),
+    type: (evt.type as StreamEventType) || 'message.chunk',
+    timestamp: (typeof evt.timestamp === 'number' ? evt.timestamp : Date.now()),
     data: {
-      content: event.content || event.message,
-      toolName: event.toolName || event.tool_name,
-      metadata: event.metadata || event,
+      content: evt.content as string | undefined || evt.message as string | undefined,
+      toolName: evt.toolName as string | undefined || evt.tool_name as string | undefined,
+      metadata: (evt.metadata as Record<string, unknown>) || evt,
     },
   };
 }

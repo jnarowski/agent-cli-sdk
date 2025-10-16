@@ -13,15 +13,15 @@
   },
   "scripts": {
     "build": "tsc",
+    "check": "vitest run && npm run typecheck && npm run lint",
     "dev": "tsx watch src/index.ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint src --ext .ts",
     "test": "vitest",
     "test:console": "tsx examples/console-test.ts",
     "test:e2e": "RUN_E2E_TESTS=true vitest run --config vitest.e2e.config.ts",
     "test:e2e:examples": "tsx examples/console-test.ts claude && tsx examples/streaming-tools-test.ts && tsx examples/session-test.ts",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "check": "vitest run && npm run typecheck && npm run lint"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "ai",

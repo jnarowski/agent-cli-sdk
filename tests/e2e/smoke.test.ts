@@ -19,24 +19,35 @@ const describeE2E = shouldRunE2E ? describe : describe.skip;
 
 describeE2E('E2E Smoke Tests', () => {
   let claudeAdapter: ClaudeAdapter;
-  let codexAdapter: CodexAdapter;
+  let codexAdapter: CodexAdapter | null;
+  let codexAvailable = false;
 
   beforeAll(() => {
+    // For E2E tests, use explicit CLI path if available, otherwise auto-detect
+    const claudeConfig = process.env.CLAUDE_CLI_PATH && !process.env.CLAUDE_CLI_PATH.includes('/mock/')
+      ? { cliPath: process.env.CLAUDE_CLI_PATH }
+      : {};
+
+    const codexConfig = process.env.CODEX_CLI_PATH && !process.env.CODEX_CLI_PATH.includes('/mock/')
+      ? { cliPath: process.env.CODEX_CLI_PATH }
+      : {};
+
+    // Create Claude adapter (required)
     try {
-      // For E2E tests, use explicit CLI path if available, otherwise auto-detect
-      const claudeConfig = process.env.CLAUDE_CLI_PATH && !process.env.CLAUDE_CLI_PATH.includes('/mock/')
-        ? { cliPath: process.env.CLAUDE_CLI_PATH }
-        : {};
-
-      const codexConfig = process.env.CODEX_CLI_PATH && !process.env.CODEX_CLI_PATH.includes('/mock/')
-        ? { cliPath: process.env.CODEX_CLI_PATH }
-        : {};
-
       claudeAdapter = createClaudeAdapter(claudeConfig);
-      codexAdapter = createCodexAdapter(codexConfig);
     } catch (error) {
-      console.error('Failed to create adapters:', error);
+      console.error('Failed to create Claude adapter:', error);
       throw error;
+    }
+
+    // Create Codex adapter (optional - skip tests if not available)
+    try {
+      codexAdapter = createCodexAdapter(codexConfig);
+      codexAvailable = true;
+    } catch (error) {
+      console.warn('Codex CLI not available - Codex tests will be skipped');
+      codexAdapter = null;
+      codexAvailable = false;
     }
   });
 
@@ -111,8 +122,8 @@ describeE2E('E2E Smoke Tests', () => {
   });
 
   describe('Codex Adapter E2E', () => {
-    it('should execute simple prompt and get response', async () => {
-      const response = await codexAdapter.execute(
+    it.skipIf(!codexAvailable)('should execute simple prompt and get response', async () => {
+      const response = await codexAdapter!.execute(
         'Say "Hello from Codex!" and nothing else',
         {
           fullAuto: true,
@@ -126,10 +137,10 @@ describeE2E('E2E Smoke Tests', () => {
       expect(response.duration).toBeGreaterThan(0);
     }, 90000);
 
-    it('should support streaming mode', async () => {
+    it.skipIf(!codexAvailable)('should support streaming mode', async () => {
       const streamEvents: any[] = [];
 
-      const response = await codexAdapter.execute(
+      const response = await codexAdapter!.execute(
         'Count from 1 to 3',
         {
           streaming: true,
@@ -145,8 +156,8 @@ describeE2E('E2E Smoke Tests', () => {
       expect(streamEvents.length).toBeGreaterThan(0);
     }, 90000);
 
-    it('should work with sandbox restrictions', async () => {
-      const response = await codexAdapter.execute(
+    it.skipIf(!codexAvailable)('should work with sandbox restrictions', async () => {
+      const response = await codexAdapter!.execute(
         'List files in current directory',
         {
           sandbox: 'read-only',
@@ -159,7 +170,7 @@ describeE2E('E2E Smoke Tests', () => {
   });
 
   describe('Multi-Agent Workflow E2E', () => {
-    it('should coordinate between Claude and Codex', async () => {
+    it.skipIf(!codexAvailable)('should coordinate between Claude and Codex', async () => {
       // Step 1: Claude generates code
       const step1 = await claudeAdapter.execute(
         'Write a simple function to a temp file /tmp/test-multi-agent.js that adds two numbers',
@@ -170,7 +181,7 @@ describeE2E('E2E Smoke Tests', () => {
       expect(step1.sessionId).toBeDefined();
 
       // Step 2: Codex reviews the code
-      const step2 = await codexAdapter.execute(
+      const step2 = await codexAdapter!.execute(
         'Review the file /tmp/test-multi-agent.js and check if it works correctly',
         {
           fullAuto: true,
