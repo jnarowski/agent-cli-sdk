@@ -56,7 +56,7 @@ export class CodexAdapter extends BaseAdapter {
     try {
       // Execute CLI with config-level settings (options can override config)
       const result = await executeCodexCLI(this.cliPath, prompt, {
-        workingDirectory: this.config.workingDirectory,
+        workingDir: this.config.workingDir,
         ...mergedOptions,
       });
 

@@ -41,7 +41,7 @@ export interface CodexConfig extends AdapterConfig {
   /** API key for authentication (optional, OAuth via 'codex login' is default) */
   apiKey?: string;
   /** Working directory for CLI execution */
-  workingDirectory?: string;
+  workingDir?: string;
 }
 
 /**
@@ -61,7 +61,7 @@ export interface CodexExecutionOptions extends ExecutionOptions {
   /** Model to use (default: 'gpt-5') */
   model?: OpenAIModel;
   /** Working directory for execution (usually set from config, but can be overridden) */
-  workingDirectory?: string;
+  workingDir?: string;
   /** Sandbox mode for file system access */
   sandbox?: CodexSandboxMode;
   /** Approval policy for operations */

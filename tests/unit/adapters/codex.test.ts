@@ -52,7 +52,7 @@ describe('CodexAdapter', () => {
       expect(streamEvents.length).toBeGreaterThan(0);
 
       // Check for different event types
-      const eventTypes = streamEvents.map(e => e.type);
+      const eventTypes = streamEvents.map((e) => e.type);
       expect(eventTypes).toContain('turn.started');
       expect(eventTypes).toContain('turn.completed');
     });
@@ -62,9 +62,7 @@ describe('CodexAdapter', () => {
       const spawnMock = mockSpawn(fixture, { exitCode: 1 });
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Do something')
-      ).rejects.toThrow(); // Just verify it throws
+      await expect(adapter.execute('Do something')).rejects.toThrow(); // Just verify it throws
     });
 
     it('should support full-auto mode', async () => {
@@ -105,7 +103,7 @@ describe('CodexAdapter', () => {
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
       await adapter.execute('Run tests', {
-        workingDirectory: '/path/to/project',
+        workingDir: '/path/to/project',
       });
 
       // Verify spawn was called with -C flag
@@ -145,10 +143,7 @@ describe('CodexAdapter', () => {
       // Verify spawn was called with -i flags
       expect(childProcess.spawn).toHaveBeenCalledWith(
         expect.any(String),
-        expect.arrayContaining([
-          '-i', '/path/to/screenshot.png',
-          '-i', '/path/to/diagram.jpg',
-        ]),
+        expect.arrayContaining(['-i', '/path/to/screenshot.png', '-i', '/path/to/diagram.jpg']),
         expect.any(Object)
       );
     });
@@ -157,9 +152,7 @@ describe('CodexAdapter', () => {
       const spawnMock = mockSpawn('', { delay: 10000 }); // Long delay
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Long task', { timeout: 100 })
-      ).rejects.toThrow(); // Just verify it throws
+      await expect(adapter.execute('Long task', { timeout: 100 })).rejects.toThrow(); // Just verify it throws
     });
 
     it('should pass model option correctly', async () => {
@@ -210,9 +203,7 @@ describe('CodexAdapter', () => {
       });
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Do something')
-      ).rejects.toThrow(/not found/i);
+      await expect(adapter.execute('Do something')).rejects.toThrow(/not found/i);
     });
 
     it('should handle sandbox permission errors', async () => {
@@ -228,9 +219,7 @@ describe('CodexAdapter', () => {
       const spawnMock = mockSpawn(fixture, { exitCode: 1 });
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Dangerous operation')
-      ).rejects.toThrow(); // Just verify it throws
+      await expect(adapter.execute('Dangerous operation')).rejects.toThrow(); // Just verify it throws
     });
   });
 
@@ -246,7 +235,7 @@ describe('CodexAdapter', () => {
         onStream: (event) => streamEvents.push(event),
       });
 
-      const startEvent = streamEvents.find(e => e.type === 'turn.started');
+      const startEvent = streamEvents.find((e) => e.type === 'turn.started');
       expect(startEvent).toBeDefined();
     });
 
@@ -261,7 +250,7 @@ describe('CodexAdapter', () => {
         onStream: (event) => streamEvents.push(event),
       });
 
-      const completeEvent = streamEvents.find(e => e.type === 'turn.completed');
+      const completeEvent = streamEvents.find((e) => e.type === 'turn.completed');
       expect(completeEvent).toBeDefined();
     });
 

@@ -24,7 +24,7 @@ export async function executeCodexCLI(
     const child: ChildProcess = spawn(cliPath, args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       shell: false,
-      cwd: options.workingDirectory,
+      cwd: options.workingDir,
     });
 
     let stdout = '';
@@ -134,8 +134,8 @@ function buildCLIArguments(prompt: string, options: CodexExecutionOptions): stri
   }
 
   // Working directory
-  if (options.workingDirectory) {
-    args.push('-C', options.workingDirectory);
+  if (options.workingDir) {
+    args.push('-C', options.workingDir);
   }
 
   // Full auto mode (convenience)

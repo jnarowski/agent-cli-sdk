@@ -10,7 +10,7 @@ describe('ClaudeAdapter', () => {
   let adapter: ClaudeAdapter;
 
   beforeEach(() => {
-    adapter = new ClaudeAdapter('/mock/path/to/claude');
+    adapter = new ClaudeAdapter({ cliPath: '/mock/path/to/claude' });
     vi.clearAllMocks();
   });
 
@@ -56,7 +56,7 @@ describe('ClaudeAdapter', () => {
       expect(streamEvents.length).toBeGreaterThan(0);
 
       // Check for different event types
-      const eventTypes = streamEvents.map(e => e.type);
+      const eventTypes = streamEvents.map((e) => e.type);
       expect(eventTypes).toContain('message.chunk');
       expect(eventTypes).toContain('tool.started');
       expect(eventTypes).toContain('tool.completed');
@@ -83,9 +83,7 @@ describe('ClaudeAdapter', () => {
       const spawnMock = mockSpawn(fixture, { exitCode: 1 });
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Do something')
-      ).rejects.toThrow(); // Just verify it throws an error
+      await expect(adapter.execute('Do something')).rejects.toThrow(); // Just verify it throws an error
     });
 
     it('should support session resumption', async () => {
@@ -106,9 +104,7 @@ describe('ClaudeAdapter', () => {
       const spawnMock = mockSpawn('', { delay: 10000 }); // Long delay
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Long running task', { timeout: 100 })
-      ).rejects.toThrow(); // Just verify it throws
+      await expect(adapter.execute('Long running task', { timeout: 100 })).rejects.toThrow(); // Just verify it throws
     });
 
     it('should pass CLI options correctly', async () => {
@@ -126,9 +122,12 @@ describe('ClaudeAdapter', () => {
       expect(childProcess.spawn).toHaveBeenCalledWith(
         expect.any(String),
         expect.arrayContaining([
-          '--model', 'opus',
-          '--system-prompt', 'You are a helpful assistant',
-          '--permission-mode', 'acceptEdits',
+          '--model',
+          'opus',
+          '--system-prompt',
+          'You are a helpful assistant',
+          '--permission-mode',
+          'acceptEdits',
         ]),
         expect.any(Object)
       );
@@ -173,9 +172,7 @@ describe('ClaudeAdapter', () => {
       });
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Do something')
-      ).rejects.toThrow(/not found/i);
+      await expect(adapter.execute('Do something')).rejects.toThrow(/not found/i);
     });
 
     it('should handle permission denied errors', async () => {
@@ -189,9 +186,7 @@ describe('ClaudeAdapter', () => {
       const spawnMock = mockSpawn(fixture, { exitCode: 1 });
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Delete all files')
-      ).rejects.toThrow(); // Just verify it throws
+      await expect(adapter.execute('Delete all files')).rejects.toThrow(); // Just verify it throws
     });
 
     it('should handle model overload errors', async () => {
@@ -205,9 +200,7 @@ describe('ClaudeAdapter', () => {
       const spawnMock = mockSpawn(fixture, { exitCode: 1 });
       vi.spyOn(childProcess, 'spawn').mockImplementation(spawnMock as any);
 
-      await expect(
-        adapter.execute('Do something')
-      ).rejects.toThrow(); // Just verify it throws
+      await expect(adapter.execute('Do something')).rejects.toThrow(); // Just verify it throws
     });
   });
 
