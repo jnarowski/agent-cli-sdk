@@ -13,9 +13,9 @@ import { detectClaudeCLI } from './cli-detector.js';
 export class ClaudeAdapter extends BaseAdapter {
   private config: ClaudeConfig;
 
-  constructor(cliPath?: string, config: ClaudeConfig = {}) {
+  constructor(config: ClaudeConfig = {}) {
     // Auto-detect CLI path if not provided
-    const resolvedPath = cliPath || detectClaudeCLI();
+    const resolvedPath = config.cliPath || detectClaudeCLI();
 
     if (!resolvedPath) {
       throw new CLINotFoundError(
@@ -45,7 +45,6 @@ export class ClaudeAdapter extends BaseAdapter {
 
     // Merge config with options (options take precedence)
     const mergedOptions: ClaudeExecutionOptions = {
-      verbose: this.config.verbose,
       ...options,
     };
 
@@ -60,8 +59,12 @@ export class ClaudeAdapter extends BaseAdapter {
     }
 
     try {
-      // Execute CLI
-      const result = await executeClaudeCLI(this.cliPath, prompt, mergedOptions);
+      // Execute CLI with config-level settings (options can override config)
+      const result = await executeClaudeCLI(this.cliPath, prompt, {
+        verbose: this.config.verbose,
+        workingDir: this.config.workingDir,
+        ...mergedOptions,
+      });
 
       // Parse output - always use parseStreamOutput since we use stream-json format
       const response = parseStreamOutput(result.stdout, result.duration, result.exitCode);

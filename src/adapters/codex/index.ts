@@ -13,9 +13,9 @@ import { detectCodexCLI } from './cli-detector.js';
 export class CodexAdapter extends BaseAdapter {
   private config: CodexConfig;
 
-  constructor(cliPath?: string, config: CodexConfig = {}) {
+  constructor(config: CodexConfig = {}) {
     // Auto-detect CLI path if not provided
-    const resolvedPath = cliPath || detectCodexCLI();
+    const resolvedPath = config.cliPath || detectCodexCLI();
 
     if (!resolvedPath) {
       throw new CLINotFoundError(
@@ -54,8 +54,11 @@ export class CodexAdapter extends BaseAdapter {
     }
 
     try {
-      // Execute CLI
-      const result = await executeCodexCLI(this.cliPath, prompt, mergedOptions);
+      // Execute CLI with config-level settings (options can override config)
+      const result = await executeCodexCLI(this.cliPath, prompt, {
+        workingDirectory: this.config.workingDirectory,
+        ...mergedOptions,
+      });
 
       // Parse output based on streaming mode
       let response: AdapterResponse;

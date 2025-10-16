@@ -6,6 +6,8 @@ import type { ExecutionOptions, AdapterConfig } from './config.js';
 export interface CodexConfig extends AdapterConfig {
   /** API key for authentication (optional, OAuth via 'codex login' is default) */
   apiKey?: string;
+  /** Working directory for CLI execution */
+  workingDirectory?: string;
 }
 
 /**
@@ -24,7 +26,7 @@ export type CodexApprovalPolicy = 'untrusted' | 'on-failure' | 'on-request' | 'n
 export interface CodexExecutionOptions extends ExecutionOptions {
   /** Model to use (default: 'gpt-5') */
   model?: string;
-  /** Working directory for execution */
+  /** Working directory for execution (usually set from config, but can be overridden) */
   workingDirectory?: string;
   /** Sandbox mode for file system access */
   sandbox?: CodexSandboxMode;

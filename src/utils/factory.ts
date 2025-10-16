@@ -20,8 +20,8 @@ export function createClaudeAdapter(config: ClaudeConfig = {}): ClaudeAdapter {
     );
   }
 
-  // Let the adapter handle CLI detection and error messaging
-  return new ClaudeAdapter(config.cliPath, config);
+  // Pass config directly to adapter
+  return new ClaudeAdapter(config);
 }
 
 /**
@@ -31,6 +31,6 @@ export function createClaudeAdapter(config: ClaudeConfig = {}): ClaudeAdapter {
  * @returns Configured Codex adapter
  */
 export function createCodexAdapter(config: CodexConfig = {}): CodexAdapter {
-  // Let the adapter handle CLI detection and error messaging
-  return new CodexAdapter(config.cliPath, config);
+  // Pass config directly to adapter
+  return new CodexAdapter(config);
 }

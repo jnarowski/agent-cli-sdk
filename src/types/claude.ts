@@ -10,6 +10,8 @@ export interface ClaudeConfig extends AdapterConfig {
   oauthToken?: string;
   /** Enable verbose logging to see CLI commands and arguments */
   verbose?: boolean;
+  /** Working directory for CLI execution */
+  workingDir?: string;
 }
 
 /**
@@ -44,10 +46,10 @@ export interface ClaudeExecutionOptions extends ExecutionOptions {
   includePartialMessages?: boolean;
   /** Fallback model if primary model is overloaded */
   fallbackModel?: string;
-  /** Enable verbose logging to see CLI commands and arguments */
-  verbose?: boolean;
   /** Skip permission prompts (use with caution) */
   dangerouslySkipPermissions?: boolean;
-  /** Working directory for CLI execution */
+  /** Enable verbose logging (usually set from config, but can be overridden) */
+  verbose?: boolean;
+  /** Working directory for CLI execution (usually set from config, but can be overridden) */
   workingDir?: string;
 }
