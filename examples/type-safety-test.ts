@@ -48,3 +48,8 @@ await claude.execute('Hello', {
 await claude.execute('Hello', {
   dangerouslySkipPermissions: true, // OK for Claude
 });
+
+await claude.execute('Hello', {
+  // @ts-expect-error - This is a valid option for Claude
+  workingDirs: true, // OK for Claude
+});

@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'child_process';
 import type { ClaudeExecutionOptions } from '../../types/claude.js';
 import { ExecutionError, TimeoutError } from '../../core/errors.js';
+import { BOX_STYLES, BORDER_STYLES } from '../../utils/constants.js';
 import boxen from 'boxen';
 import chalk from 'chalk';
 
@@ -34,10 +35,8 @@ export async function executeClaudeCLI(
     const debugBox = boxen(debugInfo, {
       title: '🔧 Executing Claude Code CLI',
       titleAlignment: 'center',
-      padding: 1,
-      margin: { top: 1, bottom: 1, left: 0, right: 0 },
-      borderStyle: 'round',
-      borderColor: 'blue',
+      ...BOX_STYLES.fullWidth,
+      ...BORDER_STYLES.info,
     });
 
     console.log(debugBox);
