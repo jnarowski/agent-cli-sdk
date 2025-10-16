@@ -83,10 +83,9 @@ const codex = createCodexAdapter();
 const generated = await claude.execute('Create an email validator function');
 
 // Step 2: Review with Codex
-const review = await codex.execute(
-  'Review the email validator for security issues',
-  { fullAuto: true }
-);
+const review = await codex.execute('Review the email validator for security issues', {
+  fullAuto: true,
+});
 
 // Step 3: Apply improvements
 const improved = await claude.execute(
@@ -104,11 +103,13 @@ const improved = await claude.execute(
 Creates a Claude Code adapter instance.
 
 **Parameters:**
+
 - `config?: ClaudeConfig` - Optional configuration
 
 **Returns:** `ClaudeAdapter`
 
 **Example:**
+
 ```typescript
 const claude = createClaudeAdapter({
   apiKey: process.env.ANTHROPIC_API_KEY, // Optional
@@ -120,11 +121,13 @@ const claude = createClaudeAdapter({
 Creates a Codex adapter instance.
 
 **Parameters:**
+
 - `config?: CodexConfig` - Optional configuration
 
 **Returns:** `CodexAdapter`
 
 **Example:**
+
 ```typescript
 const codex = createCodexAdapter({
   apiKey: process.env.CODEX_API_KEY, // Optional
@@ -138,24 +141,28 @@ const codex = createCodexAdapter({
 Execute a prompt with the AI adapter.
 
 **Parameters:**
+
 - `prompt: string` - The prompt/instruction
 - `options?: ExecutionOptions` - Execution options
 
 **Returns:** `Promise<AdapterResponse>`
 
 **Common Options:**
+
 - `streaming?: boolean` - Enable streaming mode
 - `onStream?: (event: StreamEvent) => void` - Streaming callback
 - `timeout?: number` - Timeout in milliseconds
 - `sessionId?: string` - Resume a previous session (Claude only)
 
 **Claude-Specific Options:**
+
 - `model?: string` - Model to use (default: 'sonnet')
 - `permissionMode?: string` - Permission mode ('acceptEdits', 'bypassPermissions', etc.)
 - `systemPrompt?: string` - Custom system prompt
 - `fallbackModel?: string` - Fallback model if primary is overloaded
 
 **Codex-Specific Options:**
+
 - `model?: string` - Model to use (default: 'gpt-5')
 - `fullAuto?: boolean` - Enable full-auto mode
 - `sandbox?: string` - Sandbox mode ('read-only', 'workspace-write', 'danger-full-access')
@@ -214,14 +221,11 @@ Retry an operation with exponential backoff.
 ```typescript
 import { retry } from '@sourceborn/agent-cli-sdk';
 
-const result = await retry(
-  () => claude.execute('Generate code'),
-  {
-    maxAttempts: 3,
-    initialDelay: 1000,
-    backoffMultiplier: 2,
-  }
-);
+const result = await retry(() => claude.execute('Generate code'), {
+  maxAttempts: 3,
+  initialDelay: 1000,
+  backoffMultiplier: 2,
+});
 ```
 
 ## Configuration
@@ -229,10 +233,12 @@ const result = await retry(
 ### Environment Variables
 
 #### CLI Path Overrides
+
 - `CLAUDE_CLI_PATH` - Custom path to Claude CLI binary
 - `CODEX_CLI_PATH` - Custom path to Codex CLI binary
 
 #### Authentication (Optional)
+
 - `ANTHROPIC_API_KEY` - Claude API key (alternative to OAuth)
 - `CLAUDE_CODE_OAUTH_TOKEN` - Claude OAuth token
 - `CODEX_API_KEY` - Codex API key (alternative to OAuth)
@@ -252,7 +258,7 @@ import {
   AuthenticationError,
   CLINotFoundError,
   TimeoutError,
-  ExecutionError
+  ExecutionError,
 } from '@sourceborn/agent-cli-sdk';
 
 try {
@@ -278,6 +284,7 @@ See the `examples/` directory for complete examples:
 - `examples/ci-integration.ts` - CI/CD pipeline integration
 
 Run examples:
+
 ```bash
 npx tsx examples/simple.ts
 npx tsx examples/multi-agent.ts
@@ -332,6 +339,12 @@ npm run lint
 
 # Format
 npm run format
+```
+
+## Validation
+
+```bash
+npm run check
 ```
 
 ## Contributing

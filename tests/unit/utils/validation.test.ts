@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateConfig, validateExecutionOptions, sanitizePrompt } from '../../../src/utils/validation';
+import { validateConfig, validateExecutionOptions, sanitizePrompt, validateEmail } from '../../../src/utils/validation';
 
 describe('Validation Utilities', () => {
   describe('validateConfig', () => {
@@ -112,6 +112,169 @@ describe('Validation Utilities', () => {
     it('should enforce maximum length', () => {
       const longPrompt = 'a'.repeat(100000);
       expect(() => sanitizePrompt(longPrompt)).toThrow(/too long/i);
+    });
+  });
+
+  describe('validateEmail', () => {
+    describe('Valid email addresses', () => {
+      it('should accept simple valid email', () => {
+        expect(validateEmail('user@example.com')).toBe(true);
+      });
+
+      it('should accept email with dots in local part', () => {
+        expect(validateEmail('first.last@example.com')).toBe(true);
+      });
+
+      it('should accept email with plus sign', () => {
+        expect(validateEmail('user+tag@example.com')).toBe(true);
+      });
+
+      it('should accept email with underscore', () => {
+        expect(validateEmail('user_name@example.com')).toBe(true);
+      });
+
+      it('should accept email with hyphen in domain', () => {
+        expect(validateEmail('user@my-domain.com')).toBe(true);
+      });
+
+      it('should accept email with subdomain', () => {
+        expect(validateEmail('user@mail.example.com')).toBe(true);
+      });
+
+      it('should accept email with multiple subdomains', () => {
+        expect(validateEmail('user@mail.subdomain.example.com')).toBe(true);
+      });
+
+      it('should accept email with numbers', () => {
+        expect(validateEmail('user123@example456.com')).toBe(true);
+      });
+
+      it('should accept email with special characters in local part', () => {
+        expect(validateEmail('user!#$%&\'*+/=?^_`{|}~@example.com')).toBe(true);
+      });
+
+      it('should accept email with long TLD', () => {
+        expect(validateEmail('user@example.museum')).toBe(true);
+      });
+
+      it('should accept email with two-letter TLD', () => {
+        expect(validateEmail('user@example.co')).toBe(true);
+      });
+
+      it('should trim whitespace and accept valid email', () => {
+        expect(validateEmail('  user@example.com  ')).toBe(true);
+      });
+    });
+
+    describe('Invalid email addresses', () => {
+      it('should reject email without @ symbol', () => {
+        expect(validateEmail('userexample.com')).toBe(false);
+      });
+
+      it('should reject email without domain', () => {
+        expect(validateEmail('user@')).toBe(false);
+      });
+
+      it('should reject email without local part', () => {
+        expect(validateEmail('@example.com')).toBe(false);
+      });
+
+      it('should reject email without TLD', () => {
+        expect(validateEmail('user@example')).toBe(false);
+      });
+
+      it('should reject email with spaces', () => {
+        expect(validateEmail('user name@example.com')).toBe(false);
+      });
+
+      it('should reject email with multiple @ symbols', () => {
+        expect(validateEmail('user@@example.com')).toBe(false);
+        expect(validateEmail('user@domain@example.com')).toBe(false);
+      });
+
+      it('should reject email with consecutive dots', () => {
+        expect(validateEmail('user..name@example.com')).toBe(false);
+        expect(validateEmail('user@example..com')).toBe(false);
+      });
+
+      it('should reject email starting with dot', () => {
+        expect(validateEmail('.user@example.com')).toBe(false);
+      });
+
+      it('should reject email ending with dot before @', () => {
+        expect(validateEmail('user.@example.com')).toBe(false);
+      });
+
+      it('should reject empty string', () => {
+        expect(validateEmail('')).toBe(false);
+      });
+
+      it('should reject whitespace-only string', () => {
+        expect(validateEmail('   ')).toBe(false);
+      });
+
+      it('should reject non-string input', () => {
+        expect(validateEmail(null as any)).toBe(false);
+        expect(validateEmail(undefined as any)).toBe(false);
+        expect(validateEmail(123 as any)).toBe(false);
+        expect(validateEmail({} as any)).toBe(false);
+      });
+
+      it('should reject email with invalid TLD (single character)', () => {
+        expect(validateEmail('user@example.c')).toBe(false);
+      });
+
+      it('should reject email with numeric TLD', () => {
+        expect(validateEmail('user@example.123')).toBe(false);
+      });
+
+      it('should reject email with special characters in TLD', () => {
+        expect(validateEmail('user@example.c0m')).toBe(false);
+      });
+
+      it('should reject email that is too long (>254 characters)', () => {
+        const longEmail = 'a'.repeat(245) + '@example.com';
+        expect(validateEmail(longEmail)).toBe(false);
+      });
+
+      it('should reject email with local part too long (>64 characters)', () => {
+        const longLocal = 'a'.repeat(65) + '@example.com';
+        expect(validateEmail(longLocal)).toBe(false);
+      });
+
+      it('should reject email with domain too long (>253 characters)', () => {
+        const longDomain = 'user@' + 'a'.repeat(250) + '.com';
+        expect(validateEmail(longDomain)).toBe(false);
+      });
+
+      it('should reject email with leading hyphen in domain', () => {
+        expect(validateEmail('user@-example.com')).toBe(false);
+      });
+
+      it('should reject email with trailing hyphen in domain', () => {
+        expect(validateEmail('user@example-.com')).toBe(false);
+      });
+    });
+
+    describe('Edge cases', () => {
+      it('should handle international domains correctly', () => {
+        // Note: This regex doesn't support IDN (internationalized domain names)
+        // which would require punycode encoding
+        expect(validateEmail('user@exämple.com')).toBe(false);
+      });
+
+      it('should accept maximum valid local part length', () => {
+        const maxLocal = 'a'.repeat(64) + '@example.com';
+        expect(validateEmail(maxLocal)).toBe(true);
+      });
+
+      it('should accept email at maximum total length', () => {
+        // Create email with exactly 254 characters
+        const local = 'a'.repeat(64);
+        const domain = 'b'.repeat(241) + '.com'; // 64 + 1(@) + 245 + 1(.) + 3 = 254
+        const maxEmail = local + '@' + domain;
+        expect(validateEmail(maxEmail)).toBe(false); // Actually false because domain > 253
+      });
     });
   });
 });

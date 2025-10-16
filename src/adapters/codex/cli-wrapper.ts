@@ -1,6 +1,9 @@
 import { spawn, type ChildProcess } from 'child_process';
 import type { CodexExecutionOptions } from '../../types/codex.js';
 import { ExecutionError, TimeoutError } from '../../core/errors.js';
+import { BOX_STYLES, BORDER_STYLES } from '../../utils/constants.js';
+import boxen from 'boxen';
+import chalk from 'chalk';
 
 export interface CLIResult {
   stdout: string;
@@ -19,6 +22,28 @@ export async function executeCodexCLI(
 ): Promise<CLIResult> {
   const args = buildCLIArguments(prompt, options);
   const startTime = Date.now();
+
+  // Show verbose logging if enabled
+  if (options.verbose) {
+    const debugInfo = [
+      `${chalk.bold('CLI Path:')} ${chalk.cyan(cliPath)}`,
+      `${chalk.bold('Args:')} ${chalk.dim(args.join(' '))}`,
+      `${chalk.bold('Working Dir:')} ${chalk.yellow(options.workingDir || process.cwd())}`,
+      `${chalk.bold('Model:')} ${chalk.green(options.model || 'gpt-5')}`,
+      options.sandbox ? `${chalk.bold('Sandbox:')} ${chalk.magenta(options.sandbox)}` : null,
+      options.approvalPolicy ? `${chalk.bold('Approval Policy:')} ${chalk.magenta(options.approvalPolicy)}` : null,
+      options.fullAuto ? `${chalk.bold('Mode:')} ${chalk.magenta('Full Auto')}` : null,
+    ].filter(Boolean).join('\n');
+
+    const debugBox = boxen(debugInfo, {
+      title: '🤖 Executing Codex CLI',
+      titleAlignment: 'center',
+      ...BOX_STYLES.fullWidth,
+      ...BORDER_STYLES.info,
+    });
+
+    console.log(debugBox);
+  }
 
   return new Promise((resolve, reject) => {
     const child: ChildProcess = spawn(cliPath, args, {

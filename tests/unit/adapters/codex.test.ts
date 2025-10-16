@@ -10,7 +10,7 @@ describe('CodexAdapter', () => {
   let adapter: CodexAdapter;
 
   beforeEach(() => {
-    adapter = new CodexAdapter('/mock/path/to/codex');
+    adapter = new CodexAdapter({ cliPath: '/mock/path/to/codex' });
     vi.clearAllMocks();
   });
 
@@ -186,7 +186,8 @@ describe('CodexAdapter', () => {
 
   describe('configuration', () => {
     it('should accept API key configuration', () => {
-      const configuredAdapter = new CodexAdapter('/mock/path/to/codex', {
+      const configuredAdapter = new CodexAdapter({
+        cliPath: '/mock/path/to/codex',
         apiKey: 'test-api-key-123',
       });
 

@@ -40,6 +40,7 @@ export {
 } from './utils/async.js';
 export { findCLI, isCLIInstalled } from './utils/cli-detector.js';
 export { validateConfig, validateExecutionOptions, sanitizeInput, getEnvVar } from './utils/validation.js';
+export { renderConsoleBox, type RenderBoxOptions } from './utils/renderConsoleBox.js';
 
 // Types
 export type {

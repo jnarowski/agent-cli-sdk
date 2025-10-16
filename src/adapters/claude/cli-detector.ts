@@ -7,6 +7,8 @@ import { join } from 'path';
  * Common installation locations for Claude CLI
  */
 const CLAUDE_CLI_LOCATIONS = [
+  // Claude Code local installation (most common)
+  join(homedir(), '.claude', 'local', 'claude'),
   // NPM global installation
   '/usr/local/bin/claude',
   // Homebrew
@@ -55,8 +57,19 @@ function findInPath(): string | null {
       stdio: ['pipe', 'pipe', 'ignore'], // Suppress stderr
     }).trim();
 
+    // Handle shell aliases (e.g., "claude: aliased to /path/to/claude")
+    if (result.includes('aliased to')) {
+      const match = result.match(/aliased to (.+?)(?:\n|$)/);
+      if (match && match[1]) {
+        const aliasPath = match[1].trim();
+        if (isExecutable(aliasPath)) {
+          return aliasPath;
+        }
+      }
+    }
+
     // Return first match (in case multiple are found)
-    const paths = result.split('\n').filter(p => p.trim());
+    const paths = result.split('\n').filter(p => p.trim() && !p.includes('aliased'));
     if (paths.length > 0 && isExecutable(paths[0])) {
       return paths[0];
     }

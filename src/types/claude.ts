@@ -26,7 +26,7 @@ export type ClaudeModel =
   | 'claude-3-7-sonnet-20250219'
   | 'claude-3-5-haiku-20241022'
   | 'claude-3-haiku-20240307'
-  | string;               // Allow custom model IDs
+  | (string & {});        // Allow custom model IDs with autocomplete for known ones
 
 /**
  * Claude Code specific configuration

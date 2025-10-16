@@ -113,6 +113,8 @@ export interface ExecutionOptions {
   sessionId?: string;
   /** Timeout in milliseconds */
   timeout?: number;
+  /** Enable verbose debug output */
+  verbose?: boolean;
 }
 
 /**

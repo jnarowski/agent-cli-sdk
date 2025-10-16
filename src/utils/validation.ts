@@ -76,3 +76,93 @@ export function sanitizePrompt(prompt: string): string {
 export function getEnvVar(name: string, defaultValue?: string): string | undefined {
   return process.env[name] || defaultValue;
 }
+
+/**
+ * Validates an email address using regex
+ *
+ * This function uses a comprehensive regex pattern that follows RFC 5322 standards
+ * with practical limitations for common use cases.
+ *
+ * Valid formats:
+ * - user@domain.com
+ * - first.last@domain.co.uk
+ * - user+tag@domain.com
+ * - user_name@sub.domain.org
+ *
+ * @param email - The email address to validate
+ * @returns true if the email is valid, false otherwise
+ *
+ * @example
+ * ```ts
+ * validateEmail('user@example.com') // returns true
+ * validateEmail('invalid.email') // returns false
+ * validateEmail('user@') // returns false
+ * ```
+ */
+export function validateEmail(email: string): boolean {
+  if (typeof email !== 'string') {
+    return false;
+  }
+
+  // Trim whitespace
+  const trimmedEmail = email.trim();
+
+  // Basic length check
+  if (trimmedEmail.length === 0 || trimmedEmail.length > 254) {
+    return false;
+  }
+
+  // RFC 5322 compliant email regex with practical limitations
+  // Pattern breakdown:
+  // - Local part: alphanumeric, dots, hyphens, underscores, plus signs
+  // - @ symbol (required)
+  // - Domain: alphanumeric, dots, hyphens
+  // - TLD: at least 2 characters
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+  if (!emailRegex.test(trimmedEmail)) {
+    return false;
+  }
+
+  // Additional validation: check for consecutive dots
+  if (trimmedEmail.includes('..')) {
+    return false;
+  }
+
+  // Split and validate local and domain parts
+  const parts = trimmedEmail.split('@');
+  if (parts.length !== 2) {
+    return false;
+  }
+
+  const [localPart, domain] = parts;
+
+  // Local part validation
+  if (localPart.length === 0 || localPart.length > 64) {
+    return false;
+  }
+
+  // Local part cannot start or end with a dot
+  if (localPart.startsWith('.') || localPart.endsWith('.')) {
+    return false;
+  }
+
+  // Domain part validation
+  if (domain.length === 0 || domain.length > 253) {
+    return false;
+  }
+
+  // Ensure domain has at least one dot and a valid TLD
+  const domainParts = domain.split('.');
+  if (domainParts.length < 2) {
+    return false;
+  }
+
+  // Validate TLD (last part of domain)
+  const tld = domainParts[domainParts.length - 1];
+  if (tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) {
+    return false;
+  }
+
+  return true;
+}

@@ -32,7 +32,7 @@ export type OpenAIModel =
   | 'o1'
   | 'o1-preview'
   | 'o1-mini'
-  | string;               // Allow custom model IDs
+  | (string & {});        // Allow custom model IDs with autocomplete for known ones
 
 /**
  * Codex specific configuration

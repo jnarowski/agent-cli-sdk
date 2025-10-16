@@ -8,8 +8,6 @@ export const BOX_STYLES = {
   fullWidth: {
     padding: 1,
     margin: 1,
-    width: process.stdout.columns || 80,
-    minWidth: 60,
   } satisfies Partial<BoxenOptions>,
 
   /** Compact box with minimal spacing */

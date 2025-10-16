@@ -147,7 +147,8 @@ describe('ClaudeAdapter', () => {
 
   describe('configuration', () => {
     it('should accept API key configuration', () => {
-      const configuredAdapter = new ClaudeAdapter('/mock/path/to/claude', {
+      const configuredAdapter = new ClaudeAdapter({
+        cliPath: '/mock/path/to/claude',
         apiKey: 'sk-ant-test123',
       });
 
@@ -155,7 +156,8 @@ describe('ClaudeAdapter', () => {
     });
 
     it('should accept OAuth token configuration', () => {
-      const configuredAdapter = new ClaudeAdapter('/mock/path/to/claude', {
+      const configuredAdapter = new ClaudeAdapter({
+        cliPath: '/mock/path/to/claude',
         oauthToken: 'oauth-token-123',
       });
 
