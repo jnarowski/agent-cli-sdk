@@ -6,7 +6,7 @@
  */
 
 // Core interfaces and base classes
-export { AIAdapter, AdapterCapabilities } from './core/interfaces.js';
+export type { AIAdapter, AdapterCapabilities } from './core/interfaces.js';
 export { BaseAdapter } from './core/base-adapter.js';
 
 // Error classes
