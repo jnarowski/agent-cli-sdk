@@ -113,8 +113,6 @@ export interface ExecutionOptions {
   sessionId?: string;
   /** Timeout in milliseconds */
   timeout?: number;
-  /** CLI-specific options (passed through to adapter) */
-  [key: string]: unknown;
 }
 
 /**

@@ -11,6 +11,7 @@ export type {
 
 // Claude types
 export type {
+  ClaudeModel,
   ClaudeConfig,
   ClaudeOutputFormat,
   ClaudePermissionMode,
@@ -19,6 +20,7 @@ export type {
 
 // Codex types
 export type {
+  OpenAIModel,
   CodexConfig,
   CodexSandboxMode,
   CodexApprovalPolicy,

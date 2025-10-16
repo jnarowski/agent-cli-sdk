@@ -1,6 +1,34 @@
 import type { ExecutionOptions, AdapterConfig } from './config.js';
 
 /**
+ * Claude model identifiers
+ * Supports both short aliases (e.g., 'sonnet') and full model IDs
+ */
+export type ClaudeModel =
+  // Short aliases (automatically map to latest versions)
+  | 'sonnet'
+  | 'opus'
+  | 'haiku'
+  // Version aliases
+  | 'claude-sonnet-4-5'
+  | 'claude-haiku-4-5'
+  | 'claude-opus-4-1'
+  | 'claude-sonnet-4-0'
+  | 'claude-opus-4-0'
+  | 'claude-3-7-sonnet-latest'
+  | 'claude-3-5-haiku-latest'
+  // Specific versioned models
+  | 'claude-sonnet-4-5-20250929'
+  | 'claude-haiku-4-5-20251001'
+  | 'claude-opus-4-1-20250805'
+  | 'claude-sonnet-4-20250514'
+  | 'claude-opus-4-20250514'
+  | 'claude-3-7-sonnet-20250219'
+  | 'claude-3-5-haiku-20241022'
+  | 'claude-3-haiku-20240307'
+  | string;               // Allow custom model IDs
+
+/**
  * Claude Code specific configuration
  */
 export interface ClaudeConfig extends AdapterConfig {
@@ -29,7 +57,7 @@ export type ClaudePermissionMode = 'acceptEdits' | 'bypassPermissions' | 'defaul
  */
 export interface ClaudeExecutionOptions extends ExecutionOptions {
   /** Model to use (default: 'sonnet' which maps to claude-sonnet-4-5) */
-  model?: string;
+  model?: ClaudeModel;
   /** Output format for the CLI */
   outputFormat?: ClaudeOutputFormat;
   /** Permission mode for tool execution */
