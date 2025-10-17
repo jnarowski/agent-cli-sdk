@@ -5,9 +5,9 @@
  * in development workflows
  */
 
-// Core interfaces and base classes
-export type { AIAdapter, AdapterCapabilities } from './core/interfaces.js';
-export { BaseAdapter } from './core/base-adapter.js';
+// Core interfaces and base classes (for extending the library)
+export type { AIAdapter, AdapterCapabilities } from './core/interfaces';
+export { BaseAdapter } from './core/base-adapter';
 
 // Error classes
 export {
@@ -20,28 +20,18 @@ export {
   CLINotFoundError,
   ModelOverloadError,
   PermissionDeniedError,
-} from './core/errors.js';
+} from './core/errors';
 
 // Adapter implementations
-export { ClaudeAdapter } from './adapters/claude/index.js';
-export { CodexAdapter } from './adapters/codex/index.js';
+export { ClaudeAdapter } from './adapters/claude';
+export { CodexAdapter } from './adapters/codex';
 
 // Factory functions
-export { createClaudeAdapter, createCodexAdapter } from './utils/factory.js';
+export { createClaudeAdapter, createCodexAdapter } from './utils/factory';
 
 // Utilities
-export {
-  sequential,
-  parallel,
-  waterfall,
-  retry,
-  race,
-  type AsyncOperation,
-} from './utils/async.js';
-export { findCLI, isCLIInstalled } from './utils/cli-detector.js';
-export { validateConfig, validateExecutionOptions, sanitizeInput, getEnvVar } from './utils/validation.js';
-export { renderConsoleBox, type RenderBoxOptions } from './utils/renderConsoleBox.js';
-export { setLoggingConfig, getLoggingConfig } from './utils/logger.js';
+export { renderConsoleBox, type RenderBoxOptions } from './utils/renderConsoleBox';
+export { setLoggingConfig, getLoggingConfig } from './utils/logger';
 
 // Types
 export type {
@@ -63,4 +53,4 @@ export type {
   CodexSandboxMode,
   CodexApprovalPolicy,
   CodexExecutionOptions,
-} from './types/index.js';
+} from './types/index';

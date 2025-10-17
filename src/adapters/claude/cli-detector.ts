@@ -70,8 +70,9 @@ function findInPath(): string | null {
 
     // Return first match (in case multiple are found)
     const paths = result.split('\n').filter(p => p.trim() && !p.includes('aliased'));
-    if (paths.length > 0 && isExecutable(paths[0])) {
-      return paths[0];
+    const firstPath = paths[0];
+    if (firstPath && isExecutable(firstPath)) {
+      return firstPath;
     }
   } catch {
     // Command not found in PATH

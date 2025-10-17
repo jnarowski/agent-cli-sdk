@@ -14,8 +14,8 @@
  * Modify the configurations below to test different scenarios
  */
 
-import { createClaudeAdapter, createCodexAdapter } from '../src/index.js';
-import type { ClaudeConfig, CodexConfig } from '../src/types/index.js';
+import { createClaudeAdapter, createCodexAdapter } from '../src/index';
+import type { ClaudeConfig, CodexConfig } from '../src/types/index';
 
 // ============================================================================
 // CONFIGURATION - Modify these to test different scenarios

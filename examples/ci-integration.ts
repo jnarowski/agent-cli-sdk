@@ -3,7 +3,8 @@
  * Demonstrates automated code review in a CI pipeline
  */
 
-import { createCodexAdapter, parallel } from '../src/index.js';
+import { createCodexAdapter } from '../src/index';
+import { parallel } from '../src/utils/async';
 
 async function ciIntegration() {
   try {

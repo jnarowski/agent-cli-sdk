@@ -15,7 +15,7 @@ import {
   setLoggingConfig,
   type LoggingConfig,
   type AdapterResponse,
-} from '../dist/index.js';
+} from '../dist/index';
 
 async function main() {
   // Setup: Configure central logging

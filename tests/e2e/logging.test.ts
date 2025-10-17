@@ -6,8 +6,8 @@ import {
   setLoggingConfig,
   getLoggingConfig,
   type LoggingConfig,
-} from '../../src/index.js';
-import { ClaudeAdapter } from '../../src/adapters/claude/index.js';
+} from '../../src/index';
+import { ClaudeAdapter } from '../../src/adapters/claude/index';
 
 /**
  * E2E Logging Tests

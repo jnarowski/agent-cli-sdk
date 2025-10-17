@@ -3,7 +3,7 @@
  * The commented-out code below would now cause TypeScript errors.
  */
 
-import { CodexAdapter, ClaudeAdapter } from '../src/index.js';
+import { CodexAdapter, ClaudeAdapter } from '../src/index';
 
 // Example 1: Invalid model type for Codex
 const codex = new CodexAdapter();

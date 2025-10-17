@@ -7,10 +7,10 @@ export type {
   AdapterResponse,
   ExecutionOptions,
   AdapterConfig,
-} from './config.js';
+} from './config';
 
 // Logging types
-export type { LoggingConfig, ExecutionLogEntry, LogFiles } from './logging.js';
+export type { LoggingConfig, ExecutionLogEntry, LogFiles } from './logging';
 
 // Claude types
 export type {
@@ -19,7 +19,7 @@ export type {
   ClaudeOutputFormat,
   ClaudePermissionMode,
   ClaudeExecutionOptions,
-} from './claude.js';
+} from './claude';
 
 // Codex types
 export type {
@@ -28,4 +28,4 @@ export type {
   CodexSandboxMode,
   CodexApprovalPolicy,
   CodexExecutionOptions,
-} from './codex.js';
+} from './codex';

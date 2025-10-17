@@ -7,12 +7,12 @@ import {
   writeToCentralLog,
   writeExecutionLogs,
   buildExecutionLogEntry,
-} from '../../../src/utils/logger.js';
+} from '../../../src/utils/logger';
 import type {
   LoggingConfig,
   ExecutionLogEntry,
-} from '../../../src/types/logging.js';
-import type { AdapterResponse, ExecutionOptions } from '../../../src/types/config.js';
+} from '../../../src/types/logging';
+import type { AdapterResponse, ExecutionOptions } from '../../../src/types/config';
 
 describe('Logger Utilities', () => {
   const testDir = path.resolve(process.cwd(), 'test-logs');

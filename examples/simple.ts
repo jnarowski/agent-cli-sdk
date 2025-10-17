@@ -3,7 +3,7 @@
  * Demonstrates basic Claude adapter usage
  */
 
-import { createClaudeAdapter } from '../src/index.js';
+import { createClaudeAdapter } from '../src/index';
 
 async function simpleExample() {
   try {

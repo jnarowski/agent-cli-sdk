@@ -1,4 +1,4 @@
-import type { ExecutionOptions } from './config.js';
+import type { ExecutionOptions } from './config';
 
 /**
  * Configuration for the logging system.

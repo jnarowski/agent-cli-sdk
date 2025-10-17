@@ -1,5 +1,5 @@
-import { ValidationError } from '../core/errors.js';
-import type { ExecutionOptions } from '../types/config.js';
+import { ValidationError } from '../core/errors';
+import type { ExecutionOptions } from '../types/config';
 
 /**
  * Validate adapter configuration
@@ -138,7 +138,7 @@ export function validateEmail(email: string): boolean {
   const [localPart, domain] = parts;
 
   // Local part validation
-  if (localPart.length === 0 || localPart.length > 64) {
+  if (!localPart || localPart.length === 0 || localPart.length > 64) {
     return false;
   }
 
@@ -148,7 +148,7 @@ export function validateEmail(email: string): boolean {
   }
 
   // Domain part validation
-  if (domain.length === 0 || domain.length > 253) {
+  if (!domain || domain.length === 0 || domain.length > 253) {
     return false;
   }
 
@@ -160,7 +160,7 @@ export function validateEmail(email: string): boolean {
 
   // Validate TLD (last part of domain)
   const tld = domainParts[domainParts.length - 1];
-  if (tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) {
+  if (!tld || tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) {
     return false;
   }
 

@@ -1,16 +1,16 @@
-import { BaseAdapter } from '../../core/base-adapter.js';
-import type { AdapterCapabilities } from '../../core/interfaces.js';
-import type { AdapterResponse } from '../../types/config.js';
-import type { ClaudeConfig, ClaudeExecutionOptions } from '../../types/claude.js';
-import { executeClaudeCLI } from './cli-wrapper.js';
-import { parseStreamOutput } from './parser.js';
-import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors.js';
-import { detectClaudeCLI } from './cli-detector.js';
+import { BaseAdapter } from '../../core/base-adapter';
+import type { AdapterCapabilities } from '../../core/interfaces';
+import type { AdapterResponse } from '../../types/config';
+import type { ClaudeConfig, ClaudeExecutionOptions } from '../../types/claude';
+import { executeClaudeCLI } from './cli-wrapper';
+import { parseStreamOutput } from './parser';
+import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors';
+import { detectClaudeCLI } from './cli-detector';
 import {
   writeToCentralLog,
   writeExecutionLogs,
   buildExecutionLogEntry,
-} from '../../utils/logger.js';
+} from '../../utils/logger';
 
 /**
  * Claude Code adapter implementation

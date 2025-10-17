@@ -10,8 +10,8 @@ import type {
   StreamEvent,
   AdapterResponse,
   ExecutionOptions,
-} from '../types/config.js';
-import type { LoggingConfig, ExecutionLogEntry } from '../types/logging.js';
+} from '../types/config';
+import type { LoggingConfig, ExecutionLogEntry } from '../types/logging';
 
 /**
  * Global logging configuration

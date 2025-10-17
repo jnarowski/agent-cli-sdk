@@ -1,4 +1,4 @@
-import type { AdapterResponse, ActionLog, StreamEvent } from '../../types/config.js';
+import type { AdapterResponse, ActionLog, StreamEvent } from '../../types/config';
 
 /**
  * Parse Codex CLI output (text output)

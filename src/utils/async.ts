@@ -1,4 +1,4 @@
-import type { AdapterResponse } from '../types/config.js';
+import type { AdapterResponse } from '../types/config';
 
 /**
  * Operation function that returns a Promise

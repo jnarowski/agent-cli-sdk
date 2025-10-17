@@ -1,4 +1,4 @@
-import type { AdapterResponse, ActionLog, StreamEvent, StreamEventType } from '../../types/config.js';
+import type { AdapterResponse, ActionLog, StreamEvent, StreamEventType } from '../../types/config';
 
 /**
  * Parse Claude CLI JSON output (from --output-format json)

@@ -1,4 +1,4 @@
-import type { AdapterResponse, ExecutionOptions } from '../types/config.js';
+import type { AdapterResponse, ExecutionOptions } from '../types/config';
 
 /**
  * Adapter capabilities describe what features an adapter supports

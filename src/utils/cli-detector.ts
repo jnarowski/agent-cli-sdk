@@ -1,5 +1,5 @@
-import { detectClaudeCLI } from '../adapters/claude/cli-detector.js';
-import { detectCodexCLI } from '../adapters/codex/cli-detector.js';
+import { detectClaudeCLI } from '../adapters/claude/cli-detector';
+import { detectCodexCLI } from '../adapters/codex/cli-detector';
 
 /**
  * Find a CLI binary in the system PATH or use environment variable override
