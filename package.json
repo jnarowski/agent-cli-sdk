@@ -13,11 +13,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "check": "vitest run && npm run typecheck && npm run lint",
+    "check": "vitest run && pnpm run typecheck && pnpm run lint",
     "dev": "tsx watch src/index.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint src --ext .ts",
-    "ship": "git add . && git commit -m 'chore: prepare release' || true && npm version patch && git push && git push --tags && npm publish",
+    "ship": "git add . && git commit -m 'chore: prepare release' || true && pnpm version patch && git push && git push --tags && pnpm publish",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:console": "tsx examples/console-test.ts",

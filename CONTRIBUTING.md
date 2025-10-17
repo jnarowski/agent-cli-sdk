@@ -21,17 +21,17 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. Build the project:
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 4. Run tests:
    ```bash
-   npm test
+   pnpm test
    ```
 
 ## Project Structure
@@ -63,18 +63,18 @@ agent-cli-sdk/
 
 3. Run linting and formatting:
    ```bash
-   npm run lint
-   npm run format
+   pnpm run lint
+   pnpm run format
    ```
 
 4. Build the project:
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 5. Test your changes:
    ```bash
-   npm test
+   pnpm test
    ```
 
 6. Commit your changes:
@@ -118,13 +118,13 @@ agent-cli-sdk/
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run with coverage
-npm run test:coverage
+pnpm run test:coverage
 
 # Run E2E tests (requires CLIs installed)
-RUN_E2E_TESTS=true npm test
+RUN_E2E_TESTS=true pnpm test
 ```
 
 ## Adding a New Adapter
