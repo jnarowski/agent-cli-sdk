@@ -6,11 +6,7 @@ import { executeClaudeCLI } from './cli-wrapper';
 import { parseStreamOutput } from './parser';
 import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors';
 import { detectClaudeCLI } from './cli-detector';
-import {
-  writeToCentralLog,
-  writeExecutionLogs,
-  buildExecutionLogEntry,
-} from '../../utils/logger';
+import { writeExecutionLogs } from '../../utils/logger';
 
 /**
  * Claude Code adapter implementation
@@ -117,17 +113,6 @@ export class ClaudeAdapter extends BaseAdapter {
           // Logging errors should not break execution
           console.error('[logger] Failed to write execution logs:', logError);
         }
-      }
-
-      // Always log to central log if configured
-      if (response) {
-        const logEntry = buildExecutionLogEntry(
-          'claude',
-          prompt,
-          mergedOptions,
-          response
-        );
-        await writeToCentralLog(logEntry);
       }
     }
 

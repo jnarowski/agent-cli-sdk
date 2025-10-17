@@ -101,21 +101,13 @@ Both parsers (`src/adapters/*/parser.ts`) implement a dual-parsing strategy:
 
 ### Logging System
 
-The SDK has a sophisticated dual logging system (`src/utils/logger.ts`):
+The SDK provides per-execution logging (`src/utils/logger.ts`):
 
-**Two independent logging mechanisms:**
-
-1. **Per-execution logging** (via `logPath` in `ExecutionOptions`):
-   - Creates a directory with `input.json`, `output.json`, `stream.jsonl`
-   - Works standalone without global configuration
-   - Can use relative or absolute paths (absolute recommended)
-   - Example: `await claude.execute(prompt, { logPath: './logs/agent-1' })`
-
-2. **Central logging** (via `setLoggingConfig()`):
-   - Single JSONL file appending all executions across the application
-   - Optional - only writes if `setLoggingConfig({ centralLogPath })` was called
-   - Absolute paths recommended (warnings issued for relative paths)
-   - Example: `setLoggingConfig({ centralLogPath: path.resolve(cwd, 'logs/executions.jsonl') })`
+**Per-execution logging** (via `logPath` in `ExecutionOptions`):
+- Creates a directory with `input.json`, `output.json`, `stream.jsonl`
+- Works standalone without any global configuration
+- Can use relative or absolute paths (absolute recommended)
+- Example: `await claude.execute(prompt, { logPath: './logs/agent-1' })`
 
 **Best practices:**
 - Use `path.resolve()` to create absolute paths

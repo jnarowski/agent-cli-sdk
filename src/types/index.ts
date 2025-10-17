@@ -10,7 +10,7 @@ export type {
 } from './config';
 
 // Logging types
-export type { LoggingConfig, ExecutionLogEntry, LogFiles } from './logging';
+export type { LogFiles } from './logging';
 
 // Claude types
 export type {

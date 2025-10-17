@@ -6,11 +6,7 @@ import { executeCodexCLI } from './cli-wrapper';
 import { parseStreamOutput } from './parser';
 import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors';
 import { detectCodexCLI } from './cli-detector';
-import {
-  writeToCentralLog,
-  writeExecutionLogs,
-  buildExecutionLogEntry,
-} from '../../utils/logger';
+import { writeExecutionLogs } from '../../utils/logger';
 
 /**
  * Codex adapter implementation
@@ -117,17 +113,6 @@ export class CodexAdapter extends BaseAdapter {
           // Logging errors should not break execution
           console.error('[logger] Failed to write execution logs:', logError);
         }
-      }
-
-      // Always log to central log if configured
-      if (response) {
-        const logEntry = buildExecutionLogEntry(
-          'codex',
-          prompt,
-          mergedOptions,
-          response
-        );
-        await writeToCentralLog(logEntry);
       }
     }
 
