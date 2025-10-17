@@ -12,7 +12,7 @@ This is a TypeScript SDK that provides a unified interface for orchestrating AI-
 
 ```bash
 pnpm install          # Install dependencies
-pnpm build           # Build the project using tsup
+pnpm build           # Build the project using tsdown
 pnpm dev             # Watch mode for development
 ```
 
@@ -21,6 +21,7 @@ pnpm dev             # Watch mode for development
 ```bash
 pnpm test            # Run unit tests with vitest
 pnpm test:watch      # Run tests in watch mode
+vitest run path/to/test.test.ts  # Run a single test file
 pnpm check-types     # Type check without emitting
 pnpm check           # Run all validations (test + check-types + lint)
 ```
@@ -100,12 +101,26 @@ Both parsers (`src/adapters/*/parser.ts`) implement a dual-parsing strategy:
 
 ### Logging System
 
-The SDK has a sophisticated logging system (`src/utils/logger.ts`):
+The SDK has a sophisticated dual logging system (`src/utils/logger.ts`):
 
-- **Central JSONL log**: Single file with all executions (set via `setLoggingConfig()`)
-- **Per-execution logs**: Directory per execution with `input.json`, `output.json`, `stream.jsonl`
-- Configured via `logPath` option or global `setLoggingConfig()`
-- Logging failures never break execution (errors are logged but swallowed)
+**Two independent logging mechanisms:**
+
+1. **Per-execution logging** (via `logPath` in `ExecutionOptions`):
+   - Creates a directory with `input.json`, `output.json`, `stream.jsonl`
+   - Works standalone without global configuration
+   - Can use relative or absolute paths (absolute recommended)
+   - Example: `await claude.execute(prompt, { logPath: './logs/agent-1' })`
+
+2. **Central logging** (via `setLoggingConfig()`):
+   - Single JSONL file appending all executions across the application
+   - Optional - only writes if `setLoggingConfig({ centralLogPath })` was called
+   - Absolute paths recommended (warnings issued for relative paths)
+   - Example: `setLoggingConfig({ centralLogPath: path.resolve(cwd, 'logs/executions.jsonl') })`
+
+**Best practices:**
+- Use `path.resolve()` to create absolute paths
+- Use workflow pattern for organization: `logs/workflow-{id}/agent-{n}-{name}`
+- Logging failures never break execution (errors caught and logged to console)
 
 ## File Organization
 
@@ -195,7 +210,7 @@ Custom error types (`src/core/errors.ts`):
 
 ## Build Configuration
 
-- Uses `tsup` for building (configured in `tsup.config.ts`)
+- Uses `tsdown` for building (successor to tsup)
 - Outputs ESM format to `dist/`
 - Package exports both JS and type definitions
 - Main entry: `src/index.ts` exports all public APIs

@@ -1,0 +1,385 @@
+{
+  "output": "Here are all the TypeScript files in the src/ directory:\n\n**Core Files:**\n- `src/index.ts` - Main entry point\n- `src/core/interfaces.ts` - AIAdapter interface definitions\n- `src/core/base-adapter.ts` - Abstract base adapter class\n- `src/core/errors.ts` - Custom error classes\n\n**Claude Adapter:**\n- `src/adapters/claude/index.ts` - ClaudeAdapter implementation\n- `src/adapters/claude/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/claude/parser.ts` - Output parsing\n- `src/adapters/claude/cli-detector.ts` - CLI path detection\n\n**Codex Adapter:**\n- `src/adapters/codex/index.ts` - CodexAdapter implementation\n- `src/adapters/codex/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/codex/parser.ts` - Output parsing\n- `src/adapters/codex/cli-detector.ts` - CLI path detection\n\n**Types:**\n- `src/types/index.ts` - Type exports\n- `src/types/config.ts` - Common types\n- `src/types/claude.ts` - Claude-specific types\n- `src/types/codex.ts` - Codex-specific types\n- `src/types/logging.ts` - Logging types\n\n**Utilities:**\n- `src/utils/factory.ts` - Adapter factory functions\n- `src/utils/logger.ts` - Logging utilities\n- `src/utils/constants.ts` - Constants\n- `src/utils/renderConsoleBox.ts` - Console rendering utility\n\n**Total: 21 TypeScript files**",
+  "sessionId": "f3284c44-bf80-4ea7-9aba-1d355f82be05",
+  "status": "success",
+  "exitCode": 0,
+  "duration": 12499,
+  "actions": [
+    {
+      "timestamp": 1760717674525,
+      "type": "think",
+      "target": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src",
+      "content": "{\"pattern\":\"**/*.ts\",\"path\":\"/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src\"}",
+      "result": "success",
+      "metadata": {
+        "toolName": "Glob",
+        "toolId": "toolu_01QdU6DiTTz2fcgQQ4XF1LwG"
+      }
+    }
+  ],
+  "metadata": {
+    "model": "claude-sonnet-4-5-20250929",
+    "toolsUsed": [
+      "Glob"
+    ],
+    "filesModified": []
+  },
+  "raw": {
+    "stdout": "{\"type\":\"system\",\"subtype\":\"init\",\"cwd\":\"/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk\",\"session_id\":\"f3284c44-bf80-4ea7-9aba-1d355f82be05\",\"tools\":[\"Task\",\"Bash\",\"Glob\",\"Grep\",\"ExitPlanMode\",\"Read\",\"Edit\",\"Write\",\"NotebookEdit\",\"WebFetch\",\"TodoWrite\",\"WebSearch\",\"BashOutput\",\"KillShell\",\"Skill\",\"SlashCommand\"],\"mcp_servers\":[],\"model\":\"claude-sonnet-4-5-20250929\",\"permissionMode\":\"bypassPermissions\",\"slash_commands\":[\"tools\",\"test\",\"review\",\"commit\",\"pull-request\",\"prime\",\"review-spec-implementation\",\"create-pr\",\"check\",\"generate-feature\",\"implement-spec\",\"generate-research\",\"generate-prd\",\"generate-slash-command\",\"fix\",\"linear:implement-issue\",\"compact\",\"context\",\"cost\",\"init\",\"output-style:new\",\"pr-comments\",\"release-notes\",\"todos\",\"review\",\"security-review\"],\"apiKeySource\":\"none\",\"claude_code_version\":\"2.0.21\",\"output_style\":\"default\",\"agents\":[\"general-purpose\",\"statusline-setup\",\"output-style-setup\",\"Explore\"],\"uuid\":\"8a5a77df-cf3a-4a11-9091-7c44843534a3\"}\n{\"type\":\"assistant\",\"message\":{\"model\":\"claude-sonnet-4-5-20250929\",\"id\":\"msg_01XEjTbhMZUZytFV296hns2F\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"I'll list all TypeScript files in the src/ directory for you.\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"cache_creation_input_tokens\":17424,\"cache_read_input_tokens\":0,\"cache_creation\":{\"ephemeral_5m_input_tokens\":17424,\"ephemeral_1h_input_tokens\":0},\"output_tokens\":8,\"service_tier\":\"standard\"}},\"parent_tool_use_id\":null,\"session_id\":\"f3284c44-bf80-4ea7-9aba-1d355f82be05\",\"uuid\":\"168a2d88-de18-4baa-a102-92c1a7014317\"}\n{\"type\":\"assistant\",\"message\":{\"model\":\"claude-sonnet-4-5-20250929\",\"id\":\"msg_01XEjTbhMZUZytFV296hns2F\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"toolu_01QdU6DiTTz2fcgQQ4XF1LwG\",\"name\":\"Glob\",\"input\":{\"pattern\":\"**/*.ts\",\"path\":\"/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src\"}}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"cache_creation_input_tokens\":17424,\"cache_read_input_tokens\":0,\"cache_creation\":{\"ephemeral_5m_input_tokens\":17424,\"ephemeral_1h_input_tokens\":0},\"output_tokens\":8,\"service_tier\":\"standard\"}},\"parent_tool_use_id\":null,\"session_id\":\"f3284c44-bf80-4ea7-9aba-1d355f82be05\",\"uuid\":\"3f544a74-4030-4d63-8bdd-4c66ef9129de\"}\n{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"tool_use_id\":\"toolu_01QdU6DiTTz2fcgQQ4XF1LwG\",\"type\":\"tool_result\",\"content\":\"/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/renderConsoleBox.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/cli-detector.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/cli-wrapper.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/index.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/parser.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/cli-detector.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/cli-wrapper.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/index.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/parser.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/base-adapter.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/errors.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/interfaces.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/index.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/claude.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/codex.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/config.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/index.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/logging.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/constants.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/factory.ts\\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/logger.ts\"}]},\"parent_tool_use_id\":null,\"session_id\":\"f3284c44-bf80-4ea7-9aba-1d355f82be05\",\"uuid\":\"dcdc87b6-45a9-40ee-b10e-a7e4e2e2dcd7\"}\n{\"type\":\"assistant\",\"message\":{\"model\":\"claude-sonnet-4-5-20250929\",\"id\":\"msg_01MTbbrPmcNpnqPofZMDAhbR\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Here are all the TypeScript files in the src/ directory:\\n\\n**Core Files:**\\n- `src/index.ts` - Main entry point\\n- `src/core/interfaces.ts` - AIAdapter interface definitions\\n- `src/core/base-adapter.ts` - Abstract base adapter class\\n- `src/core/errors.ts` - Custom error classes\\n\\n**Claude Adapter:**\\n- `src/adapters/claude/index.ts` - ClaudeAdapter implementation\\n- `src/adapters/claude/cli-wrapper.ts` - CLI process spawning\\n- `src/adapters/claude/parser.ts` - Output parsing\\n- `src/adapters/claude/cli-detector.ts` - CLI path detection\\n\\n**Codex Adapter:**\\n- `src/adapters/codex/index.ts` - CodexAdapter implementation\\n- `src/adapters/codex/cli-wrapper.ts` - CLI process spawning\\n- `src/adapters/codex/parser.ts` - Output parsing\\n- `src/adapters/codex/cli-detector.ts` - CLI path detection\\n\\n**Types:**\\n- `src/types/index.ts` - Type exports\\n- `src/types/config.ts` - Common types\\n- `src/types/claude.ts` - Claude-specific types\\n- `src/types/codex.ts` - Codex-specific types\\n- `src/types/logging.ts` - Logging types\\n\\n**Utilities:**\\n- `src/utils/factory.ts` - Adapter factory functions\\n- `src/utils/logger.ts` - Logging utilities\\n- `src/utils/constants.ts` - Constants\\n- `src/utils/renderConsoleBox.ts` - Console rendering utility\\n\\n**Total: 21 TypeScript files**\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":7,\"cache_creation_input_tokens\":742,\"cache_read_input_tokens\":17424,\"cache_creation\":{\"ephemeral_5m_input_tokens\":742,\"ephemeral_1h_input_tokens\":0},\"output_tokens\":1,\"service_tier\":\"standard\"}},\"parent_tool_use_id\":null,\"session_id\":\"f3284c44-bf80-4ea7-9aba-1d355f82be05\",\"uuid\":\"1fc35dcd-edbd-44ed-a91d-93283cf2aebc\"}\n{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":11084,\"duration_api_ms\":15078,\"num_turns\":4,\"result\":\"Here are all the TypeScript files in the src/ directory:\\n\\n**Core Files:**\\n- `src/index.ts` - Main entry point\\n- `src/core/interfaces.ts` - AIAdapter interface definitions\\n- `src/core/base-adapter.ts` - Abstract base adapter class\\n- `src/core/errors.ts` - Custom error classes\\n\\n**Claude Adapter:**\\n- `src/adapters/claude/index.ts` - ClaudeAdapter implementation\\n- `src/adapters/claude/cli-wrapper.ts` - CLI process spawning\\n- `src/adapters/claude/parser.ts` - Output parsing\\n- `src/adapters/claude/cli-detector.ts` - CLI path detection\\n\\n**Codex Adapter:**\\n- `src/adapters/codex/index.ts` - CodexAdapter implementation\\n- `src/adapters/codex/cli-wrapper.ts` - CLI process spawning\\n- `src/adapters/codex/parser.ts` - Output parsing\\n- `src/adapters/codex/cli-detector.ts` - CLI path detection\\n\\n**Types:**\\n- `src/types/index.ts` - Type exports\\n- `src/types/config.ts` - Common types\\n- `src/types/claude.ts` - Claude-specific types\\n- `src/types/codex.ts` - Codex-specific types\\n- `src/types/logging.ts` - Logging types\\n\\n**Utilities:**\\n- `src/utils/factory.ts` - Adapter factory functions\\n- `src/utils/logger.ts` - Logging utilities\\n- `src/utils/constants.ts` - Constants\\n- `src/utils/renderConsoleBox.ts` - Console rendering utility\\n\\n**Total: 21 TypeScript files**\",\"session_id\":\"f3284c44-bf80-4ea7-9aba-1d355f82be05\",\"total_cost_usd\":0.08474969999999998,\"usage\":{\"input_tokens\":11,\"cache_creation_input_tokens\":18166,\"cache_read_input_tokens\":17424,\"output_tokens\":523,\"server_tool_use\":{\"web_search_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":18166}},\"modelUsage\":{\"claude-haiku-4-5-20251001\":{\"inputTokens\":2737,\"outputTokens\":157,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.003522,\"contextWindow\":200000},\"claude-sonnet-4-5-20250929\":{\"inputTokens\":11,\"outputTokens\":523,\"cacheReadInputTokens\":17424,\"cacheCreationInputTokens\":18166,\"webSearchRequests\":0,\"costUSD\":0.08122769999999999,\"contextWindow\":200000}},\"permission_denials\":[],\"uuid\":\"4bc6ca45-8bb2-4f6b-a77b-0855d74dc746\"}\n",
+    "stderr": "",
+    "events": [
+      {
+        "type": "system",
+        "timestamp": 1760717674525,
+        "data": {
+          "metadata": {
+            "type": "system",
+            "subtype": "init",
+            "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk",
+            "session_id": "f3284c44-bf80-4ea7-9aba-1d355f82be05",
+            "tools": [
+              "Task",
+              "Bash",
+              "Glob",
+              "Grep",
+              "ExitPlanMode",
+              "Read",
+              "Edit",
+              "Write",
+              "NotebookEdit",
+              "WebFetch",
+              "TodoWrite",
+              "WebSearch",
+              "BashOutput",
+              "KillShell",
+              "Skill",
+              "SlashCommand"
+            ],
+            "mcp_servers": [],
+            "model": "claude-sonnet-4-5-20250929",
+            "permissionMode": "bypassPermissions",
+            "slash_commands": [
+              "tools",
+              "test",
+              "review",
+              "commit",
+              "pull-request",
+              "prime",
+              "review-spec-implementation",
+              "create-pr",
+              "check",
+              "generate-feature",
+              "implement-spec",
+              "generate-research",
+              "generate-prd",
+              "generate-slash-command",
+              "fix",
+              "linear:implement-issue",
+              "compact",
+              "context",
+              "cost",
+              "init",
+              "output-style:new",
+              "pr-comments",
+              "release-notes",
+              "todos",
+              "review",
+              "security-review"
+            ],
+            "apiKeySource": "none",
+            "claude_code_version": "2.0.21",
+            "output_style": "default",
+            "agents": [
+              "general-purpose",
+              "statusline-setup",
+              "output-style-setup",
+              "Explore"
+            ],
+            "uuid": "8a5a77df-cf3a-4a11-9091-7c44843534a3"
+          }
+        }
+      },
+      {
+        "type": "assistant",
+        "timestamp": 1760717674525,
+        "data": {
+          "content": {
+            "model": "claude-sonnet-4-5-20250929",
+            "id": "msg_01XEjTbhMZUZytFV296hns2F",
+            "type": "message",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "I'll list all TypeScript files in the src/ directory for you."
+              }
+            ],
+            "stop_reason": null,
+            "stop_sequence": null,
+            "usage": {
+              "input_tokens": 4,
+              "cache_creation_input_tokens": 17424,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 17424,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 8,
+              "service_tier": "standard"
+            }
+          },
+          "metadata": {
+            "type": "assistant",
+            "message": {
+              "model": "claude-sonnet-4-5-20250929",
+              "id": "msg_01XEjTbhMZUZytFV296hns2F",
+              "type": "message",
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "I'll list all TypeScript files in the src/ directory for you."
+                }
+              ],
+              "stop_reason": null,
+              "stop_sequence": null,
+              "usage": {
+                "input_tokens": 4,
+                "cache_creation_input_tokens": 17424,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 17424,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 8,
+                "service_tier": "standard"
+              }
+            },
+            "parent_tool_use_id": null,
+            "session_id": "f3284c44-bf80-4ea7-9aba-1d355f82be05",
+            "uuid": "168a2d88-de18-4baa-a102-92c1a7014317"
+          }
+        }
+      },
+      {
+        "type": "assistant",
+        "timestamp": 1760717674525,
+        "data": {
+          "content": {
+            "model": "claude-sonnet-4-5-20250929",
+            "id": "msg_01XEjTbhMZUZytFV296hns2F",
+            "type": "message",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "toolu_01QdU6DiTTz2fcgQQ4XF1LwG",
+                "name": "Glob",
+                "input": {
+                  "pattern": "**/*.ts",
+                  "path": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src"
+                }
+              }
+            ],
+            "stop_reason": null,
+            "stop_sequence": null,
+            "usage": {
+              "input_tokens": 4,
+              "cache_creation_input_tokens": 17424,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 17424,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 8,
+              "service_tier": "standard"
+            }
+          },
+          "metadata": {
+            "type": "assistant",
+            "message": {
+              "model": "claude-sonnet-4-5-20250929",
+              "id": "msg_01XEjTbhMZUZytFV296hns2F",
+              "type": "message",
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "tool_use",
+                  "id": "toolu_01QdU6DiTTz2fcgQQ4XF1LwG",
+                  "name": "Glob",
+                  "input": {
+                    "pattern": "**/*.ts",
+                    "path": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src"
+                  }
+                }
+              ],
+              "stop_reason": null,
+              "stop_sequence": null,
+              "usage": {
+                "input_tokens": 4,
+                "cache_creation_input_tokens": 17424,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 17424,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 8,
+                "service_tier": "standard"
+              }
+            },
+            "parent_tool_use_id": null,
+            "session_id": "f3284c44-bf80-4ea7-9aba-1d355f82be05",
+            "uuid": "3f544a74-4030-4d63-8bdd-4c66ef9129de"
+          }
+        }
+      },
+      {
+        "type": "user",
+        "timestamp": 1760717674525,
+        "data": {
+          "content": {
+            "role": "user",
+            "content": [
+              {
+                "tool_use_id": "toolu_01QdU6DiTTz2fcgQQ4XF1LwG",
+                "type": "tool_result",
+                "content": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/renderConsoleBox.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/cli-detector.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/cli-wrapper.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/parser.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/cli-detector.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/cli-wrapper.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/parser.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/base-adapter.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/errors.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/interfaces.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/claude.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/codex.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/config.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/logging.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/constants.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/factory.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/logger.ts"
+              }
+            ]
+          },
+          "metadata": {
+            "type": "user",
+            "message": {
+              "role": "user",
+              "content": [
+                {
+                  "tool_use_id": "toolu_01QdU6DiTTz2fcgQQ4XF1LwG",
+                  "type": "tool_result",
+                  "content": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/renderConsoleBox.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/cli-detector.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/cli-wrapper.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/claude/parser.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/cli-detector.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/cli-wrapper.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/adapters/codex/parser.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/base-adapter.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/errors.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/core/interfaces.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/claude.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/codex.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/config.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/index.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/types/logging.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/constants.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/factory.ts\n/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/src/utils/logger.ts"
+                }
+              ]
+            },
+            "parent_tool_use_id": null,
+            "session_id": "f3284c44-bf80-4ea7-9aba-1d355f82be05",
+            "uuid": "dcdc87b6-45a9-40ee-b10e-a7e4e2e2dcd7"
+          }
+        }
+      },
+      {
+        "type": "assistant",
+        "timestamp": 1760717674525,
+        "data": {
+          "content": {
+            "model": "claude-sonnet-4-5-20250929",
+            "id": "msg_01MTbbrPmcNpnqPofZMDAhbR",
+            "type": "message",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "Here are all the TypeScript files in the src/ directory:\n\n**Core Files:**\n- `src/index.ts` - Main entry point\n- `src/core/interfaces.ts` - AIAdapter interface definitions\n- `src/core/base-adapter.ts` - Abstract base adapter class\n- `src/core/errors.ts` - Custom error classes\n\n**Claude Adapter:**\n- `src/adapters/claude/index.ts` - ClaudeAdapter implementation\n- `src/adapters/claude/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/claude/parser.ts` - Output parsing\n- `src/adapters/claude/cli-detector.ts` - CLI path detection\n\n**Codex Adapter:**\n- `src/adapters/codex/index.ts` - CodexAdapter implementation\n- `src/adapters/codex/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/codex/parser.ts` - Output parsing\n- `src/adapters/codex/cli-detector.ts` - CLI path detection\n\n**Types:**\n- `src/types/index.ts` - Type exports\n- `src/types/config.ts` - Common types\n- `src/types/claude.ts` - Claude-specific types\n- `src/types/codex.ts` - Codex-specific types\n- `src/types/logging.ts` - Logging types\n\n**Utilities:**\n- `src/utils/factory.ts` - Adapter factory functions\n- `src/utils/logger.ts` - Logging utilities\n- `src/utils/constants.ts` - Constants\n- `src/utils/renderConsoleBox.ts` - Console rendering utility\n\n**Total: 21 TypeScript files**"
+              }
+            ],
+            "stop_reason": null,
+            "stop_sequence": null,
+            "usage": {
+              "input_tokens": 7,
+              "cache_creation_input_tokens": 742,
+              "cache_read_input_tokens": 17424,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 742,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 1,
+              "service_tier": "standard"
+            }
+          },
+          "metadata": {
+            "type": "assistant",
+            "message": {
+              "model": "claude-sonnet-4-5-20250929",
+              "id": "msg_01MTbbrPmcNpnqPofZMDAhbR",
+              "type": "message",
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Here are all the TypeScript files in the src/ directory:\n\n**Core Files:**\n- `src/index.ts` - Main entry point\n- `src/core/interfaces.ts` - AIAdapter interface definitions\n- `src/core/base-adapter.ts` - Abstract base adapter class\n- `src/core/errors.ts` - Custom error classes\n\n**Claude Adapter:**\n- `src/adapters/claude/index.ts` - ClaudeAdapter implementation\n- `src/adapters/claude/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/claude/parser.ts` - Output parsing\n- `src/adapters/claude/cli-detector.ts` - CLI path detection\n\n**Codex Adapter:**\n- `src/adapters/codex/index.ts` - CodexAdapter implementation\n- `src/adapters/codex/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/codex/parser.ts` - Output parsing\n- `src/adapters/codex/cli-detector.ts` - CLI path detection\n\n**Types:**\n- `src/types/index.ts` - Type exports\n- `src/types/config.ts` - Common types\n- `src/types/claude.ts` - Claude-specific types\n- `src/types/codex.ts` - Codex-specific types\n- `src/types/logging.ts` - Logging types\n\n**Utilities:**\n- `src/utils/factory.ts` - Adapter factory functions\n- `src/utils/logger.ts` - Logging utilities\n- `src/utils/constants.ts` - Constants\n- `src/utils/renderConsoleBox.ts` - Console rendering utility\n\n**Total: 21 TypeScript files**"
+                }
+              ],
+              "stop_reason": null,
+              "stop_sequence": null,
+              "usage": {
+                "input_tokens": 7,
+                "cache_creation_input_tokens": 742,
+                "cache_read_input_tokens": 17424,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 742,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 1,
+                "service_tier": "standard"
+              }
+            },
+            "parent_tool_use_id": null,
+            "session_id": "f3284c44-bf80-4ea7-9aba-1d355f82be05",
+            "uuid": "1fc35dcd-edbd-44ed-a91d-93283cf2aebc"
+          }
+        }
+      },
+      {
+        "type": "result",
+        "timestamp": 1760717674525,
+        "data": {
+          "metadata": {
+            "type": "result",
+            "subtype": "success",
+            "is_error": false,
+            "duration_ms": 11084,
+            "duration_api_ms": 15078,
+            "num_turns": 4,
+            "result": "Here are all the TypeScript files in the src/ directory:\n\n**Core Files:**\n- `src/index.ts` - Main entry point\n- `src/core/interfaces.ts` - AIAdapter interface definitions\n- `src/core/base-adapter.ts` - Abstract base adapter class\n- `src/core/errors.ts` - Custom error classes\n\n**Claude Adapter:**\n- `src/adapters/claude/index.ts` - ClaudeAdapter implementation\n- `src/adapters/claude/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/claude/parser.ts` - Output parsing\n- `src/adapters/claude/cli-detector.ts` - CLI path detection\n\n**Codex Adapter:**\n- `src/adapters/codex/index.ts` - CodexAdapter implementation\n- `src/adapters/codex/cli-wrapper.ts` - CLI process spawning\n- `src/adapters/codex/parser.ts` - Output parsing\n- `src/adapters/codex/cli-detector.ts` - CLI path detection\n\n**Types:**\n- `src/types/index.ts` - Type exports\n- `src/types/config.ts` - Common types\n- `src/types/claude.ts` - Claude-specific types\n- `src/types/codex.ts` - Codex-specific types\n- `src/types/logging.ts` - Logging types\n\n**Utilities:**\n- `src/utils/factory.ts` - Adapter factory functions\n- `src/utils/logger.ts` - Logging utilities\n- `src/utils/constants.ts` - Constants\n- `src/utils/renderConsoleBox.ts` - Console rendering utility\n\n**Total: 21 TypeScript files**",
+            "session_id": "f3284c44-bf80-4ea7-9aba-1d355f82be05",
+            "total_cost_usd": 0.08474969999999998,
+            "usage": {
+              "input_tokens": 11,
+              "cache_creation_input_tokens": 18166,
+              "cache_read_input_tokens": 17424,
+              "output_tokens": 523,
+              "server_tool_use": {
+                "web_search_requests": 0
+              },
+              "service_tier": "standard",
+              "cache_creation": {
+                "ephemeral_1h_input_tokens": 0,
+                "ephemeral_5m_input_tokens": 18166
+              }
+            },
+            "modelUsage": {
+              "claude-haiku-4-5-20251001": {
+                "inputTokens": 2737,
+                "outputTokens": 157,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0,
+                "webSearchRequests": 0,
+                "costUSD": 0.003522,
+                "contextWindow": 200000
+              },
+              "claude-sonnet-4-5-20250929": {
+                "inputTokens": 11,
+                "outputTokens": 523,
+                "cacheReadInputTokens": 17424,
+                "cacheCreationInputTokens": 18166,
+                "webSearchRequests": 0,
+                "costUSD": 0.08122769999999999,
+                "contextWindow": 200000
+              }
+            },
+            "permission_denials": [],
+            "uuid": "4bc6ca45-8bb2-4f6b-a77b-0855d74dc746"
+          }
+        }
+      }
+    ]
+  }
+}
