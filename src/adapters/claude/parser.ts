@@ -1,4 +1,5 @@
 import type { AdapterResponse, ActionLog, StreamEvent, StreamEventType } from '../../types/config';
+import { extractJsonFromOutput, validateWithSchema } from '../../utils/json-parser';
 
 /**
  * Parse Claude CLI JSON output (from --output-format json)
@@ -48,11 +49,16 @@ export function parseJSONOutput(output: string, duration: number, exitCode: numb
       error: {
         code: 'PARSE_ERROR',
         message: 'Failed to parse Claude CLI output',
-        details: error instanceof Error ? {
-          name: error.name,
-          message: error.message,
-          stack: error.stack,
-        } : typeof error === 'object' && error !== null ? error as Record<string, unknown> : { error: String(error) },
+        details:
+          error instanceof Error
+            ? {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              }
+            : typeof error === 'object' && error !== null
+              ? (error as Record<string, unknown>)
+              : { error: String(error) },
       },
     };
   }
@@ -62,24 +68,29 @@ export function parseJSONOutput(output: string, duration: number, exitCode: numb
  * Parse streaming JSONL output (from --output-format stream-json)
  * Also handles single JSON object responses for testing/compatibility
  */
-export function parseStreamOutput(
+export async function parseStreamOutput(
   output: string,
   duration: number,
-  exitCode: number
-): AdapterResponse {
+  exitCode: number,
+  responseSchema?: true | { safeParse: (data: unknown) => unknown }
+): Promise<AdapterResponse> {
   // First, try to parse as a single JSON object (for fixtures and some CLI responses)
   try {
     const parsed = JSON.parse(output);
     // If it's a single object with expected fields, use JSON parser
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) &&
-        (parsed.output || parsed.messages || parsed.result || parsed.status)) {
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      !Array.isArray(parsed) &&
+      (parsed.output || parsed.messages || parsed.result || parsed.status)
+    ) {
       return parseJSONOutput(output, duration, exitCode);
     }
   } catch {
     // Not a single JSON object, continue with JSONL parsing
   }
 
-  const lines = output.split('\n').filter(line => line.trim());
+  const lines = output.split('\n').filter((line) => line.trim());
   const events: StreamEvent[] = [];
   const actions: ActionLog[] = [];
   const toolsUsed = new Set<string>();
@@ -186,8 +197,44 @@ export function parseStreamOutput(
     }
   }
 
+  // If no JSONL events were found and finalOutput is empty, use the original output as fallback
+  if (!finalOutput && output) {
+    finalOutput = output;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let parsedOutput: string | Record<string, any> = finalOutput;
+  let validationMetadata: { success: boolean; errors?: string[] } | undefined;
+
+  // Handle responseSchema if provided
+  if (responseSchema) {
+    const extracted = extractJsonFromOutput(finalOutput);
+
+    if (extracted === null) {
+      // No JSON found - return empty object
+      parsedOutput = {};
+      validationMetadata = {
+        success: false,
+        errors: ['No JSON found in output'],
+      };
+    } else if (responseSchema === true) {
+      // JSON extraction only (no validation)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      parsedOutput = extracted as Record<string, any>;
+      validationMetadata = { success: true };
+    } else {
+      // Validate with schema
+      const validation = await validateWithSchema(extracted, responseSchema);
+      parsedOutput = validation.data ?? extracted;
+      validationMetadata = {
+        success: validation.success,
+        errors: validation.errors,
+      };
+    }
+  }
+
   return {
-    output: finalOutput,
+    output: parsedOutput,
     sessionId,
     status: exitCode === 0 ? 'success' : 'error',
     exitCode,
@@ -197,6 +244,7 @@ export function parseStreamOutput(
       model,
       toolsUsed: Array.from(toolsUsed),
       filesModified: Array.from(filesModified),
+      validation: validationMetadata,
     },
     raw: {
       stdout: output,
@@ -229,15 +277,17 @@ function extractOutputText(parsed: unknown): string {
 
   // If it's an array of messages, concatenate them
   if (Array.isArray(obj.messages)) {
-    return obj.messages.map((m: unknown) => {
-      if (typeof m === 'object' && m !== null) {
-        const msg = m as Record<string, unknown>;
-        const content = typeof msg.content === 'string' ? msg.content : '';
-        const text = typeof msg.text === 'string' ? msg.text : '';
-        return content || text;
-      }
-      return '';
-    }).join('\n');
+    return obj.messages
+      .map((m: unknown) => {
+        if (typeof m === 'object' && m !== null) {
+          const msg = m as Record<string, unknown>;
+          const content = typeof msg.content === 'string' ? msg.content : '';
+          const text = typeof msg.text === 'string' ? msg.text : '';
+          return content || text;
+        }
+        return '';
+      })
+      .join('\n');
   }
 
   return JSON.stringify(parsed, null, 2);
@@ -259,11 +309,16 @@ function extractActions(parsed: unknown): ActionLog[] {
     return obj.actions.map((action: unknown) => {
       const act = action as Record<string, unknown>;
       const typeStr = typeof act.type === 'string' ? act.type : 'think';
-      const targetStr = typeof act.target === 'string' ? act.target :
-                       typeof act.path === 'string' ? act.path :
-                       typeof act.command === 'string' ? act.command : '';
+      const targetStr =
+        typeof act.target === 'string'
+          ? act.target
+          : typeof act.path === 'string'
+            ? act.path
+            : typeof act.command === 'string'
+              ? act.command
+              : '';
       return {
-        timestamp: (typeof act.timestamp === 'number' ? act.timestamp : Date.now()),
+        timestamp: typeof act.timestamp === 'number' ? act.timestamp : Date.now(),
         type: mapToolToActionType(typeStr),
         target: targetStr,
         content: act.content as string | undefined,
@@ -277,10 +332,9 @@ function extractActions(parsed: unknown): ActionLog[] {
     return obj.toolCalls.map((tool: unknown) => {
       const t = tool as Record<string, unknown>;
       const nameStr = typeof t.name === 'string' ? t.name : '';
-      const targetStr = typeof t.target === 'string' ? t.target :
-                       typeof t.path === 'string' ? t.path : '';
+      const targetStr = typeof t.target === 'string' ? t.target : typeof t.path === 'string' ? t.path : '';
       return {
-        timestamp: (typeof t.timestamp === 'number' ? t.timestamp : Date.now()),
+        timestamp: typeof t.timestamp === 'number' ? t.timestamp : Date.now(),
         type: mapToolToActionType(nameStr),
         target: targetStr,
         content: t.content as string | undefined,
@@ -341,10 +395,10 @@ function normalizeStreamEvent(event: unknown): StreamEvent {
 
   return {
     type: (evt.type as StreamEventType) || 'message.chunk',
-    timestamp: (typeof evt.timestamp === 'number' ? evt.timestamp : Date.now()),
+    timestamp: typeof evt.timestamp === 'number' ? evt.timestamp : Date.now(),
     data: {
-      content: evt.content as string | undefined || evt.message as string | undefined,
-      toolName: evt.toolName as string | undefined || evt.tool_name as string | undefined,
+      content: (evt.content as string | undefined) || (evt.message as string | undefined),
+      toolName: (evt.toolName as string | undefined) || (evt.tool_name as string | undefined),
       metadata: (evt.metadata as Record<string, unknown>) || evt,
     },
   };

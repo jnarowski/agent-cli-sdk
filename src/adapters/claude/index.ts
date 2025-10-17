@@ -81,7 +81,7 @@ export class ClaudeAdapter extends BaseAdapter {
       });
 
       // Parse output - always use parseStreamOutput since we use stream-json format
-      response = parseStreamOutput(result.stdout, result.duration, result.exitCode);
+      response = await parseStreamOutput(result.stdout, result.duration, result.exitCode, mergedOptions.responseSchema);
 
       // Add stderr to raw output
       if (response.raw) {

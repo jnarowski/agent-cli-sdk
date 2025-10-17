@@ -63,6 +63,14 @@
     "boxen": "^8.0.1",
     "chalk": "^5.3.0"
   },
+  "peerDependencies": {
+    "zod": "^4.0.0 || ^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
@@ -72,6 +80,7 @@
     "tsdown": "^0.15.7",
     "tsx": "^4.7.0",
     "typescript": "^5.5.0",
-    "vitest": "^2.0.0"
+    "vitest": "^2.0.0",
+    "zod": "^4.0.0"
   }
 }
