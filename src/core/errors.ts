@@ -19,17 +19,6 @@ export class AdapterError extends Error {
   }
 }
 
-/**
- * Error thrown when configuration is invalid
- */
-export class ConfigurationError extends AdapterError {
-  constructor(message: string, details?: Record<string, unknown>) {
-    super(message, 'CONFIGURATION_ERROR');
-    this.name = 'ConfigurationError';
-    this.details = details;
-    Object.setPrototypeOf(this, ConfigurationError.prototype);
-  }
-}
 
 /**
  * Error thrown during CLI execution
@@ -104,27 +93,3 @@ export class CLINotFoundError extends AdapterError {
   }
 }
 
-/**
- * Error thrown when model is overloaded
- */
-export class ModelOverloadError extends AdapterError {
-  constructor(message: string = 'Model is currently overloaded') {
-    super(message, 'MODEL_OVERLOAD');
-    this.name = 'ModelOverloadError';
-    this.recovery = 'Retry the request in a few moments or use a fallback model';
-    Object.setPrototypeOf(this, ModelOverloadError.prototype);
-  }
-}
-
-/**
- * Error thrown when permission is denied
- */
-export class PermissionDeniedError extends AdapterError {
-  constructor(operation: string) {
-    const message = `Permission denied for operation: ${operation}`;
-    super(message, 'PERMISSION_DENIED');
-    this.name = 'PermissionDeniedError';
-    this.recovery = 'Check sandbox settings or permission modes';
-    Object.setPrototypeOf(this, PermissionDeniedError.prototype);
-  }
-}

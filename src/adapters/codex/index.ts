@@ -58,13 +58,16 @@ export class CodexAdapter extends BaseAdapter {
       mergedOptions.model = 'gpt-5'; // Default to GPT-5
     }
 
-    try {
-      // Capture input for logging
-      const inputData = {
-        prompt,
-        options: mergedOptions,
-      };
+    // Capture input for logging (outside try block so it's available in finally)
+    const inputData = {
+      prompt,
+      options: mergedOptions,
+    };
 
+    let response: AdapterResponse | null = null;
+    let executionError: Error | null = null;
+
+    try {
       // Execute CLI with config-level settings (options can override config)
       const result = await executeCodexCLI(this.cliPath, prompt, {
         workingDir: this.config.workingDir,
@@ -72,7 +75,7 @@ export class CodexAdapter extends BaseAdapter {
       });
 
       // Always parse as stream output (JSON) to get detailed information
-      const response = parseStreamOutput(
+      response = parseStreamOutput(
         result.stdout,
         result.duration,
         result.exitCode,
@@ -83,58 +86,77 @@ export class CodexAdapter extends BaseAdapter {
       if (response.raw) {
         response.raw.stderr = result.stderr;
       }
-
-      // Write execution logs if logPath is configured
-      if (mergedOptions.logPath) {
-        const events = response.raw?.events || [];
-        // Fire-and-forget: don't await to avoid blocking
-        writeExecutionLogs(
-          mergedOptions.logPath,
-          inputData,
-          response,
-          events
-        ).catch(() => {
-          // Errors already logged in writeExecutionLogs
-        });
-      }
-
-      // Write to central log if configured
-      const logEntry = buildExecutionLogEntry(
-        'codex',
-        prompt,
-        mergedOptions,
-        response
-      );
-      // Fire-and-forget: don't await to avoid blocking
-      writeToCentralLog(logEntry).catch(() => {
-        // Errors already logged in writeToCentralLog
-      });
-
-      return response;
     } catch (error) {
-      // Handle specific errors
-      if (error instanceof Error) {
-        // Check for authentication errors
-        if (
-          error.message.includes('not logged in') ||
-          error.message.includes('not authenticated') ||
-          error.message.includes('login required')
-        ) {
-          throw new AuthenticationError('codex');
-        }
-
-        throw new ExecutionError(
-          `Codex execution failed: ${error.message}`,
-          {
-            name: error.name,
-            message: error.message,
-            stack: error.stack,
+      executionError = error instanceof Error ? error : new Error(String(error));
+    } finally {
+      // Always log input, even on failure
+      if (mergedOptions.logPath) {
+        try {
+          if (response) {
+            // Success case: log everything
+            const events = response.raw?.events || [];
+            await writeExecutionLogs(
+              mergedOptions.logPath,
+              inputData,
+              response,
+              events
+            );
+          } else {
+            // Error case: log just the input
+            const { mkdir, writeFile } = await import('fs/promises');
+            const path = await import('path');
+            await mkdir(mergedOptions.logPath, { recursive: true });
+            await writeFile(
+              path.join(mergedOptions.logPath, 'input.json'),
+              JSON.stringify(inputData, null, 2),
+              'utf-8'
+            );
           }
-        );
+        } catch (logError) {
+          // Logging errors should not break execution
+          console.error('[logger] Failed to write execution logs:', logError);
+        }
       }
 
-      throw error;
+      // Always log to central log if configured
+      if (response) {
+        const logEntry = buildExecutionLogEntry(
+          'codex',
+          prompt,
+          mergedOptions,
+          response
+        );
+        await writeToCentralLog(logEntry);
+      }
     }
+
+    // Handle errors after logging
+    if (executionError) {
+      // Check for authentication errors
+      if (
+        executionError.message.includes('not logged in') ||
+        executionError.message.includes('not authenticated') ||
+        executionError.message.includes('login required')
+      ) {
+        throw new AuthenticationError('codex');
+      }
+
+      throw new ExecutionError(
+        `Codex execution failed: ${executionError.message}`,
+        {
+          name: executionError.name,
+          message: executionError.message,
+          stack: executionError.stack,
+        }
+      );
+    }
+
+    // Return response if successful
+    if (!response) {
+      throw new ExecutionError('Execution completed but no response was generated');
+    }
+
+    return response;
   }
 
   /**

@@ -1,14 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   AdapterError,
-  ConfigurationError,
   ExecutionError,
   ValidationError,
   TimeoutError,
   AuthenticationError,
   CLINotFoundError,
-  ModelOverloadError,
-  PermissionDeniedError,
 } from '../../../src/core/errors';
 
 describe('Error Classes', () => {
@@ -71,22 +68,6 @@ describe('Error Classes', () => {
     it('should include partial output', () => {
       const error = new TimeoutError('Timeout', 'session-123', 'Partial result...');
       expect(error.partialOutput).toBe('Partial result...');
-    });
-  });
-
-  describe('ModelOverloadError', () => {
-    it('should suggest retry with backoff', () => {
-      const error = new ModelOverloadError('Model overloaded');
-      expect(error.code).toBe('MODEL_OVERLOAD');
-      expect(error.recovery).toMatch(/retry/i); // Case insensitive match
-    });
-  });
-
-  describe('PermissionDeniedError', () => {
-    it('should include operation details', () => {
-      const error = new PermissionDeniedError('Delete file', 'User blocked deletion');
-      expect(error.message).toContain('Delete file');
-      expect(error.code).toBe('PERMISSION_DENIED');
     });
   });
 
