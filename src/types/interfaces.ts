@@ -1,4 +1,4 @@
-import type { AdapterResponse, ExecutionOptions } from '../types/config';
+import type { AdapterResponse, ExecutionOptions } from './config';
 
 /**
  * Adapter capabilities describe what features an adapter supports
@@ -15,19 +15,25 @@ export interface AdapterCapabilities {
 }
 
 /**
- * Common interface that all AI adapters must implement
- * This provides a unified API for interacting with different CLI tools
+ * Simplified interface for CLI execution
+ * Use this for simple type annotations when you don't need adapter-specific methods
  */
-export interface AIAdapter {
+export interface Cli {
   /**
-   * Execute a prompt with the AI adapter
+   * Execute a prompt with the CLI
    * @template T The expected type of the output (inferred from responseSchema)
    * @param prompt The prompt/instruction to send to the AI
    * @param options Execution options (streaming, timeout, CLI-specific options)
    * @returns Promise resolving to the adapter response
    */
   execute<T = string>(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse<T>>;
+}
 
+/**
+ * Common interface that all AI adapters must implement
+ * This provides a unified API for interacting with different CLI tools
+ */
+export interface AIAdapter extends Cli {
   /**
    * Get the capabilities of this adapter
    * @returns The capabilities supported by this adapter

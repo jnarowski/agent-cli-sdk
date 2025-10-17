@@ -6,7 +6,7 @@
  */
 
 // Core interfaces and base classes (for extending the library)
-export type { AIAdapter, AdapterCapabilities } from './core/interfaces';
+export type { Cli, AIAdapter, AdapterCapabilities } from './types/interfaces';
 export { BaseAdapter } from './core/base-adapter';
 
 // Error classes
@@ -31,9 +31,14 @@ export { extractJsonFromOutput, validateWithSchema } from './utils/json-parser';
 
 // Types
 export type {
+  ActionLog,
+  AdapterResponse,
   ClaudeConfig,
-  ClaudeOutputFormat,
   ClaudeExecutionOptions,
+  ClaudeOutputFormat,
   CodexConfig,
   CodexExecutionOptions,
+  ExecutionOptions,
+  ResponseStatus,
+  StreamEvent,
 } from './types/index';

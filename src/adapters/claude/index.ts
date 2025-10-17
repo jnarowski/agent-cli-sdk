@@ -1,5 +1,5 @@
 import { BaseAdapter } from '../../core/base-adapter';
-import type { AdapterCapabilities } from '../../core/interfaces';
+import type { AdapterCapabilities } from '../../types/interfaces';
 import type { AdapterResponse } from '../../types/config';
 import type { ClaudeConfig, ClaudeExecutionOptions } from '../../types/claude';
 import { executeClaudeCLI } from './cli-wrapper';
@@ -22,7 +22,7 @@ export class ClaudeAdapter extends BaseAdapter {
       throw new CLINotFoundError(
         'claude',
         'Claude CLI not found. Please install it or provide a cliPath.\n' +
-        'Visit https://docs.anthropic.com/claude/docs/claude-cli for installation instructions or set CLAUDE_CLI_PATH environment variable'
+          'Visit https://docs.anthropic.com/claude/docs/claude-cli for installation instructions or set CLAUDE_CLI_PATH environment variable'
       );
     }
 
@@ -34,10 +34,7 @@ export class ClaudeAdapter extends BaseAdapter {
    * Execute a prompt with Claude Code CLI
    * @template T The expected type of the output (inferred from responseSchema)
    */
-  async execute<T = string>(
-    prompt: string,
-    options: ClaudeExecutionOptions = {}
-  ): Promise<AdapterResponse<T>> {
+  async execute<T = string>(prompt: string, options: ClaudeExecutionOptions = {}): Promise<AdapterResponse<T>> {
     // Validate inputs
     this.validatePrompt(prompt);
     this.validateOptions(options);
@@ -78,7 +75,12 @@ export class ClaudeAdapter extends BaseAdapter {
       });
 
       // Parse output - always use parseStreamOutput since we use stream-json format
-      response = await parseStreamOutput<T>(result.stdout, result.duration, result.exitCode, mergedOptions.responseSchema);
+      response = await parseStreamOutput<T>(
+        result.stdout,
+        result.duration,
+        result.exitCode,
+        mergedOptions.responseSchema
+      );
 
       // Add stderr to raw output
       if (response.raw) {
@@ -93,12 +95,7 @@ export class ClaudeAdapter extends BaseAdapter {
           if (response) {
             // Success case: log everything
             const events = response.raw?.events || [];
-            await writeExecutionLogs(
-              mergedOptions.logPath,
-              inputData,
-              response,
-              events
-            );
+            await writeExecutionLogs(mergedOptions.logPath, inputData, response, events);
           } else {
             // Error case: log just the input
             const { mkdir, writeFile } = await import('fs/promises');
@@ -120,21 +117,15 @@ export class ClaudeAdapter extends BaseAdapter {
     // Handle errors after logging
     if (executionError) {
       // Check for authentication errors
-      if (
-        executionError.message.includes('not authenticated') ||
-        executionError.message.includes('no auth token')
-      ) {
+      if (executionError.message.includes('not authenticated') || executionError.message.includes('no auth token')) {
         throw new AuthenticationError('claude');
       }
 
-      throw new ExecutionError(
-        `Claude execution failed: ${executionError.message}`,
-        {
-          name: executionError.name,
-          message: executionError.message,
-          stack: executionError.stack,
-        }
-      );
+      throw new ExecutionError(`Claude execution failed: ${executionError.message}`, {
+        name: executionError.name,
+        message: executionError.message,
+        stack: executionError.stack,
+      });
     }
 
     // Return response if successful

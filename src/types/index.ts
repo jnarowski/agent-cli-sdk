@@ -1,16 +1,18 @@
 // Core config types
 export type {
-  StreamEvent,
-  StreamEventType,
   ActionLog,
-  ResponseStatus,
+  AdapterConfig,
   AdapterResponse,
   ExecutionOptions,
-  AdapterConfig,
+  ResponseStatus,
+  StreamEvent,
+  StreamEventType,
 } from './config';
 
 // Logging types
 export type { LogFiles } from './logging';
+
+export type { AdapterCapabilities, Cli, AIAdapter } from './interfaces';
 
 // Claude types
 export type {
@@ -22,10 +24,4 @@ export type {
 } from './claude';
 
 // Codex types
-export type {
-  OpenAIModel,
-  CodexConfig,
-  CodexSandboxMode,
-  CodexApprovalPolicy,
-  CodexExecutionOptions,
-} from './codex';
+export type { OpenAIModel, CodexConfig, CodexSandboxMode, CodexApprovalPolicy, CodexExecutionOptions } from './codex';

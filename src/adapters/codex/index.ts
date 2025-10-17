@@ -1,5 +1,5 @@
 import { BaseAdapter } from '../../core/base-adapter';
-import type { AdapterCapabilities } from '../../core/interfaces';
+import type { AdapterCapabilities } from '../../types/interfaces';
 import type { AdapterResponse } from '../../types/config';
 import type { CodexConfig, CodexExecutionOptions } from '../../types/codex';
 import { executeCodexCLI } from './cli-wrapper';
@@ -22,7 +22,7 @@ export class CodexAdapter extends BaseAdapter {
       throw new CLINotFoundError(
         'codex',
         'Codex CLI not found. Please install it or provide a cliPath.\n' +
-        'Visit https://github.com/openai/openai-codex-cli for installation instructions or set CODEX_CLI_PATH environment variable'
+          'Visit https://github.com/openai/openai-codex-cli for installation instructions or set CODEX_CLI_PATH environment variable'
       );
     }
 
@@ -34,10 +34,7 @@ export class CodexAdapter extends BaseAdapter {
    * Execute a prompt with Codex CLI
    * @template T The expected type of the output (inferred from responseSchema)
    */
-  async execute<T = string>(
-    prompt: string,
-    options: CodexExecutionOptions = {}
-  ): Promise<AdapterResponse<T>> {
+  async execute<T = string>(prompt: string, options: CodexExecutionOptions = {}): Promise<AdapterResponse<T>> {
     // Validate inputs
     this.validatePrompt(prompt);
     this.validateOptions(options);
@@ -93,12 +90,7 @@ export class CodexAdapter extends BaseAdapter {
           if (response) {
             // Success case: log everything
             const events = response.raw?.events || [];
-            await writeExecutionLogs(
-              mergedOptions.logPath,
-              inputData,
-              response,
-              events
-            );
+            await writeExecutionLogs(mergedOptions.logPath, inputData, response, events);
           } else {
             // Error case: log just the input
             const { mkdir, writeFile } = await import('fs/promises');
@@ -128,14 +120,11 @@ export class CodexAdapter extends BaseAdapter {
         throw new AuthenticationError('codex');
       }
 
-      throw new ExecutionError(
-        `Codex execution failed: ${executionError.message}`,
-        {
-          name: executionError.name,
-          message: executionError.message,
-          stack: executionError.stack,
-        }
-      );
+      throw new ExecutionError(`Codex execution failed: ${executionError.message}`, {
+        name: executionError.name,
+        message: executionError.message,
+        stack: executionError.stack,
+      });
     }
 
     // Return response if successful
