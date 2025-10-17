@@ -1,8 +1,0 @@
-{
-  "prompt": "Count the total number of lines in all TypeScript files",
-  "options": {
-    "logPath": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/logs/workflow-1760716800040/agent-2-analysis",
-    "dangerouslySkipPermissions": true,
-    "model": "sonnet"
-  }
-}

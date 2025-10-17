@@ -1,8 +1,0 @@
-{
-  "prompt": "List all TypeScript files in the src/ directory",
-  "options": {
-    "logPath": "/Users/jnarowski/Dev/sourceborn/src/agent-cli-sdk/logs/workflow-1760717662021/agent-1-research",
-    "dangerouslySkipPermissions": true,
-    "model": "sonnet"
-  }
-}
