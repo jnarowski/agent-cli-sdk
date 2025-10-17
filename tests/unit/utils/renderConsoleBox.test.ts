@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderConsoleBox } from '../../../src/utils/renderConsoleBox.js';
+import { renderConsoleBox } from '../../../src/utils/renderConsoleBox';
 
 describe('renderConsoleBox', () => {
   it('should render a basic box with default options', () => {

@@ -14,24 +14,27 @@ Thank you for your interest in contributing! This document provides guidelines f
 ### Getting Started
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/sourceborn/agent-cli-sdk.git
    cd agent-cli-sdk
    ```
 
 2. Install dependencies:
+
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. Build the project:
+
    ```bash
-   npm run build
+   pnpm build
    ```
 
 4. Run tests:
    ```bash
-   npm test
+   pnpm test
    ```
 
 ## Project Structure
@@ -55,6 +58,7 @@ agent-cli-sdk/
 ### Making Changes
 
 1. Create a new branch:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -62,28 +66,33 @@ agent-cli-sdk/
 2. Make your changes
 
 3. Run linting and formatting:
+
    ```bash
-   npm run lint
-   npm run format
+   pnpm lint
+   pnpm format
    ```
 
 4. Build the project:
+
    ```bash
-   npm run build
+   pnpm build
    ```
 
 5. Test your changes:
+
    ```bash
-   npm test
+   pnpm test
    ```
 
 6. Commit your changes:
+
    ```bash
    git add .
    git commit -m "Description of changes"
    ```
 
 7. Push your branch:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -118,13 +127,13 @@ agent-cli-sdk/
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run with coverage
-npm run test:coverage
+pnpm test:coverage
 
 # Run E2E tests (requires CLIs installed)
-RUN_E2E_TESTS=true npm test
+RUN_E2E_TESTS=true pnpm test
 ```
 
 ## Adding a New Adapter
@@ -132,6 +141,7 @@ RUN_E2E_TESTS=true npm test
 To add support for a new AI CLI tool:
 
 1. Create adapter directory:
+
    ```
    src/adapters/your-tool/
    ├── index.ts           # Main adapter class
@@ -140,6 +150,7 @@ To add support for a new AI CLI tool:
    ```
 
 2. Implement the `AIAdapter` interface:
+
    ```typescript
    export class YourToolAdapter extends BaseAdapter implements AIAdapter {
      async execute(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse> {
@@ -184,6 +195,7 @@ To add support for a new AI CLI tool:
 ### PR Description
 
 Include:
+
 - Summary of changes
 - Motivation and context
 - Breaking changes (if any)
@@ -201,6 +213,7 @@ Include:
 ### Bug Reports
 
 Include:
+
 - Clear description of the bug
 - Steps to reproduce
 - Expected behavior
@@ -211,6 +224,7 @@ Include:
 ### Feature Requests
 
 Include:
+
 - Clear description of the feature
 - Use case and motivation
 - Example usage (pseudocode)

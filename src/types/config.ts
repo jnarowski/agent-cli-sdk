@@ -149,6 +149,8 @@ export interface ExecutionOptions {
   timeout?: number;
   /** Enable verbose debug output */
   verbose?: boolean;
+  /** Optional path to directory for logging this execution's input, output, and stream events */
+  logPath?: string;
 }
 
 /**

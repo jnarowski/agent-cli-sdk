@@ -2,8 +2,8 @@
 /**
  * Test script to verify that we're capturing all detailed information from Codex
  */
-import { createCodexAdapter } from '../src/index.js';
-import { renderConsoleBox } from '../src/utils/renderConsoleBox.js';
+import { createCodexAdapter } from '../src/index';
+import { renderConsoleBox } from '../src/utils/renderConsoleBox';
 
 async function main() {
   console.log('Testing Codex detailed response parsing...\n');

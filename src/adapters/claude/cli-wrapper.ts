@@ -1,7 +1,7 @@
 import { spawn, type ChildProcess } from 'child_process';
-import type { ClaudeExecutionOptions } from '../../types/claude.js';
-import { ExecutionError, TimeoutError } from '../../core/errors.js';
-import { BOX_STYLES, BORDER_STYLES } from '../../utils/constants.js';
+import type { ClaudeExecutionOptions } from '../../types/claude';
+import { ExecutionError, TimeoutError } from '../../core/errors';
+import { BOX_STYLES, BORDER_STYLES } from '../../utils/constants';
 import boxen from 'boxen';
 import chalk from 'chalk';
 

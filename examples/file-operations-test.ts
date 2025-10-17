@@ -3,8 +3,8 @@
  * File operations test - verify tool tracking and file modification tracking
  */
 
-import { createClaudeAdapter } from '../src/index.js';
-import type { ClaudeConfig } from '../src/types/index.js';
+import { createClaudeAdapter } from '../src/index';
+import type { ClaudeConfig } from '../src/types/index';
 
 const CLAUDE_CONFIG: Partial<ClaudeConfig> = {
   cliPath: '/Users/jnarowski/.claude/local/claude',

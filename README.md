@@ -22,6 +22,12 @@ TypeScript SDK for orchestrating AI-powered CLI tools (Claude Code, OpenAI Codex
 ## Installation
 
 ```bash
+pnpm add @sourceborn/agent-cli-sdk
+```
+
+Or with npm:
+
+```bash
 npm install @sourceborn/agent-cli-sdk
 ```
 
@@ -326,25 +332,25 @@ npx tsx examples/ci-integration.ts src/index.ts
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Build
-npm run build
+pnpm build
 
 # Run tests
-npm test
+pnpm test
 
 # Lint
-npm run lint
+pnpm lint
 
 # Format
-npm run format
+pnpm format
 ```
 
-## Validationgs
+## Validations
 
 ```bash
-npm run check
+pnpm check
 ```
 
 ## Contributing

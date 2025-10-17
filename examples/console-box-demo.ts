@@ -1,4 +1,4 @@
-import { renderConsoleBox } from '../src/utils/renderConsoleBox.js';
+import { renderConsoleBox } from '../src/utils/renderConsoleBox';
 
 console.log('=== Console Box Rendering Demo ===\n');
 

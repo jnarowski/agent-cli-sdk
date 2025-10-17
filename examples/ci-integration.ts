@@ -3,7 +3,7 @@
  * Demonstrates automated code review in a CI pipeline
  */
 
-import { createCodexAdapter, parallel } from '../src/index.js';
+import { createCodexAdapter } from '../src/index';
 
 async function ciIntegration() {
   try {
@@ -22,26 +22,24 @@ async function ciIntegration() {
 
     console.log(`Files to review: ${changedFiles.join(', ')}\n`);
 
-    // Run reviews in parallel for speed
+    // Run reviews in parallel for speed using Promise.all
     console.log('=== Running Parallel Reviews ===');
-    const reviews = await parallel(
-      changedFiles.map((file) => {
-        return async () => {
-          console.log(`  Reviewing ${file}...`);
-          return codex.execute(
-            `Review ${file} for:
+    const reviews = await Promise.all(
+      changedFiles.map(async (file) => {
+        console.log(`  Reviewing ${file}...`);
+        return codex.execute(
+          `Review ${file} for:
 - Code quality issues
 - Potential bugs
 - Security vulnerabilities
 - Performance concerns
 
 Provide a concise summary with severity ratings (high/medium/low).`,
-            {
-              fullAuto: true,
-              workingDirectory: process.cwd(),
-            }
-          );
-        };
+          {
+            fullAuto: true,
+            workingDirectory: process.cwd(),
+          }
+        );
       })
     );
 

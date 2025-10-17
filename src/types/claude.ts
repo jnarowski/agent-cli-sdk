@@ -1,4 +1,4 @@
-import type { ExecutionOptions, AdapterConfig } from './config.js';
+import type { ExecutionOptions, AdapterConfig } from './config';
 
 /**
  * Claude model identifiers

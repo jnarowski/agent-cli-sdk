@@ -1,4 +1,4 @@
-import type { AdapterResponse, ActionLog, StreamEvent } from '../../types/config.js';
+import type { AdapterResponse, ActionLog, StreamEvent } from '../../types/config';
 
 /**
  * Parse Codex CLI output (text output)
@@ -94,6 +94,12 @@ export function parseStreamOutput(
           result: 'success',
           metadata: event,
         });
+      } else if (event.type === 'item.updated') {
+        // Item updated - accumulate content from message updates
+        const data = event.data || event;
+        if (data.content) {
+          finalOutput += data.content;
+        }
       } else if (event.type === 'item.completed') {
         // Item completed - update action result
         const item = event.item || event;

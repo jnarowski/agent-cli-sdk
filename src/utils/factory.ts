@@ -1,7 +1,7 @@
-import { ClaudeAdapter } from '../adapters/claude/index.js';
-import { CodexAdapter } from '../adapters/codex/index.js';
-import type { ClaudeConfig } from '../types/claude.js';
-import type { CodexConfig } from '../types/codex.js';
+import { ClaudeAdapter } from '../adapters/claude/index';
+import { CodexAdapter } from '../adapters/codex/index';
+import type { ClaudeConfig } from '../types/claude';
+import type { CodexConfig } from '../types/codex';
 
 /**
  * Create a Claude Code adapter instance

@@ -1,6 +1,6 @@
-import type { AIAdapter, AdapterCapabilities } from './interfaces.js';
-import type { AdapterResponse, ExecutionOptions } from '../types/config.js';
-import { ValidationError } from './errors.js';
+import type { AIAdapter, AdapterCapabilities } from './interfaces';
+import type { AdapterResponse, ExecutionOptions } from '../types/config';
+import { ValidationError } from './errors';
 
 /**
  * Base adapter class providing shared functionality

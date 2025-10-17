@@ -3,7 +3,7 @@
  * Demonstrates coordinating Claude and Codex
  */
 
-import { createClaudeAdapter, createCodexAdapter } from '../src/index.js';
+import { createClaudeAdapter, createCodexAdapter } from '../src/index';
 
 async function multiAgentWorkflow() {
   try {

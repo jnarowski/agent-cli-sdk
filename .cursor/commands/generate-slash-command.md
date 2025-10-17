@@ -15,21 +15,36 @@ Create a new slash command following team conventions and best practices. Read I
 ## Instructions
 
 - Normalize $command-name (lowercase, hyphenated) for the filename
-- If description is not provided, ask the user to provide one
+- If command name is not provided, stop IMMEDIATELY and ask the user to provide one
+- If description is not provided, stop IMMEDIATELY and ask the user to provide one
 - All slash commands are markdown files in `.claude/commands/` directory
 - Commands should be clear, actionable, and follow existing patterns
 - Use frontmatter for metadata (description, argument-hint)
 
 ## Workflow
 
-1. Ask clarifying questions if needed:
-   - Does this command take arguments?
-   - Does it generate a file or perform an action?
-   - Does it need to interact with external tools (git, npm, etc.)?
-   - Should it follow a specific template or workflow?
-2. Once you have all context, generate the command file following the exact structure in Template below
-3. Write the command to `.claude/commands/${command-name}.md`
-4. Report the file path created
+1.  Ask clarifying questions if needed:
+    a. Ask questions ONE AT A TIME.
+    b. Follow this template below (provide two options and specify which you recommend and why)
+
+                 ```md
+                 **Question**: The question you have
+                 **Suggestions**
+                 1: Something (recommended)
+                 2: Something else
+                 3: Other - user specifies
+                 ```
+
+    c. question examples
+
+    - Does this command take arguments?
+    - Does it generate a file or perform an action?
+    - Does it need to interact with external tools (git, npm, etc.)?
+    - Should it follow a specific template or workflow?
+
+2.  Once you have all context, generate the command file following the exact structure in Template below
+3.  Write the command to `.claude/commands/${command-name}.md`
+4.  Report the file path created
 
 ## Slash Command Types
 
@@ -86,7 +101,7 @@ Commands that coordinate multiple agents or complex workflows (generate-research
 
 2. **Be Actionable**: Every instruction should be something Claude can act on immediately.
 
-3. **Use Variables**: For arguments, define them clearly with `$variable-name: $N` syntax.
+3. **Use Variables**: For arguments, define them clearly with `$variable-name = $N` syntax.
 
 4. **Include Validation**: Tell Claude how to verify the command succeeded.
 
@@ -138,8 +153,8 @@ argument-hint: [arg1, arg2, optional-arg3]
 
 ## Variables (if command takes arguments)
 
-- $arg1: $1 (required) - <description>
-- $arg2: $2 (optional) - <description>
+- $arg1: $1 (required/optional) - <description>
+- $arg2: $2 (required/optional) - <description>
 
 ## Instructions (optional - used to provide additional clarification on things that don't fit into ordered Workflow steps.)
 
@@ -174,9 +189,9 @@ argument-hint: [arg1, arg2, optional-arg3]
 - IMPORTANT: <What the command should report back to the user>
 ```
 
-## Validation Checklist (Before Writing the File)
+## Validation Checklist
 
-Verify the following before writing the command file:
+Before finalizing the command file, verify:
 
 - [ ] Frontmatter is valid YAML with description and argument-hint
 - [ ] Variables are clearly defined with required/optional markers
@@ -187,9 +202,7 @@ Verify the following before writing the command file:
 - [ ] Success criteria or reporting is defined
 - [ ] Command follows existing patterns in the codebase
 
-## Report (After Creating the Command File)
+## Report
 
-Once you have written the slash command file, report back to the user:
-
-- The full path to the command file created (e.g., `.claude/commands/test.md`)
+- Return the full path to the command file created
 - Suggest trying the command with: `/command-name`
