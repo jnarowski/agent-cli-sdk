@@ -1,6 +1,6 @@
 import { BaseAdapter } from '../../core/base-adapter';
 import type { AdapterCapabilities } from '../../types/interfaces';
-import type { AdapterResponse } from '../../types/config';
+import type { ExecutionResponse } from '../../types/config';
 import type { CodexConfig, CodexExecutionOptions } from '../../types/codex';
 import { executeCodexCLI } from './cli-wrapper';
 import { parseStreamOutput } from './parser';
@@ -34,7 +34,7 @@ export class CodexAdapter extends BaseAdapter {
    * Execute a prompt with Codex CLI
    * @template T The expected type of the output (inferred from responseSchema)
    */
-  async execute<T = string>(prompt: string, options: CodexExecutionOptions = {}): Promise<AdapterResponse<T>> {
+  async execute<T = string>(prompt: string, options: CodexExecutionOptions = {}): Promise<ExecutionResponse<T>> {
     // Validate inputs
     this.validatePrompt(prompt);
     this.validateOptions(options);
@@ -58,7 +58,7 @@ export class CodexAdapter extends BaseAdapter {
       options: mergedOptions,
     };
 
-    let response: AdapterResponse<T> | null = null;
+    let response: ExecutionResponse<T> | null = null;
     let executionError: Error | null = null;
 
     try {

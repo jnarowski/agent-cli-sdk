@@ -1,11 +1,11 @@
-import type { AdapterResponse, ActionLog, StreamEvent, StreamEventType } from '../../types/config';
+import type { ExecutionResponse, ActionLog, StreamEvent, StreamEventType } from '../../types/config';
 import { extractJsonFromOutput, validateWithSchema } from '../../utils/json-parser';
 
 /**
  * Parse Claude CLI JSON output (from --output-format json)
  * @template T The expected type of the output
  */
-export function parseJSONOutput<T = string>(output: string, duration: number, exitCode: number): AdapterResponse<T> {
+export function parseJSONOutput<T = string>(output: string, duration: number, exitCode: number): ExecutionResponse<T> {
   try {
     const parsed = JSON.parse(output);
 
@@ -75,7 +75,7 @@ export async function parseStreamOutput<T = string>(
   duration: number,
   exitCode: number,
   responseSchema?: true | { safeParse: (data: unknown) => unknown }
-): Promise<AdapterResponse<T>> {
+): Promise<ExecutionResponse<T>> {
   // First, try to parse as a single JSON object (for fixtures and some CLI responses)
   try {
     const parsed = JSON.parse(output);

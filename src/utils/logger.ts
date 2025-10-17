@@ -8,7 +8,7 @@ import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import type {
   StreamEvent,
-  AdapterResponse,
+  ExecutionResponse,
 } from '../types/config';
 
 /**
@@ -45,13 +45,13 @@ async function ensureDirectoryExists(dirPath: string): Promise<void> {
  * @template T The type of the output
  * @param logPath - Directory path where log files will be written
  * @param input - Input object containing prompt and options
- * @param output - Full AdapterResponse object
+ * @param output - Full ExecutionResponse object
  * @param events - Array of streaming events
  */
 export async function writeExecutionLogs<T = string>(
   logPath: string,
   input: object,
-  output: AdapterResponse<T>,
+  output: ExecutionResponse<T>,
   events: StreamEvent[]
 ): Promise<void> {
   try {

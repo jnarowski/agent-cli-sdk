@@ -4,7 +4,7 @@
 export interface LogFiles {
   /** Path to input.json (prompt + options) */
   input: string;
-  /** Path to output.json (full AdapterResponse) */
+  /** Path to output.json (full ExecutionResponse) */
   output: string;
   /** Path to stream.jsonl (streaming events) */
   stream: string;

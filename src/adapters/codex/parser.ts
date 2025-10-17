@@ -1,11 +1,11 @@
-import type { AdapterResponse, ActionLog, StreamEvent } from '../../types/config';
+import type { ExecutionResponse, ActionLog, StreamEvent } from '../../types/config';
 import { extractJsonFromOutput, validateWithSchema } from '../../utils/json-parser';
 
 /**
  * Parse Codex CLI output (text output)
  * @template T The expected type of the output
  */
-export function parseTextOutput<T = string>(output: string, duration: number, exitCode: number): AdapterResponse<T> {
+export function parseTextOutput<T = string>(output: string, duration: number, exitCode: number): ExecutionResponse<T> {
   return {
     output: output as T,
     sessionId: '', // Codex doesn't return session ID in text mode
@@ -30,7 +30,7 @@ export async function parseStreamOutput<T = string>(
   exitCode: number,
   modelName?: string,
   responseSchema?: true | { safeParse: (data: unknown) => unknown }
-): Promise<AdapterResponse<T>> {
+): Promise<ExecutionResponse<T>> {
   const lines = output.split('\n').filter((line) => line.trim());
   const events: StreamEvent[] = [];
   const actions: ActionLog[] = [];

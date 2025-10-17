@@ -1,6 +1,6 @@
 import { BaseAdapter } from '../../core/base-adapter';
 import type { AdapterCapabilities } from '../../types/interfaces';
-import type { AdapterResponse } from '../../types/config';
+import type { ExecutionResponse } from '../../types/config';
 import type { ClaudeConfig, ClaudeExecutionOptions } from '../../types/claude';
 import { executeClaudeCLI } from './cli-wrapper';
 import { parseStreamOutput } from './parser';
@@ -34,7 +34,7 @@ export class ClaudeAdapter extends BaseAdapter {
    * Execute a prompt with Claude Code CLI
    * @template T The expected type of the output (inferred from responseSchema)
    */
-  async execute<T = string>(prompt: string, options: ClaudeExecutionOptions = {}): Promise<AdapterResponse<T>> {
+  async execute<T = string>(prompt: string, options: ClaudeExecutionOptions = {}): Promise<ExecutionResponse<T>> {
     // Validate inputs
     this.validatePrompt(prompt);
     this.validateOptions(options);
@@ -63,7 +63,7 @@ export class ClaudeAdapter extends BaseAdapter {
       options: mergedOptions,
     };
 
-    let response: AdapterResponse<T> | null = null;
+    let response: ExecutionResponse<T> | null = null;
     let executionError: Error | null = null;
 
     try {
