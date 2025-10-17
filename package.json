@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "check": "vitest run && pnpm check-type && pnpm lint",
+    "check": "vitest run && pnpm check-types && pnpm lint",
     "check-types": "tsc --noEmit",
     "dev": "tsx watch src/index.ts",
     "format": "prettier --write \"src/**/*.ts\"",
