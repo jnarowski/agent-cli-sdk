@@ -101,6 +101,7 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
 #### Completion Notes
 
 **Phase 1 Complete:**
+
 - ✅ Created full directory structure: src/{core,adapters/{claude,codex},types,utils}, examples, tests/{unit/{adapters,utils},e2e,fixtures}
 - ✅ Updated .gitignore with build artifacts, dependencies, environment files, logs, OS files, IDE configs, coverage reports
 - ✅ Created tsconfig.json with ES2022 target, NodeNext modules, strict mode, declaration files enabled
@@ -535,7 +536,7 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
         - Export utilities
         - File: `src/index.ts`
 - [x] 6.2 Verify build output
-        - Command: `npm run build`
+        - Command: `pnpm build`
         - Expected: Clean build with no errors, dist/ populated with .js and .d.ts files
 
 #### Completion Notes
@@ -684,6 +685,7 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
 #### Completion Notes
 
 **Phase 8 Complete:**
+
 - ✅ Created comprehensive test infrastructure with Vitest configuration (vitest.config.ts)
 - ✅ Set up test fixtures with sample Claude/Codex CLI outputs (JSON/JSONL format)
 - ✅ Wrote Claude adapter unit tests covering: execution, streaming, session management, error handling, timeout, capabilities
@@ -693,11 +695,13 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
 - ✅ Tests follow behavior-driven approach focusing on SDK functionality rather than implementation details
 
 **Test Coverage:**
+
 - Unit tests: 90 test cases across adapters, utilities, and core functionality
 - E2E tests: 12 test cases for real CLI integration (optional)
 - Test fixtures: 6 fixture files (3 Claude, 3 Codex) with realistic CLI output samples
 
 **Known Issues (to be fixed in source code):**
+
 - Some error class constructors need signature adjustments (recovery parameter placement)
 - Missing `sanitizePrompt` function in validation.ts (referenced but not implemented)
 - CLI detector needs to validate file existence when using env var overrides
@@ -747,7 +751,7 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
         - Command: `npm pack --dry-run`
         - Expected: Only necessary files included (dist/, package.json, README, LICENSE)
 - [x] 10.3 Final build and lint check
-        - Command: `npm run lint && npm run build`
+        - Command: `pnpm lint && pnpm build`
         - Expected: No errors or warnings
 
 #### Completion Notes
@@ -792,11 +796,11 @@ npx tsc --noEmit
 # Expected: No type errors
 
 # Linting
-npm run lint
+pnpm lint
 # Expected: No lint errors
 
 # Build
-npm run build
+pnpm build
 # Expected: dist/ directory created with .js and .d.ts files
 
 # Unit tests
@@ -840,6 +844,7 @@ npm pack --dry-run
 ## Notes
 
 **Dependencies:**
+
 - Requires Claude Code CLI to be installed and authenticated for Claude adapter functionality
   - CLI auto-detected in PATH or specify via `CLAUDE_CLI_PATH` environment variable
 - Requires Codex CLI to be installed and authenticated (`codex login`) for Codex adapter functionality
@@ -849,6 +854,7 @@ npm pack --dry-run
 - No external dependencies for CLI detection (uses native `which`/`where` commands)
 
 **Future Considerations:**
+
 - Additional AI tool adapters (GitHub Copilot, Amazon CodeWhisperer, etc.)
 - Built-in caching layer for repeated operations
 - Workflow visualization and debugging tools
@@ -858,6 +864,7 @@ npm pack --dry-run
 - Performance profiling and cost tracking per operation
 
 **Architecture Notes:**
+
 - Adapter pattern allows easy addition of new AI tools without changing core interfaces
 - Factory pattern simplifies instantiation and configuration
 - Async utilities enable complex workflow composition without callback hell

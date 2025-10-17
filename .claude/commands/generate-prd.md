@@ -20,13 +20,27 @@ Create a concise, actionable Product Requirements Document from the provided des
 
 ## Workflow
 
-1. Analyze the $context and ask any clarifying questions one at a time. Focus on:
-   - Missing user details or use cases
-   - Unclear technical constraints
-   - Ambiguous success metrics
-   - Timeline if not specified
-2. Once you have all the context that you need, generate a focused 1-2 page PRD following the exact structure outlined in PRD Template below. Be concise but comprehensive. Skip sections only if truly not applicable.
-3. Write this prd doc to `.agent/specs/${feature-name}-prd.md`
+<!-- prettier-ignore-->
+1. **Important** Analyze the $context and ask any clarifying questions
+   a. Ask one at a time.
+   b. Focus on:
+      - Missing user details or use cases
+      - Unclear technical constraints
+      - Ambiguous success metrics
+      - Timeline if not specified
+   c. Follow this template below (provide two options and specify which you recommend and why)
+
+```md
+      **Question**: The question you have
+
+      **Suggestions**
+      1. Something (recommended)
+      2. Something else
+      3. Other - user specifies
+```
+
+2.  Once you have all the context that you need, generate a focused 1-2 page PRD following the exact structure outlined in PRD Template below. Be concise but comprehensive. Skip sections only if truly not applicable.
+3.  Write this prd doc to `.agent/specs/${feature-name}-prd.md`
 
 ## PRD Template
 

@@ -6,6 +6,11 @@ import { executeClaudeCLI } from './cli-wrapper.js';
 import { parseStreamOutput } from './parser.js';
 import { ExecutionError, AuthenticationError, CLINotFoundError } from '../../core/errors.js';
 import { detectClaudeCLI } from './cli-detector.js';
+import {
+  writeToCentralLog,
+  writeExecutionLogs,
+  buildExecutionLogEntry,
+} from '../../utils/logger.js';
 
 /**
  * Claude Code adapter implementation
@@ -59,6 +64,12 @@ export class ClaudeAdapter extends BaseAdapter {
     }
 
     try {
+      // Capture input for logging
+      const inputData = {
+        prompt,
+        options: mergedOptions,
+      };
+
       // Execute CLI with config-level settings (options can override config)
       const result = await executeClaudeCLI(this.cliPath, prompt, {
         verbose: this.config.verbose,
@@ -73,6 +84,32 @@ export class ClaudeAdapter extends BaseAdapter {
       if (response.raw) {
         response.raw.stderr = result.stderr;
       }
+
+      // Write execution logs if logPath is configured
+      if (mergedOptions.logPath) {
+        const events = response.raw?.events || [];
+        // Fire-and-forget: don't await to avoid blocking
+        writeExecutionLogs(
+          mergedOptions.logPath,
+          inputData,
+          response,
+          events
+        ).catch(() => {
+          // Errors already logged in writeExecutionLogs
+        });
+      }
+
+      // Write to central log if configured
+      const logEntry = buildExecutionLogEntry(
+        'claude',
+        prompt,
+        mergedOptions,
+        response
+      );
+      // Fire-and-forget: don't await to avoid blocking
+      writeToCentralLog(logEntry).catch(() => {
+        // Errors already logged in writeToCentralLog
+      });
 
       return response;
     } catch (error) {

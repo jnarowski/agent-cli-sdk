@@ -9,6 +9,9 @@ export type {
   AdapterConfig,
 } from './config.js';
 
+// Logging types
+export type { LoggingConfig, ExecutionLogEntry, LogFiles } from './logging.js';
+
 // Claude types
 export type {
   ClaudeModel,

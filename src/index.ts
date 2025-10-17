@@ -41,6 +41,7 @@ export {
 export { findCLI, isCLIInstalled } from './utils/cli-detector.js';
 export { validateConfig, validateExecutionOptions, sanitizeInput, getEnvVar } from './utils/validation.js';
 export { renderConsoleBox, type RenderBoxOptions } from './utils/renderConsoleBox.js';
+export { setLoggingConfig, getLoggingConfig } from './utils/logger.js';
 
 // Types
 export type {
@@ -51,6 +52,9 @@ export type {
   AdapterResponse,
   ExecutionOptions,
   AdapterConfig,
+  LoggingConfig,
+  ExecutionLogEntry,
+  LogFiles,
   ClaudeConfig,
   ClaudeOutputFormat,
   ClaudePermissionMode,
