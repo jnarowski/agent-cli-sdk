@@ -5,6 +5,11 @@
 
 import { CodexAdapter, ClaudeAdapter } from '../src/index';
 
+interface MyResponse {
+  name: string;
+  age: number;
+}
+
 // Example 1: Invalid model type for Codex
 const codex = new CodexAdapter();
 
@@ -53,3 +58,17 @@ await claude.execute('Hello', {
   // @ts-expect-error - This is a valid option for Claude
   workingDirs: true, // OK for Claude
 });
+
+const response = await claude.execute<MyResponse>('Hello', {
+  responseSchema: true,
+});
+
+console.log(response.output.name);
+console.log(response.output.age);
+
+const response2 = await claude.execute('Hello', {
+  responseSchema: true,
+});
+
+// @ts-expect-error - This is a valid option for Claude
+console.log(response2.output.name);

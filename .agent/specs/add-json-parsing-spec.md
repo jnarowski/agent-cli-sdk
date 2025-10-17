@@ -233,7 +233,7 @@ export async function parseStreamOutput(
   duration: number,
   exitCode: number,
   responseSchema?: any | true
-): Promise<AdapterResponse> {
+): Promise<ExecutionResponse> {
   // ... existing parsing logic to extract finalOutput ...
 
   let parsedOutput: any = finalOutput;
@@ -310,7 +310,7 @@ Update `execute()` method to pass schema to parser:
 async execute(
   prompt: string,
   options: ClaudeExecutionOptions = {}
-): Promise<AdapterResponse> {
+): Promise<ExecutionResponse> {
   // ... existing validation and CLI execution ...
 
   try {
@@ -341,10 +341,10 @@ Apply identical changes.
 
 **File: `src/types/config.ts`**
 
-Update `AdapterResponse` interface:
+Update `ExecutionResponse` interface:
 
 ```typescript
-export interface AdapterResponse {
+export interface ExecutionResponse {
   /** Final output from the AI (string or parsed JSON object if responseSchema used) */
   output: string | Record<string, any>;
 

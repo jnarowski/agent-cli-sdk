@@ -113,14 +113,14 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
 <!-- prettier-ignore -->
 - [x] 2.1 Define common adapter interface
         - Interface: `AIAdapter` with primary method: `execute(prompt: string, options?: ExecutionOptions)`
-        - All methods return `Promise<AdapterResponse>`
+        - All methods return `Promise<ExecutionResponse>`
         - Include `getCapabilities()` method for feature detection
         - Support both streaming and non-streaming modes
         - File: `src/core/interfaces.ts`
         - Example structure:
         ```typescript
         interface AIAdapter {
-          execute(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse>;
+          execute(prompt: string, options?: ExecutionOptions): Promise<ExecutionResponse>;
           getCapabilities(): AdapterCapabilities;
         }
 
@@ -180,12 +180,12 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
         }
         ```
 - [x] 2.4 Create TypeScript type definitions
-        - `AdapterResponse`, `AdapterConfig`, `ExecutionOptions`, `StreamEvent`, `ActionLog` types
+        - `ExecutionResponse`, `AdapterConfig`, `ExecutionOptions`, `StreamEvent`, `ActionLog` types
         - Support for both streaming and complete response modes
         - File: `src/types/config.ts`
         - Example structure:
         ```typescript
-        interface AdapterResponse {
+        interface ExecutionResponse {
           output: string;              // Final text response
           sessionId: string;           // For resuming
           status: 'success' | 'error' | 'timeout';
@@ -330,7 +330,7 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
         - Call `options.onStream(event)` callback for real-time events
         - Support session management via `options.sessionId` or `--continue`/`--resume` flags
         - Configuration validation
-        - Return complete AdapterResponse with actions, metadata, and raw events
+        - Return complete ExecutionResponse with actions, metadata, and raw events
         - File: `src/adapters/claude/index.ts`
         - Reference: `.agent/docs/claude.md` lines 125-152
         - Example usage:
@@ -400,7 +400,7 @@ Add example workflows demonstrating single-agent, multi-agent, and CI/CD integra
         - Call `options.onStream(event)` callback for real-time JSONL events
         - Support for configuration profiles via `-p, --profile`
         - Configuration validation (check for authentication via `codex login`)
-        - Return complete AdapterResponse with actions, metadata, and raw events
+        - Return complete ExecutionResponse with actions, metadata, and raw events
         - Access session logs from `$CODEX_HOME/sessions/` for forensics
         - File: `src/adapters/codex/index.ts`
         - Reference: `.agent/docs/codex.md` lines 95-132

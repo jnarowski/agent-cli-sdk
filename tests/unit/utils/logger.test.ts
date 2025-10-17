@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { readFile, rm, mkdir } from 'fs/promises';
 import path from 'path';
 import { writeExecutionLogs } from '../../../src/utils/logger';
-import type { AdapterResponse } from '../../../src/types/config';
+import type { ExecutionResponse } from '../../../src/types/config';
 
 describe('Logger Utilities', () => {
   const testDir = path.resolve(process.cwd(), 'test-logs');
@@ -30,7 +30,7 @@ describe('Logger Utilities', () => {
         options: { timeout: 30000 },
       };
 
-      const output: AdapterResponse = {
+      const output: ExecutionResponse = {
         status: 'success',
         output: 'Test output',
         exitCode: 0,
@@ -68,7 +68,7 @@ describe('Logger Utilities', () => {
       const logPath = path.join(testDir, 'execution-2');
 
       const input = { prompt: 'Test' };
-      const output: AdapterResponse = {
+      const output: ExecutionResponse = {
         status: 'success',
         output: '',
         exitCode: 0,
@@ -88,7 +88,7 @@ describe('Logger Utilities', () => {
       const logPath = path.join(testDir, 'nested', 'execution');
 
       const input = { prompt: 'Test' };
-      const output: AdapterResponse = {
+      const output: ExecutionResponse = {
         status: 'success',
         output: '',
         exitCode: 0,
@@ -107,7 +107,7 @@ describe('Logger Utilities', () => {
       const logPath = path.join(testDir, 'execution-formatted');
 
       const input = { prompt: 'Test', nested: { key: 'value' } };
-      const output: AdapterResponse = {
+      const output: ExecutionResponse = {
         status: 'success',
         output: '',
         exitCode: 0,

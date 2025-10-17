@@ -153,7 +153,7 @@ To add support for a new AI CLI tool:
 
    ```typescript
    export class YourToolAdapter extends BaseAdapter implements AIAdapter {
-     async execute(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse> {
+     async execute(prompt: string, options?: ExecutionOptions): Promise<ExecutionResponse> {
        // Implementation
      }
 

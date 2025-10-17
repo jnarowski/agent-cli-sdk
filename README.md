@@ -297,7 +297,7 @@ Execute a prompt with the AI adapter.
 - `prompt: string` - The prompt/instruction
 - `options?: ExecutionOptions` - Execution options
 
-**Returns:** `Promise<AdapterResponse>`
+**Returns:** `Promise<ExecutionResponse>`
 
 **Common Options:**
 

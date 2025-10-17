@@ -74,7 +74,7 @@ Each adapter has three main components:
 - **AIAdapter** (`src/core/interfaces.ts`): Core interface with `execute()` and `getCapabilities()`
 - **BaseAdapter** (`src/core/base-adapter.ts`): Abstract base with validation, session ID generation, and timing utilities
 - **ExecutionOptions** (`src/types/config.ts`): Common options like streaming, timeout, onStream callback
-- **AdapterResponse** (`src/types/config.ts`): Standardized response with output, sessionId, status, duration, actions, metadata
+- **ExecutionResponse** (`src/types/config.ts`): Standardized response with output, sessionId, status, duration, actions, metadata
 
 ### CLI Interaction
 

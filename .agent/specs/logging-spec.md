@@ -80,7 +80,7 @@ Phase 1 complete. Created `src/types/logging.ts` with all required interfaces (L
 
 - [x] Create logger utility scaffold
   - Create new file: `src/utils/logger.ts`
-  - Import: `fs/promises`, `path`, `StreamEvent`, `AdapterResponse`, `ExecutionOptions`
+  - Import: `fs/promises`, `path`, `StreamEvent`, `ExecutionResponse`, `ExecutionOptions`
   - Add file header comment explaining purpose
 - [x] Implement global logging configuration
   - Add module-level variable: `let globalLoggingConfig: LoggingConfig | null = null`
@@ -100,7 +100,7 @@ Phase 1 complete. Created `src/types/logging.ts` with all required interfaces (L
   - Use `fs.appendFile()` with UTF-8 encoding
   - Wrap in try-catch, log errors to stderr without throwing
 - [x] Implement per-execution log writer
-  - Implement `async writeExecutionLogs(logPath: string, input: object, output: AdapterResponse, events: StreamEvent[]): Promise<void>`
+  - Implement `async writeExecutionLogs(logPath: string, input: object, output: ExecutionResponse, events: StreamEvent[]): Promise<void>`
   - Ensure `logPath` directory exists
   - Write `input.json`: `JSON.stringify(input, null, 2)`
   - Write `output.json`: `JSON.stringify(output, null, 2)`
@@ -109,7 +109,7 @@ Phase 1 complete. Created `src/types/logging.ts` with all required interfaces (L
   - Execute all writes in parallel with `Promise.all()`
   - Wrap in try-catch, log errors to stderr without throwing
 - [x] Implement execution log entry builder
-  - Implement `buildExecutionLogEntry(adapter: string, prompt: string, options: ExecutionOptions, response: AdapterResponse): ExecutionLogEntry`
+  - Implement `buildExecutionLogEntry(adapter: string, prompt: string, options: ExecutionOptions, response: ExecutionResponse): ExecutionLogEntry`
   - Extract: timestamp, adapter name, prompt, sessionId from response
   - Include: status, duration, exitCode
   - Extract workflowId from logPath if it matches pattern (optional)
@@ -270,7 +270,7 @@ npm test
 
 - Verify `stream.jsonl` contains all streaming events in JSONL format
 - Verify `input.json` contains prompt and execution options
-- Verify `output.json` matches the AdapterResponse structure
+- Verify `output.json` matches the ExecutionResponse structure
 - Verify central log entries have correct timestamp, adapter, and session info
 - Test workflow pattern: `logs/workflow-123/agent-1/` structure works
 - Verify concurrent executions don't corrupt logs
@@ -311,7 +311,7 @@ npm test
 
 **Security Considerations:**
 
-- Logs contain same data as AdapterResponse (not introducing new data exposure)
+- Logs contain same data as ExecutionResponse (not introducing new data exposure)
 - Validate paths to prevent directory traversal attacks
 - Consider adding option to exclude sensitive fields from logs
 
