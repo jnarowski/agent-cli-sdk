@@ -8,6 +8,7 @@ TypeScript SDK for orchestrating AI-powered CLI tools (Claude Code, OpenAI Codex
 - **Type-Safe**: Full TypeScript support with comprehensive type definitions
 - **Streaming Support**: Real-time event streaming for both Claude and Codex
 - **Session Management**: Resume and continue conversations (Claude)
+- **Structured Output**: Extract and validate JSON responses with optional Zod schemas
 - **Error Handling**: Standardized error types with recovery suggestions
 - **Workflow Utilities**: Built-in helpers for sequential, parallel, and retry operations
 - **Auto-Detection**: Automatically finds CLI binaries in your PATH
@@ -23,12 +24,18 @@ TypeScript SDK for orchestrating AI-powered CLI tools (Claude Code, OpenAI Codex
 
 ```bash
 pnpm add @sourceborn/agent-cli-sdk
+
+# Optional: Install Zod for structured output validation
+pnpm add zod
 ```
 
 Or with npm:
 
 ```bash
 npm install @sourceborn/agent-cli-sdk
+
+# Optional: Install Zod for structured output validation
+npm install zod
 ```
 
 ## Quick Start
@@ -100,6 +107,145 @@ const improved = await claude.execute(
 );
 ```
 
+## Structured Output with JSON Parsing
+
+Extract and validate JSON responses from AI CLI tools with optional Zod schema validation.
+
+### Basic JSON Extraction
+
+Extract JSON without validation:
+
+```typescript
+const response = await claude.execute(
+  'Return a JSON object with keys: name, age, city',
+  { responseSchema: true } // Auto-extract JSON without validation
+);
+
+console.log(response.output); // Parsed JSON object
+console.log(response.raw.stdout); // Original text with JSON
+```
+
+### Type-Safe Validation with Zod
+
+Define and validate expected structure:
+
+```typescript
+import { z } from 'zod';
+
+const UserSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+  city: z.string(),
+});
+
+const response = await claude.execute(
+  'Return user data for John, age 30, from NYC as JSON',
+  { responseSchema: UserSchema }
+);
+
+// response.output is fully typed as { name: string; age: number; city: string }
+console.log(response.output.name); // TypeScript knows this is a string
+
+// Check validation results
+if (response.metadata.validation?.success) {
+  console.log('Valid JSON:', response.output);
+} else {
+  console.log('Validation errors:', response.metadata.validation?.errors);
+  console.log('Best effort parse:', response.output);
+}
+```
+
+### Complex Nested Schemas
+
+```typescript
+const WeatherSchema = z.object({
+  location: z.object({
+    city: z.string(),
+    country: z.string(),
+  }),
+  temperature: z.number(),
+  conditions: z.string(),
+  forecast: z.array(
+    z.object({
+      day: z.string(),
+      high: z.number(),
+      low: z.number(),
+    })
+  ),
+});
+
+const response = await claude.execute(
+  'Return weather data for San Francisco with 3-day forecast',
+  { responseSchema: WeatherSchema }
+);
+```
+
+### Array Validation
+
+```typescript
+const TaskSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  completed: z.boolean(),
+});
+
+const TaskListSchema = z.array(TaskSchema);
+
+const response = await claude.execute(
+  'Return a JSON array of tasks',
+  { responseSchema: TaskListSchema }
+);
+
+// response.output is typed as Array<{ id: number; title: string; completed: boolean }>
+```
+
+### Key Features
+
+- **Automatic JSON Extraction**: Parses JSON from markdown code blocks or inline
+- **Optional Validation**: Use `true` for extraction only, or provide Zod schema
+- **Type Safety**: TypeScript infers output type from Zod schema
+- **Graceful Failures**: Returns best-effort data even if validation fails
+- **Original Text Preserved**: Access raw output via `response.raw.stdout`
+- **Validation Metadata**: Check `response.metadata.validation` for results
+
+### Example: Complete Workflow
+
+```typescript
+import { createClaudeAdapter } from '@sourceborn/agent-cli-sdk';
+import { z } from 'zod';
+
+const claude = createClaudeAdapter();
+
+// Define schema
+const AnalysisSchema = z.object({
+  summary: z.string(),
+  issues: z.array(
+    z.object({
+      severity: z.enum(['low', 'medium', 'high']),
+      description: z.string(),
+      line: z.number().optional(),
+    })
+  ),
+  recommendations: z.array(z.string()),
+});
+
+// Execute with validation
+const response = await claude.execute(
+  'Analyze this code and return structured JSON with summary, issues, and recommendations',
+  { responseSchema: AnalysisSchema }
+);
+
+// Type-safe access
+if (response.metadata.validation?.success) {
+  console.log(`Found ${response.output.issues.length} issues`);
+  response.output.issues.forEach((issue) => {
+    console.log(`[${issue.severity}] ${issue.description}`);
+  });
+}
+```
+
+See `examples/structured-output.ts` for more examples.
+
 ## API Reference
 
 ### Factory Functions
@@ -159,6 +305,7 @@ Execute a prompt with the AI adapter.
 - `onStream?: (event: StreamEvent) => void` - Streaming callback
 - `timeout?: number` - Timeout in milliseconds
 - `sessionId?: string` - Resume a previous session (Claude only)
+- `responseSchema?: any | true` - Extract/validate JSON (pass `true` for extraction only, or Zod schema for validation)
 
 **Claude-Specific Options:**
 
@@ -288,6 +435,7 @@ See the `examples/` directory for complete examples:
 - `examples/simple.ts` - Basic single-agent usage
 - `examples/multi-agent.ts` - Multi-agent workflow
 - `examples/ci-integration.ts` - CI/CD pipeline integration
+- `examples/structured-output.ts` - JSON extraction and validation
 
 Run examples:
 
@@ -295,6 +443,7 @@ Run examples:
 npx tsx examples/simple.ts
 npx tsx examples/multi-agent.ts
 npx tsx examples/ci-integration.ts src/index.ts
+npx tsx examples/structured-output.ts
 ```
 
 ## Architecture

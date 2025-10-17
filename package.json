@@ -1,6 +1,6 @@
 {
   "name": "@sourceborn/agent-cli-sdk",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "TypeScript SDK for orchestrating AI-powered CLI tools (Claude Code, OpenAI Codex) in development workflows",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -63,6 +63,14 @@
     "boxen": "^8.0.1",
     "chalk": "^5.3.0"
   },
+  "peerDependencies": {
+    "zod": "^4.0.0 || ^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
@@ -72,6 +80,7 @@
     "tsdown": "^0.15.7",
     "tsx": "^4.7.0",
     "typescript": "^5.5.0",
-    "vitest": "^2.0.0"
+    "vitest": "^2.0.0",
+    "zod": "^4.0.0"
   }
 }

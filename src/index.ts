@@ -28,6 +28,7 @@ export { createClaudeAdapter, createCodexAdapter } from './utils/factory';
 
 // Utilities
 export { setLoggingConfig, getLoggingConfig } from './utils/logger';
+export { extractJsonFromOutput, validateWithSchema } from './utils/json-parser';
 
 // Types
 export type {

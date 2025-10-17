@@ -86,8 +86,9 @@ export interface ModelUsage extends TokenUsage {
  * Standard response from an adapter
  */
 export interface AdapterResponse {
-  /** Final text output from the AI */
-  output: string;
+  /** Final output from the AI (string or parsed JSON object if responseSchema used) */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  output: string | Record<string, any>;
   /** Session ID for resuming (if supported) */
   sessionId: string;
   /** Status of the execution */
@@ -108,6 +109,13 @@ export interface AdapterResponse {
     toolsUsed?: string[];
     /** Files that were modified */
     filesModified?: string[];
+    /** JSON parsing and validation results (when responseSchema is used) */
+    validation?: {
+      /** Whether validation succeeded */
+      success: boolean;
+      /** Validation error messages (if validation failed) */
+      errors?: string[];
+    };
   };
   /** Detailed token usage information */
   usage?: TokenUsage;
@@ -151,6 +159,14 @@ export interface ExecutionOptions {
   verbose?: boolean;
   /** Optional path to directory for logging this execution's input, output, and stream events */
   logPath?: string;
+  /**
+   * Optional schema for validating and parsing JSON response
+   * - Pass `true` to enable JSON extraction without validation
+   * - Pass a Zod schema to validate structure (requires zod peer dependency)
+   * - When provided, automatically extracts JSON from CLI output
+   * - Original text preserved in response.raw.stdout
+   */
+  responseSchema?: true | { safeParse: (data: unknown) => unknown };
 }
 
 /**

@@ -75,11 +75,12 @@ export class CodexAdapter extends BaseAdapter {
       });
 
       // Always parse as stream output (JSON) to get detailed information
-      response = parseStreamOutput(
+      response = await parseStreamOutput(
         result.stdout,
         result.duration,
         result.exitCode,
-        mergedOptions.model
+        mergedOptions.model,
+        mergedOptions.responseSchema
       );
 
       // Add stderr to raw output

@@ -1,4 +1,5 @@
 import type { AdapterResponse, ActionLog, StreamEvent } from '../../types/config';
+import { extractJsonFromOutput, validateWithSchema } from '../../utils/json-parser';
 
 /**
  * Parse Codex CLI output (text output)
@@ -21,13 +22,14 @@ export function parseTextOutput(output: string, duration: number, exitCode: numb
 /**
  * Parse Codex JSONL event stream (from --json flag)
  */
-export function parseStreamOutput(
+export async function parseStreamOutput(
   output: string,
   duration: number,
   exitCode: number,
-  modelName?: string
-): AdapterResponse {
-  const lines = output.split('\n').filter(line => line.trim());
+  modelName?: string,
+  responseSchema?: true | { safeParse: (data: unknown) => unknown }
+): Promise<AdapterResponse> {
+  const lines = output.split('\n').filter((line) => line.trim());
   const events: StreamEvent[] = [];
   const actions: ActionLog[] = [];
   const filesModified = new Set<string>();
@@ -133,18 +135,57 @@ export function parseStreamOutput(
     }
   }
 
+  // If no JSONL events were found and finalOutput is empty, use the original output as fallback
+  if (!finalOutput && output) {
+    finalOutput = output;
+  }
+
   const totalTokens = inputTokens + outputTokens;
 
   // Calculate usage
-  const usage = totalTokens > 0 ? {
-    inputTokens,
-    outputTokens,
-    cacheReadInputTokens: cachedInputTokens,
-    totalTokens,
-  } : undefined;
+  const usage =
+    totalTokens > 0
+      ? {
+          inputTokens,
+          outputTokens,
+          cacheReadInputTokens: cachedInputTokens,
+          totalTokens,
+        }
+      : undefined;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let parsedOutput: string | Record<string, any> = finalOutput;
+  let validationMetadata: { success: boolean; errors?: string[] } | undefined;
+
+  // Handle responseSchema if provided
+  if (responseSchema) {
+    const extracted = extractJsonFromOutput(finalOutput);
+
+    if (extracted === null) {
+      // No JSON found - return empty object
+      parsedOutput = {};
+      validationMetadata = {
+        success: false,
+        errors: ['No JSON found in output'],
+      };
+    } else if (responseSchema === true) {
+      // JSON extraction only (no validation)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      parsedOutput = extracted as Record<string, any>;
+      validationMetadata = { success: true };
+    } else {
+      // Validate with schema
+      const validation = await validateWithSchema(extracted, responseSchema);
+      parsedOutput = validation.data ?? extracted;
+      validationMetadata = {
+        success: validation.success,
+        errors: validation.errors,
+      };
+    }
+  }
 
   return {
-    output: finalOutput,
+    output: parsedOutput,
     sessionId,
     status: exitCode === 0 ? 'success' : 'error',
     exitCode,
@@ -154,6 +195,7 @@ export function parseStreamOutput(
       model,
       filesModified: Array.from(filesModified),
       tokensUsed: totalTokens > 0 ? totalTokens : undefined,
+      validation: validationMetadata,
     },
     usage,
     raw: {
@@ -194,8 +236,8 @@ function mapCodexEventType(type: string): StreamEvent['type'] {
     'item.completed': 'item.completed',
     'tool.started': 'tool.started',
     'tool.completed': 'tool.completed',
-    'message': 'message.chunk',
-    'chunk': 'message.chunk',
+    message: 'message.chunk',
+    chunk: 'message.chunk',
   };
 
   return mapping[type] || 'message.chunk';
