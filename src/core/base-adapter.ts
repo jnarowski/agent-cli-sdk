@@ -1,5 +1,5 @@
 import type { AIAdapter, AdapterCapabilities } from '../types/interfaces';
-import type { AdapterResponse, ExecutionOptions } from '../types/config';
+import type { ExecutionResponse, ExecutionOptions } from '../types/config';
 import { ValidationError } from './errors';
 
 /**
@@ -17,7 +17,7 @@ export abstract class BaseAdapter implements AIAdapter {
    * Execute a prompt - must be implemented by concrete adapters
    * @template T The expected type of the output (inferred from responseSchema)
    */
-  abstract execute<T = string>(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse<T>>;
+  abstract execute<T = string>(prompt: string, options?: ExecutionOptions): Promise<ExecutionResponse<T>>;
 
   /**
    * Get adapter capabilities - must be implemented by concrete adapters

@@ -1,4 +1,4 @@
-import type { AdapterResponse, ExecutionOptions } from './config';
+import type { ExecutionResponse, ExecutionOptions } from './config';
 
 /**
  * Adapter capabilities describe what features an adapter supports
@@ -26,7 +26,7 @@ export interface Cli {
    * @param options Execution options (streaming, timeout, CLI-specific options)
    * @returns Promise resolving to the adapter response
    */
-  execute<T = string>(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse<T>>;
+  execute<T = string>(prompt: string, options?: ExecutionOptions): Promise<ExecutionResponse<T>>;
 }
 
 /**

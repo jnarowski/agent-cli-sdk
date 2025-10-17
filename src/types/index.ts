@@ -2,7 +2,7 @@
 export type {
   ActionLog,
   AdapterConfig,
-  AdapterResponse,
+  ExecutionResponse,
   ExecutionOptions,
   ResponseStatus,
   StreamEvent,

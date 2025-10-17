@@ -32,7 +32,7 @@ export { extractJsonFromOutput, validateWithSchema } from './utils/json-parser';
 // Types
 export type {
   ActionLog,
-  AdapterResponse,
+  ExecutionResponse,
   ClaudeConfig,
   ClaudeExecutionOptions,
   ClaudeOutputFormat,

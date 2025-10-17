@@ -83,11 +83,11 @@ export interface ModelUsage extends TokenUsage {
 }
 
 /**
- * Standard response from an adapter
+ * Standard response from an execution
  * @template T The type of the output (inferred from responseSchema)
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface AdapterResponse<T = string | Record<string, any>> {
+export interface ExecutionResponse<T = string | Record<string, any>> {
   /** Final output from the AI (string or parsed JSON object if responseSchema used) */
   output: T;
   /** Session ID for resuming (if supported) */
