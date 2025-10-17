@@ -42,15 +42,16 @@ async function ensureDirectoryExists(dirPath: string): Promise<void> {
  * Write execution logs to a per-execution directory.
  * Creates three files: input.json, output.json, and stream.jsonl.
  *
+ * @template T The type of the output
  * @param logPath - Directory path where log files will be written
  * @param input - Input object containing prompt and options
  * @param output - Full AdapterResponse object
  * @param events - Array of streaming events
  */
-export async function writeExecutionLogs(
+export async function writeExecutionLogs<T = string>(
   logPath: string,
   input: object,
-  output: AdapterResponse,
+  output: AdapterResponse<T>,
   events: StreamEvent[]
 ): Promise<void> {
   try {

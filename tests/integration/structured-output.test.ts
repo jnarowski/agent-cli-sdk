@@ -136,6 +136,56 @@ Thank you!`;
       expect(result.output).toBe('Plain text output without JSON');
       expect(result.metadata.validation).toBeUndefined();
     });
+
+    it('should extract JSON from response with explanatory text and code block', async () => {
+      const output = `The validation failed with 2 errors from ESLint. Let me provide the JSON output as requested:
+
+\`\`\`json
+{
+  "success": true,
+  "validation_command": "pnpm check",
+  "issues": {
+    "errors": 2,
+    "warnings": 0,
+    "info": 0
+  }
+}
+\`\`\``;
+
+      const result = await parseClaudeStream(output, 1000, 0, true);
+
+      expect(result.output).toEqual({
+        success: true,
+        validation_command: 'pnpm check',
+        issues: {
+          errors: 2,
+          warnings: 0,
+          info: 0,
+        },
+      });
+      expect(result.metadata.validation).toEqual({ success: true });
+      expect(result.raw?.stdout).toBe(output);
+    });
+
+    it('should support generic type inference with Zod schema', async () => {
+      const output = '```json\n{"count":42,"message":"Success"}\n```';
+
+      type ResponseType = { count: number; message: string };
+      const ResponseSchema = z.object({
+        count: z.number(),
+        message: z.string(),
+      });
+
+      const result = await parseClaudeStream<ResponseType>(output, 1000, 0, ResponseSchema);
+
+      // TypeScript should infer the correct type
+      const count: number = result.output.count;
+      const message: string = result.output.message;
+
+      expect(count).toBe(42);
+      expect(message).toBe('Success');
+      expect(result.metadata.validation?.success).toBe(true);
+    });
   });
 
   describe('Codex adapter with responseSchema', () => {

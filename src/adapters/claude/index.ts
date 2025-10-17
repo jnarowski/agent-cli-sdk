@@ -32,11 +32,12 @@ export class ClaudeAdapter extends BaseAdapter {
 
   /**
    * Execute a prompt with Claude Code CLI
+   * @template T The expected type of the output (inferred from responseSchema)
    */
-  async execute(
+  async execute<T = string>(
     prompt: string,
     options: ClaudeExecutionOptions = {}
-  ): Promise<AdapterResponse> {
+  ): Promise<AdapterResponse<T>> {
     // Validate inputs
     this.validatePrompt(prompt);
     this.validateOptions(options);
@@ -65,7 +66,7 @@ export class ClaudeAdapter extends BaseAdapter {
       options: mergedOptions,
     };
 
-    let response: AdapterResponse | null = null;
+    let response: AdapterResponse<T> | null = null;
     let executionError: Error | null = null;
 
     try {
@@ -77,7 +78,7 @@ export class ClaudeAdapter extends BaseAdapter {
       });
 
       // Parse output - always use parseStreamOutput since we use stream-json format
-      response = await parseStreamOutput(result.stdout, result.duration, result.exitCode, mergedOptions.responseSchema);
+      response = await parseStreamOutput<T>(result.stdout, result.duration, result.exitCode, mergedOptions.responseSchema);
 
       // Add stderr to raw output
       if (response.raw) {

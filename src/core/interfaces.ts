@@ -21,11 +21,12 @@ export interface AdapterCapabilities {
 export interface AIAdapter {
   /**
    * Execute a prompt with the AI adapter
+   * @template T The expected type of the output (inferred from responseSchema)
    * @param prompt The prompt/instruction to send to the AI
    * @param options Execution options (streaming, timeout, CLI-specific options)
    * @returns Promise resolving to the adapter response
    */
-  execute(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse>;
+  execute<T = string>(prompt: string, options?: ExecutionOptions): Promise<AdapterResponse<T>>;
 
   /**
    * Get the capabilities of this adapter

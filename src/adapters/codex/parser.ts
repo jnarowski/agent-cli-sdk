@@ -3,10 +3,11 @@ import { extractJsonFromOutput, validateWithSchema } from '../../utils/json-pars
 
 /**
  * Parse Codex CLI output (text output)
+ * @template T The expected type of the output
  */
-export function parseTextOutput(output: string, duration: number, exitCode: number): AdapterResponse {
+export function parseTextOutput<T = string>(output: string, duration: number, exitCode: number): AdapterResponse<T> {
   return {
-    output,
+    output: output as T,
     sessionId: '', // Codex doesn't return session ID in text mode
     status: exitCode === 0 ? 'success' : 'error',
     exitCode,
@@ -21,14 +22,15 @@ export function parseTextOutput(output: string, duration: number, exitCode: numb
 
 /**
  * Parse Codex JSONL event stream (from --json flag)
+ * @template T The expected type of the output
  */
-export async function parseStreamOutput(
+export async function parseStreamOutput<T = string>(
   output: string,
   duration: number,
   exitCode: number,
   modelName?: string,
   responseSchema?: true | { safeParse: (data: unknown) => unknown }
-): Promise<AdapterResponse> {
+): Promise<AdapterResponse<T>> {
   const lines = output.split('\n').filter((line) => line.trim());
   const events: StreamEvent[] = [];
   const actions: ActionLog[] = [];
@@ -185,7 +187,7 @@ export async function parseStreamOutput(
   }
 
   return {
-    output: parsedOutput,
+    output: parsedOutput as T,
     sessionId,
     status: exitCode === 0 ? 'success' : 'error',
     exitCode,

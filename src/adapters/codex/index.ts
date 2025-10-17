@@ -32,11 +32,12 @@ export class CodexAdapter extends BaseAdapter {
 
   /**
    * Execute a prompt with Codex CLI
+   * @template T The expected type of the output (inferred from responseSchema)
    */
-  async execute(
+  async execute<T = string>(
     prompt: string,
     options: CodexExecutionOptions = {}
-  ): Promise<AdapterResponse> {
+  ): Promise<AdapterResponse<T>> {
     // Validate inputs
     this.validatePrompt(prompt);
     this.validateOptions(options);
@@ -60,7 +61,7 @@ export class CodexAdapter extends BaseAdapter {
       options: mergedOptions,
     };
 
-    let response: AdapterResponse | null = null;
+    let response: AdapterResponse<T> | null = null;
     let executionError: Error | null = null;
 
     try {
@@ -71,7 +72,7 @@ export class CodexAdapter extends BaseAdapter {
       });
 
       // Always parse as stream output (JSON) to get detailed information
-      response = await parseStreamOutput(
+      response = await parseStreamOutput<T>(
         result.stdout,
         result.duration,
         result.exitCode,

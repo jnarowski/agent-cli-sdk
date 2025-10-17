@@ -15,11 +15,12 @@ export abstract class BaseAdapter implements AIAdapter {
 
   /**
    * Execute a prompt - must be implemented by concrete adapters
+   * @template T The expected type of the output (inferred from responseSchema)
    */
-  abstract execute(
+  abstract execute<T = string>(
     prompt: string,
     options?: ExecutionOptions
-  ): Promise<AdapterResponse>;
+  ): Promise<AdapterResponse<T>>;
 
   /**
    * Get adapter capabilities - must be implemented by concrete adapters

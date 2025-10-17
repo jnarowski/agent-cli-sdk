@@ -3,8 +3,9 @@ import { extractJsonFromOutput, validateWithSchema } from '../../utils/json-pars
 
 /**
  * Parse Claude CLI JSON output (from --output-format json)
+ * @template T The expected type of the output
  */
-export function parseJSONOutput(output: string, duration: number, exitCode: number): AdapterResponse {
+export function parseJSONOutput<T = string>(output: string, duration: number, exitCode: number): AdapterResponse<T> {
   try {
     const parsed = JSON.parse(output);
 
@@ -21,7 +22,7 @@ export function parseJSONOutput(output: string, duration: number, exitCode: numb
     const metadata = extractMetadata(parsed);
 
     return {
-      output: outputText,
+      output: outputText as T,
       sessionId,
       status: exitCode === 0 ? 'success' : 'error',
       exitCode,
@@ -36,7 +37,7 @@ export function parseJSONOutput(output: string, duration: number, exitCode: numb
   } catch (error) {
     // Failed to parse JSON, return raw output
     return {
-      output,
+      output: output as T,
       sessionId: '',
       status: exitCode === 0 ? 'success' : 'error',
       exitCode,
@@ -67,13 +68,14 @@ export function parseJSONOutput(output: string, duration: number, exitCode: numb
 /**
  * Parse streaming JSONL output (from --output-format stream-json)
  * Also handles single JSON object responses for testing/compatibility
+ * @template T The expected type of the output
  */
-export async function parseStreamOutput(
+export async function parseStreamOutput<T = string>(
   output: string,
   duration: number,
   exitCode: number,
   responseSchema?: true | { safeParse: (data: unknown) => unknown }
-): Promise<AdapterResponse> {
+): Promise<AdapterResponse<T>> {
   // First, try to parse as a single JSON object (for fixtures and some CLI responses)
   try {
     const parsed = JSON.parse(output);
@@ -234,7 +236,7 @@ export async function parseStreamOutput(
   }
 
   return {
-    output: parsedOutput,
+    output: parsedOutput as T,
     sessionId,
     status: exitCode === 0 ? 'success' : 'error',
     exitCode,
