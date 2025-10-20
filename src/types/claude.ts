@@ -36,7 +36,7 @@ export interface ClaudeExecutionOptions extends ExecutionOptions {
   };
   images?: ImageInput[];
   continue?: boolean; // Continue the most recent conversation
-  resume?: boolean | string; // Resume a specific session or most recent
+  resume?: boolean; // Resume a session (requires sessionId to be set)
 }
 
 /**

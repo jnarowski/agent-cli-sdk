@@ -49,9 +49,13 @@ export class ClaudeSession extends EventEmitter {
     };
 
     // Session management:
-    // - First message: don't pass sessionId, let Claude CLI generate one
-    // - Subsequent messages: use the captured sessionId to resume
+    // - First message: pass sessionId to create with that ID (if pre-set), otherwise let CLI generate
+    // - Subsequent messages: pass sessionId + resume to continue
     if (this._messageCount > 1 && this._sessionId) {
+      mergedOptions.sessionId = this._sessionId;
+      mergedOptions.resume = true;
+    } else if (this._sessionId) {
+      // First message with pre-set sessionId
       mergedOptions.sessionId = this._sessionId;
     }
 

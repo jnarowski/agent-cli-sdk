@@ -24,17 +24,14 @@ export function buildClaudeArgs(
   }
 
   // Session management (sessionId, continue, and resume are mutually exclusive)
-  // When sessionId is provided, use --resume to continue that specific session
-  if (options.sessionId) {
+  if (options.sessionId && options.resume) {
+    // Resume an existing session with specific ID
     args.push('--resume', options.sessionId);
+  } else if (options.sessionId) {
+    // Create new session with specific ID
+    args.push('--session-id', options.sessionId);
   } else if (options.continue) {
     args.push('--continue');
-  } else if (options.resume) {
-    if (typeof options.resume === 'string') {
-      args.push('--resume', options.resume);
-    } else {
-      args.push('--resume');
-    }
   }
 
   // Permission mode
