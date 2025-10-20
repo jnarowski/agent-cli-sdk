@@ -33,6 +33,34 @@ function promptUser(rl: ReturnType<typeof createReadline>, question: string): Pr
 }
 
 /**
+ * Parse and display only the text content from Claude's JSON output
+ */
+function createTextOnlyOutput() {
+  return (raw: string) => {
+    try {
+      const parsed = JSON.parse(raw);
+
+      // Extract text from assistant messages
+      if (parsed.type === 'assistant' && parsed.message?.content) {
+        for (const content of parsed.message.content) {
+          if (content.type === 'text' && content.text) {
+            process.stdout.write(content.text);
+          }
+        }
+      }
+      // Optionally show errors
+      else if (parsed.type === 'error') {
+        process.stdout.write(`\n❌ Error: ${parsed.error}\n`);
+      }
+      // Ignore system messages and other JSON output
+    } catch {
+      // If it's not JSON, just write it (in case of non-JSON output)
+      // But skip it to avoid noise - Claude CLI outputs JSON by default
+    }
+  };
+}
+
+/**
  * Main interactive relay loop
  */
 async function main() {
@@ -63,17 +91,13 @@ async function main() {
     // Create Session 1 - The Questioner
     console.log('📝 Creating Session 1 (Questioner)...\n');
     const session1 = client.createSession({
-      onOutput: (raw) => {
-        process.stdout.write(raw);
-      },
+      onOutput: createTextOnlyOutput(),
     });
 
     // Create Session 2 - The Processor
     console.log('\n🔍 Creating Session 2 (Processor)...\n');
     const session2 = client.createSession({
-      onOutput: (raw) => {
-        process.stdout.write(raw);
-      },
+      onOutput: createTextOnlyOutput(),
     });
 
     // Questions to ask
