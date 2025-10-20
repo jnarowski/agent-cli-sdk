@@ -1,89 +1,85 @@
 /**
- * Core logging utility for agent execution tracking.
- * Provides functionality to write per-execution logs to directories
- * with input/output/stream files.
+ * Execution logging utilities
  */
 
-import { mkdir, writeFile } from 'fs/promises';
-import path from 'path';
-import type {
-  StreamEvent,
-  ExecutionResponse,
-} from '../types/config';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import type { ExecutionLog, LogPaths } from '../types';
 
 /**
- * Ensure a directory exists, creating it recursively if needed.
- * Handles EEXIST errors gracefully and logs other errors without throwing.
- *
- * @param dirPath - Directory path to create
+ * Get log file paths for an execution
  */
-async function ensureDirectoryExists(dirPath: string): Promise<void> {
+export function getLogPaths(baseLogPath: string): LogPaths {
+  return {
+    base: baseLogPath,
+    input: join(baseLogPath, 'input.json'),
+    output: join(baseLogPath, 'output.json'),
+    error: join(baseLogPath, 'error.json'),
+  };
+}
+
+/**
+ * Write execution logs to disk (non-blocking, never throws)
+ */
+export async function writeExecutionLogs(
+  baseLogPath: string,
+  input: { prompt: string; options: Record<string, unknown> },
+  output: unknown,
+  error: unknown
+): Promise<void> {
   try {
-    await mkdir(dirPath, { recursive: true });
-  } catch (error: unknown) {
-    // EEXIST is fine, directory already exists
-    if (
-      error &&
-      typeof error === 'object' &&
-      'code' in error &&
-      error.code === 'EEXIST'
-    ) {
-      return;
+    const paths = getLogPaths(baseLogPath);
+
+    // Ensure directory exists
+    await mkdir(paths.base, { recursive: true });
+
+    // Prepare log entry
+    const log: ExecutionLog = {
+      timestamp: Date.now(),
+      input,
+      output: output as ExecutionLog['output'],
+      error: error
+        ? {
+            message: error instanceof Error ? error.message : JSON.stringify(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            code:
+              error && typeof error === 'object' && 'code' in error
+                ? String((error as { code: unknown }).code)
+                : undefined,
+          }
+        : undefined,
+    };
+
+    // Write files in parallel
+    const writes = [
+      writeFile(paths.input, JSON.stringify(input, null, 2), 'utf-8'),
+    ];
+
+    if (output) {
+      writes.push(
+        writeFile(paths.output, JSON.stringify(output, null, 2), 'utf-8')
+      );
     }
-    // Log other errors but don't throw - logging failures shouldn't break execution
-    console.error(
-      `[logger] Failed to create directory ${dirPath}:`,
-      error instanceof Error ? error.message : String(error)
-    );
+
+    if (error) {
+      writes.push(
+        writeFile(paths.error, JSON.stringify(log.error, null, 2), 'utf-8')
+      );
+    }
+
+    await Promise.all(writes);
+  } catch (logError) {
+    // Logging errors are silently ignored
+    console.error('[logger] Failed to write execution logs:', logError);
   }
 }
 
 /**
- * Write execution logs to a per-execution directory.
- * Creates three files: input.json, output.json, and stream.jsonl.
- *
- * @template T The type of the output
- * @param logPath - Directory path where log files will be written
- * @param input - Input object containing prompt and options
- * @param output - Full ExecutionResponse object
- * @param events - Array of streaming events
+ * Create a log path for a session message
  */
-export async function writeExecutionLogs<T = string>(
-  logPath: string,
-  input: object,
-  output: ExecutionResponse<T>,
-  events: StreamEvent[]
-): Promise<void> {
-  try {
-    // Ensure log directory exists
-    await ensureDirectoryExists(logPath);
-
-    // Build JSONL for stream events (one JSON object per line)
-    const streamJsonl = events.map((event) => JSON.stringify(event)).join('\n');
-
-    // Write all files in parallel
-    await Promise.all([
-      writeFile(
-        path.join(logPath, 'input.json'),
-        JSON.stringify(input, null, 2),
-        'utf-8'
-      ),
-      writeFile(
-        path.join(logPath, 'output.json'),
-        JSON.stringify(output, null, 2),
-        'utf-8'
-      ),
-      writeFile(
-        path.join(logPath, 'stream.jsonl'),
-        streamJsonl + (streamJsonl ? '\n' : ''),
-        'utf-8'
-      ),
-    ]);
-  } catch (error: unknown) {
-    // Log errors but don't throw - logging failures shouldn't break execution
-    console.error(
-      `[logger] Failed to write execution logs to ${logPath}:`,
-      error instanceof Error ? error.message : String(error)
-    );
-  }
+export function createSessionMessageLogPath(
+  baseSessionLogPath: string,
+  messageNumber: number
+): string {
+  return join(baseSessionLogPath, `message-${messageNumber}`);
 }

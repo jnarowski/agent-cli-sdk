@@ -1,2 +1,0 @@
-{"type":"turn.started","timestamp":1704067200000,"data":{"turnId":"turn-error"}}
-{"type":"turn.failed","timestamp":1704067201000,"data":{"turnId":"turn-error","error":{"code":"AUTH_REQUIRED","message":"Not logged in. Run 'codex login' to authenticate"}}}

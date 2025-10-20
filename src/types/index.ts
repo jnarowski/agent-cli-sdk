@@ -1,27 +1,44 @@
-// Core config types
+/**
+ * Type exports for agent-cli-sdk
+ */
+
+// Core interfaces
 export type {
+  StreamEvent,
+  TokenUsage,
+  ModelUsage,
   ActionLog,
-  AdapterConfig,
+  ValidationResult,
+  AdapterCapabilities,
   ExecutionResponse,
   ExecutionOptions,
-  ResponseStatus,
-  StreamEvent,
-  StreamEventType,
+  AIAdapter,
+} from './interfaces';
+
+// Configuration types
+export type {
+  AgentClientOptions,
+  AgentClientConfig,
+  ExecuteOptions,
+  SessionInfo,
+  SessionOptions,
+  SendOptions,
 } from './config';
 
-// Logging types
-export type { LogFiles } from './logging';
-
-export type { AdapterCapabilities, Cli, AIAdapter } from './interfaces';
-
-// Claude types
+// Claude-specific types
 export type {
-  ClaudeModel,
+  ImageInput,
   ClaudeConfig,
-  ClaudeOutputFormat,
-  ClaudePermissionMode,
   ClaudeExecutionOptions,
+  MCPServer,
+  CLIDetectionResult,
 } from './claude';
 
-// Codex types
-export type { OpenAIModel, CodexConfig, CodexSandboxMode, CodexApprovalPolicy, CodexExecutionOptions } from './codex';
+// Codex-specific types
+export type { CodexConfig, CodexExecutionOptions } from './codex';
+
+// Session types
+export type { SessionEventType, SessionEventData, AdapterSession } from './session';
+
+// Logging types
+export type { ExecutionLog, LogPaths } from './logging';

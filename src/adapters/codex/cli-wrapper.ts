@@ -1,10 +1,9 @@
-import { spawn, type ChildProcess } from 'child_process';
-import type { CodexExecutionOptions } from '../../types/codex';
-import { ExecutionError, TimeoutError } from '../../core/errors';
-import { BOX_STYLES, BORDER_STYLES } from '../../utils/constants';
-import boxen from 'boxen';
-import chalk from 'chalk';
+import { spawn } from "child_process";
+import type { CodexExecutionOptions } from "../../types/codex";
 
+/**
+ * CLI execution result
+ */
 export interface CLIResult {
   stdout: string;
   stderr: string;
@@ -13,200 +12,221 @@ export interface CLIResult {
 }
 
 /**
- * Spawn the Codex CLI process with given arguments
+ * Execute Codex CLI with a prompt
+ * @param cliPath Path to codex CLI
+ * @param prompt The prompt to execute
+ * @param options Execution options
+ * @param sessionId Optional session ID for resumption
+ * @returns CLI execution result
  */
 export async function executeCodexCLI(
   cliPath: string,
   prompt: string,
-  options: CodexExecutionOptions = {}
+  options: CodexExecutionOptions = {},
+  sessionId?: string
 ): Promise<CLIResult> {
-  const args = buildCLIArguments(prompt, options);
   const startTime = Date.now();
 
-  // Show verbose logging if enabled
-  if (options.verbose) {
-    const debugInfo = [
-      `${chalk.bold('CLI Path:')} ${chalk.cyan(cliPath)}`,
-      `${chalk.bold('Args:')} ${chalk.dim(args.join(' '))}`,
-      `${chalk.bold('Working Dir:')} ${chalk.yellow(options.workingDir || process.cwd())}`,
-      `${chalk.bold('Model:')} ${chalk.green(options.model || 'gpt-5')}`,
-      options.sandbox ? `${chalk.bold('Sandbox:')} ${chalk.magenta(options.sandbox)}` : null,
-      options.approvalPolicy ? `${chalk.bold('Approval Policy:')} ${chalk.magenta(options.approvalPolicy)}` : null,
-      options.fullAuto ? `${chalk.bold('Mode:')} ${chalk.magenta('Full Auto')}` : null,
-    ].filter(Boolean).join('\n');
-
-    const debugBox = boxen(debugInfo, {
-      title: '🤖 Executing Codex CLI',
-      titleAlignment: 'center',
-      ...BOX_STYLES.fullWidth,
-      ...BORDER_STYLES.info,
-    });
-
-    console.log(debugBox);
-  }
+  // Build command arguments
+  const args = buildCodexArgs(prompt, options, sessionId);
 
   return new Promise((resolve, reject) => {
-    const child: ChildProcess = spawn(cliPath, args, {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      shell: false,
+    let stdout = "";
+    let stderr = "";
+    let settled = false; // Prevent race conditions between timeout and process close
+
+    const proc = spawn(cliPath, args, {
       cwd: options.workingDir,
+      env: {
+        ...process.env,
+        // Add any environment variables
+      },
     });
-
-    let stdout = '';
-    let stderr = '';
-    let timedOut = false;
-
-    // Set up timeout if specified
-    let timeoutId: NodeJS.Timeout | undefined;
-    if (options.timeout) {
-      timeoutId = setTimeout(() => {
-        timedOut = true;
-        child.kill('SIGTERM');
-        reject(
-          new TimeoutError(
-            `Codex CLI execution timed out after ${options.timeout}ms`,
-            options.sessionId,
-            stdout
-          )
-        );
-      }, options.timeout);
-    }
 
     // Collect stdout
-    if (child.stdout) {
-      child.stdout.on('data', (data: Buffer) => {
-        const chunk = data.toString();
-        stdout += chunk;
+    proc.stdout.on("data", (chunk) => {
+      const data = chunk.toString();
+      stdout += data;
 
-        // Call streaming callback if provided
-        if (options.streaming && options.onStream) {
-          try {
-            // Parse JSONL events
-            const lines = chunk.split('\n').filter(line => line.trim());
-            for (const line of lines) {
-              try {
-                const event = JSON.parse(line);
-                options.onStream(event);
-              } catch {
-                // Not a JSON line, skip
-              }
+      // Call onOutput callback with raw data
+      if (options.onOutput) {
+        options.onOutput(data);
+      }
+
+      // Call onStream/onEvent callback if provided
+      const eventCallback = options.onEvent || options.onStream;
+      if (eventCallback) {
+        try {
+          // Parse JSONL events
+          const lines = data.split("\n").filter((line: string) => line.trim());
+          for (const line of lines) {
+            try {
+              const event = JSON.parse(line);
+              eventCallback(event);
+            } catch {
+              // Not JSON, skip
             }
-          } catch {
-            // Ignore parsing errors during streaming
           }
+        } catch {
+          // Ignore parsing errors
         }
-      });
-    }
+      }
+    });
 
     // Collect stderr
-    if (child.stderr) {
-      child.stderr.on('data', (data: Buffer) => {
-        stderr += data.toString();
-      });
-    }
+    proc.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
 
-    // Handle process exit
-    child.on('close', (code: number | null) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-
-      if (timedOut) {
-        return; // Already rejected with TimeoutError
-      }
+    // Handle completion
+    proc.on("close", (exitCode) => {
+      if (settled) return;
+      settled = true;
 
       const duration = Date.now() - startTime;
-      const exitCode = code ?? 1;
 
-      if (exitCode !== 0 && !timedOut) {
-        reject(
-          new ExecutionError(
-            `Codex CLI exited with code ${exitCode}`,
-            { exitCode, stderr, stdout }
-          )
-        );
-      } else {
-        resolve({ stdout, stderr, exitCode, duration });
-      }
+      resolve({
+        stdout,
+        stderr,
+        exitCode: exitCode ?? 1,
+        duration,
+      });
     });
 
-    // Handle spawn errors
-    child.on('error', (error: Error) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      reject(new ExecutionError(`Failed to spawn Codex CLI: ${error.message}`, {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      }));
+    // Handle errors
+    proc.on("error", (error) => {
+      if (settled) return;
+      settled = true;
+      reject(error);
     });
+
+    // Handle timeout
+    if (options.timeout) {
+      setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        proc.kill("SIGTERM");
+        reject(new Error(`Execution timed out after ${options.timeout}ms`));
+      }, options.timeout);
+    }
   });
 }
 
 /**
- * Build CLI arguments from execution options
+ * Build command arguments for Codex CLI
+ * Based on Codex CLI 0.46.0 API
+ * @param prompt The prompt to execute
+ * @param options Execution options
+ * @param sessionId Optional session ID for resumption
+ * @returns Array of command arguments
  */
-function buildCLIArguments(prompt: string, options: CodexExecutionOptions): string[] {
+function buildCodexArgs(
+  prompt: string,
+  options: CodexExecutionOptions,
+  sessionId?: string
+): string[] {
   const args: string[] = [];
 
-  // Use 'exec' subcommand for non-interactive execution
-  args.push('exec');
+  // Start with 'exec' subcommand
+  args.push("exec");
 
-  // Model
+  // Add all flags BEFORE the subcommand arguments
+
+  // Model selection
   if (options.model) {
-    args.push('-m', options.model);
+    args.push("-m", options.model);
+  }
+
+  // Sandbox mode
+  if (options.sandbox) {
+    args.push("-s", options.sandbox);
+  }
+
+  // NOTE: Approval policy flags are NOT supported in 'codex exec' mode
+  // They're only available in interactive mode
+  // Use --full-auto (safe) or --dangerously-bypass-approvals-and-sandbox (unsafe)
+
+  // Full auto mode (convenience flag for programmatic execution)
+  if (options.fullAuto) {
+    args.push("--full-auto");
+  }
+
+  // Dangerous bypass (EXTREMELY DANGEROUS)
+  if (options.dangerouslyBypassApprovalsAndSandbox) {
+    args.push("--dangerously-bypass-approvals-and-sandbox");
   }
 
   // Working directory
   if (options.workingDir) {
-    args.push('-C', options.workingDir);
+    args.push("-C", options.workingDir);
   }
 
-  // Full auto mode (convenience)
-  if (options.fullAuto) {
-    args.push('--full-auto');
-  } else {
-    // Sandbox mode
-    if (options.sandbox) {
-      args.push('-s', options.sandbox);
-    }
-
-    // Approval policy
-    if (options.approvalPolicy) {
-      args.push('-a', options.approvalPolicy);
+  // Images
+  if (options.images && options.images.length > 0) {
+    for (const image of options.images) {
+      args.push("-i", image);
     }
   }
 
   // Web search
-  if (options.enableSearch) {
-    args.push('--search');
+  if (options.search) {
+    args.push("--search");
   }
 
-  // Image inputs
-  if (options.images && options.images.length > 0) {
-    for (const image of options.images) {
-      args.push('-i', image);
-    }
+  // Skip git repo check
+  if (options.skipGitRepoCheck) {
+    args.push("--skip-git-repo-check");
+  }
+
+  // Output schema
+  if (options.outputSchema) {
+    args.push("--output-schema", options.outputSchema);
+  }
+
+  // Color setting
+  if (options.color) {
+    args.push("--color", options.color);
+  }
+
+  // JSON output (JSONL streaming)
+  if (options.json !== false) {
+    // Enable JSON by default for programmatic use
+    args.push("--json");
+  }
+
+  // Include plan tool
+  if (options.includePlanTool) {
+    args.push("--include-plan-tool");
+  }
+
+  // Output last message to file
+  if (options.outputLastMessage) {
+    args.push("-o", options.outputLastMessage);
   }
 
   // Configuration overrides
-  if (options.configOverrides) {
-    for (const [key, value] of Object.entries(options.configOverrides)) {
-      const jsonValue = typeof value === 'string' ? value : JSON.stringify(value);
-      args.push('-c', `${key}=${jsonValue}`);
+  if (options.config) {
+    for (const [key, value] of Object.entries(options.config)) {
+      args.push("-c", `${key}=${JSON.stringify(value)}`);
     }
   }
 
-  // Configuration profile
+  // Profile
   if (options.profile) {
-    args.push('-p', options.profile);
+    args.push("-p", options.profile);
   }
 
-  // Always add JSON output flag to get detailed information
-  args.push('--json');
+  // OSS model provider
+  if (options.oss) {
+    args.push("--oss");
+  }
 
-  // Finally, add the prompt
+  // Now add the subcommand (resume if sessionId, otherwise just the prompt)
+  if (sessionId) {
+    args.push("resume", sessionId);
+  }
+
+  // Add prompt (always last)
   args.push(prompt);
 
   return args;

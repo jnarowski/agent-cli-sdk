@@ -1,117 +1,71 @@
-import { execSync } from 'child_process';
-import { existsSync, accessSync, constants } from 'fs';
-import { homedir } from 'os';
-import { join } from 'path';
+import { execSync } from "child_process";
 
 /**
- * Common installation locations for Codex CLI
- */
-const CODEX_CLI_LOCATIONS = [
-  // NPM global installation
-  '/usr/local/bin/codex',
-  // Homebrew
-  '/opt/homebrew/bin/codex',
-  '/usr/local/Homebrew/bin/codex',
-  // User home directory installations
-  join(homedir(), '.local', 'bin', 'codex'),
-  join(homedir(), 'bin', 'codex'),
-  // Node.js global modules
-  join(homedir(), '.npm-global', 'bin', 'codex'),
-  // Windows locations
-  join(homedir(), 'AppData', 'Local', 'Programs', 'codex', 'codex.exe'),
-  'C:\\Program Files\\Codex\\codex.exe',
-];
-
-/**
- * Check if a file exists and is executable
- */
-function isExecutable(path: string): boolean {
-  try {
-    if (!existsSync(path)) {
-      return false;
-    }
-
-    // On Windows, just check if file exists (no execute bit)
-    if (process.platform === 'win32') {
-      return true;
-    }
-
-    // On Unix, check if file is executable
-    accessSync(path, constants.X_OK);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Try to find Codex CLI in system PATH
- */
-function findInPath(): string | null {
-  try {
-    const whichCommand = process.platform === 'win32' ? 'where' : 'which';
-    const result = execSync(`${whichCommand} codex`, {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'ignore'], // Suppress stderr
-    }).trim();
-
-    // Return first match (in case multiple are found)
-    const paths = result.split('\n').filter(p => p.trim());
-    const firstPath = paths[0];
-    if (firstPath && isExecutable(firstPath)) {
-      return firstPath;
-    }
-  } catch {
-    // Command not found in PATH
-  }
-
-  return null;
-}
-
-/**
- * Auto-detect the Codex CLI binary path
- *
- * Detection order:
- * 1. CODEX_CLI_PATH environment variable
- * 2. System PATH (using which/where)
- * 3. Common installation locations
- *
- * @returns The detected CLI path, or null if not found
+ * Detect Codex CLI installation
+ * @returns Path to codex CLI or null if not found
  */
 export function detectCodexCLI(): string | null {
-  // 1. Check environment variable override first
+  // Check environment variable first
   const envPath = process.env.CODEX_CLI_PATH;
   if (envPath) {
-    if (isExecutable(envPath)) {
-      return envPath;
-    } else {
-      console.warn(`CODEX_CLI_PATH is set but path does not exist or is not executable: ${envPath}`);
-      return null;
+    return envPath;
+  }
+
+  // Try common installation paths
+  const commonPaths = [
+    "/usr/local/bin/codex",
+    "/opt/homebrew/bin/codex",
+    `${process.env.HOME}/.local/bin/codex`,
+    `${process.env.HOME}/bin/codex`,
+  ];
+
+  for (const path of commonPaths) {
+    try {
+      execSync(`test -f "${path}"`, { stdio: "ignore" });
+      return path;
+    } catch {
+      continue;
     }
   }
 
-  // 2. Try to find in PATH
-  const pathResult = findInPath();
-  if (pathResult) {
-    return pathResult;
-  }
-
-  // 3. Check common installation locations
-  for (const location of CODEX_CLI_LOCATIONS) {
-    if (isExecutable(location)) {
-      return location;
+  // Try to find in PATH
+  try {
+    const result = execSync("which codex", {
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "ignore"],
+    });
+    const path = result.trim();
+    if (path) {
+      return path;
     }
+  } catch {
+    // Not found in PATH
   }
 
   return null;
 }
 
 /**
- * Validate that a CLI path exists and is executable
- *
- * @param cliPath - The path to validate
- * @returns True if the path is valid and executable
+ * Check if Codex CLI is installed
+ * @returns True if codex CLI is available
  */
-export function validateCodexCLIPath(cliPath: string): boolean {
-  return isExecutable(cliPath);
+export function isCodexCLIInstalled(): boolean {
+  return detectCodexCLI() !== null;
+}
+
+/**
+ * Get Codex CLI version
+ * @param cliPath Path to codex CLI
+ * @returns Version string or null if unavailable
+ */
+export function getCodexCLIVersion(cliPath: string): string | null {
+  try {
+    const output = execSync(`"${cliPath}" --version`, {
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "ignore"],
+    });
+    return output.trim();
+  } catch {
+    return null;
+  }
 }

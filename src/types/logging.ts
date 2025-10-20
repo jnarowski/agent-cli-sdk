@@ -1,11 +1,32 @@
 /**
- * Paths to the three log files created per execution
+ * Logging-related types
  */
-export interface LogFiles {
-  /** Path to input.json (prompt + options) */
+
+import type { ExecutionResponse } from './interfaces';
+
+/**
+ * Execution log entry
+ */
+export interface ExecutionLog {
+  timestamp: number;
+  input: {
+    prompt: string;
+    options: Record<string, unknown>;
+  };
+  output?: ExecutionResponse;
+  error?: {
+    message: string;
+    stack?: string;
+    code?: string;
+  };
+}
+
+/**
+ * Log file paths
+ */
+export interface LogPaths {
+  base: string;
   input: string;
-  /** Path to output.json (full ExecutionResponse) */
   output: string;
-  /** Path to stream.jsonl (streaming events) */
-  stream: string;
+  error: string;
 }

@@ -1,261 +1,213 @@
-import type { ExecutionResponse, ActionLog, StreamEvent } from '../../types/config';
-import { extractJsonFromOutput, validateWithSchema } from '../../utils/json-parser';
+import type { ExecutionResponse, StreamEvent, TokenUsage } from "../../types";
+import { extractJSON } from "../../utils/json-parser";
 
 /**
- * Parse Codex CLI output (text output)
- * @template T The expected type of the output
+ * Parse Codex CLI output
+ * Based on Codex CLI 0.46.0 event format
+ * @param stdout Raw stdout from CLI
+ * @param duration Execution duration in ms
+ * @param exitCode CLI exit code
+ * @param responseSchema Optional response schema for validation
+ * @returns Parsed execution response
  */
-export function parseTextOutput<T = string>(output: string, duration: number, exitCode: number): ExecutionResponse<T> {
-  return {
-    output: output as T,
-    sessionId: '', // Codex doesn't return session ID in text mode
-    status: exitCode === 0 ? 'success' : 'error',
+export async function parseCodexOutput<T = string>(
+  stdout: string,
+  duration: number,
+  exitCode: number,
+  responseSchema?: true | { safeParse: (data: unknown) => { success: boolean; data?: unknown; error?: { message: string } } }
+): Promise<ExecutionResponse<T>> {
+  const events = parseStreamEvents(stdout);
+
+  // Extract thread ID (session ID)
+  const sessionId = extractThreadId(events);
+
+  // Extract final text output from agent_message items
+  let output: T;
+  const agentMessages = events
+    .filter((e) => {
+      if (e.type !== "item.completed") return false;
+      const data = e.data as Record<string, unknown>;
+      return (data?.item as Record<string, unknown>)?.type === "agent_message";
+    })
+    .map((e) => {
+      const data = e.data as Record<string, unknown>;
+      return (data?.item as Record<string, unknown>)?.text;
+    })
+    .filter(Boolean);
+
+  const lastMessage = agentMessages[agentMessages.length - 1];
+
+  if (responseSchema) {
+    // Extract and validate JSON
+    const jsonResult = extractJSON((typeof lastMessage === 'string' ? lastMessage : '') || stdout);
+    if (responseSchema === true) {
+      output = jsonResult as T;
+    } else if (responseSchema.safeParse) {
+      const parseResult = responseSchema.safeParse(jsonResult);
+      if (!parseResult.success) {
+        throw new Error(
+          `Response validation failed: ${parseResult.error?.message || 'Unknown validation error'}`
+        );
+      }
+      output = parseResult.data as T;
+    } else {
+      output = jsonResult as T;
+    }
+  } else {
+    // Plain text output - join all agent messages
+    output = (agentMessages.join('\n') || stdout.trim()) as T;
+  }
+
+  // Build response
+  const response: ExecutionResponse<T> = {
+    output,
+    sessionId: sessionId || generateSessionId(),
+    status: exitCode === 0 ? "success" : "error",
     exitCode,
     duration,
-    metadata: {},
+    metadata: {
+      toolsUsed: extractToolsUsed(events),
+      filesModified: extractFilesModified(events),
+    },
     raw: {
-      stdout: output,
-      stderr: '',
+      stdout,
+      stderr: "",
+      events,
     },
   };
+
+  // Add usage information if available
+  const usage = extractUsage(events);
+  if (usage) {
+    response.usage = usage;
+  }
+
+  return response;
 }
 
 /**
- * Parse Codex JSONL event stream (from --json flag)
- * @template T The expected type of the output
+ * Parse JSONL stream events
+ * @param output Raw CLI output
+ * @returns Array of parsed events
  */
-export async function parseStreamOutput<T = string>(
-  output: string,
-  duration: number,
-  exitCode: number,
-  modelName?: string,
-  responseSchema?: true | { safeParse: (data: unknown) => unknown }
-): Promise<ExecutionResponse<T>> {
-  const lines = output.split('\n').filter((line) => line.trim());
+function parseStreamEvents(output: string): StreamEvent[] {
+  const lines = output.split("\n").filter((line) => line.trim());
   const events: StreamEvent[] = [];
-  const actions: ActionLog[] = [];
-  const filesModified = new Set<string>();
-  let finalOutput = '';
-  let sessionId = '';
-  let model = modelName || ''; // Use provided model name, or try to detect from events
-
-  // Usage tracking
-  let inputTokens = 0;
-  let outputTokens = 0;
-  let cachedInputTokens = 0;
 
   for (const line of lines) {
     try {
       const event = JSON.parse(line);
-
-      // Store raw event
-      events.push(normalizeStreamEvent(event));
-
-      // Extract thread ID (Codex's equivalent of session ID)
-      if (event.thread_id) {
-        sessionId = event.thread_id;
-      }
-
-      // Extract session ID
-      if (event.sessionId || event.session_id) {
-        sessionId = event.sessionId || event.session_id;
-      }
-
-      // Extract model
-      if (event.model) {
-        model = event.model;
-      }
-
-      // Handle turn events
-      if (event.type === 'turn.started') {
-        // Turn started
-      } else if (event.type === 'turn.completed') {
-        // Extract usage information from turn.completed event
-        if (event.usage) {
-          inputTokens += event.usage.input_tokens || 0;
-          outputTokens += event.usage.output_tokens || 0;
-          cachedInputTokens += event.usage.cached_input_tokens || 0;
-        }
-
-        // Extract final output
-        if (event.output || event.message || event.content) {
-          finalOutput = event.output || event.message || event.content;
-        }
-      } else if (event.type === 'turn.failed') {
-        // Turn failed - capture error
-        finalOutput = event.error || event.message || 'Turn failed';
-      }
-
-      // Handle item events (tool calls, operations)
-      if (event.type === 'item.started') {
-        // Item started - track as action
-        const item = event.item || event;
-        actions.push({
-          timestamp: event.timestamp || Date.now(),
-          type: mapOperationToActionType(item.type || event.operation || event.tool),
-          target: item.command || event.target || event.path || event.command,
-          content: item.text || event.content,
-          result: 'success',
-          metadata: event,
-        });
-      } else if (event.type === 'item.updated') {
-        // Item updated - accumulate content from message updates
-        const data = event.data || event;
-        if (data.content) {
-          finalOutput += data.content;
-        }
-      } else if (event.type === 'item.completed') {
-        // Item completed - update action result
-        const item = event.item || event;
-
-        // Extract file modifications from commands or paths
-        if (item.path || event.path) {
-          filesModified.add(item.path || event.path);
-        }
-
-        // Capture final output from agent messages
-        if (item.type === 'agent_message' && item.text) {
-          if (!finalOutput) {
-            finalOutput = item.text;
-          }
-        }
-      }
-
-      // Handle message chunks
-      if (event.type === 'message.chunk' && event.content) {
-        finalOutput += event.content;
-      }
-
-      // Extract file modifications from diffs
-      if (event.type === 'diff' || event.type === 'file.modified') {
-        if (event.path || event.file) {
-          filesModified.add(event.path || event.file);
-        }
-      }
+      events.push({
+        type: event.type || "unknown",
+        data: event.data || event,
+        timestamp: event.timestamp || Date.now(),
+      });
     } catch {
-      // Skip invalid JSON lines
+      // Not a JSON line, skip
     }
   }
 
-  // If no JSONL events were found and finalOutput is empty, use the original output as fallback
-  if (!finalOutput && output) {
-    finalOutput = output;
-  }
+  return events;
+}
 
-  const totalTokens = inputTokens + outputTokens;
+/**
+ * Extract tools used from events
+ * @param events Stream events
+ * @returns Array of tool names
+ */
+function extractToolsUsed(events: StreamEvent[]): string[] {
+  const tools = new Set<string>();
 
-  // Calculate usage
-  const usage =
-    totalTokens > 0
-      ? {
-          inputTokens,
-          outputTokens,
-          cacheReadInputTokens: cachedInputTokens,
-          totalTokens,
-        }
-      : undefined;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let parsedOutput: string | Record<string, any> = finalOutput;
-  let validationMetadata: { success: boolean; errors?: string[] } | undefined;
-
-  // Handle responseSchema if provided
-  if (responseSchema) {
-    const extracted = extractJsonFromOutput(finalOutput);
-
-    if (extracted === null) {
-      // No JSON found - return empty object
-      parsedOutput = {};
-      validationMetadata = {
-        success: false,
-        errors: ['No JSON found in output'],
-      };
-    } else if (responseSchema === true) {
-      // JSON extraction only (no validation)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      parsedOutput = extracted as Record<string, any>;
-      validationMetadata = { success: true };
-    } else {
-      // Validate with schema
-      const validation = await validateWithSchema(extracted, responseSchema);
-      parsedOutput = validation.data ?? extracted;
-      validationMetadata = {
-        success: validation.success,
-        errors: validation.errors,
-      };
+  for (const event of events) {
+    if (event.type === "tool.started" || event.type === "tool_use") {
+      const data = event.data as Record<string, unknown>;
+      const toolName = data?.toolName || data?.name;
+      if (typeof toolName === 'string') {
+        tools.add(toolName);
+      }
     }
   }
 
-  return {
-    output: parsedOutput as T,
-    sessionId,
-    status: exitCode === 0 ? 'success' : 'error',
-    exitCode,
-    duration,
-    actions,
-    metadata: {
-      model,
-      filesModified: Array.from(filesModified),
-      tokensUsed: totalTokens > 0 ? totalTokens : undefined,
-      validation: validationMetadata,
-    },
-    usage,
-    raw: {
-      stdout: output,
-      stderr: '',
-      events,
-    },
-  };
+  return Array.from(tools);
 }
 
 /**
- * Normalize stream event to standard format
- * Preserves the complete original event in metadata
+ * Extract files modified from events
+ * @param events Stream events
+ * @returns Array of file paths
  */
-function normalizeStreamEvent(event: Record<string, unknown>): StreamEvent {
-  return {
-    type: mapCodexEventType(event.type as string),
-    timestamp: (event.timestamp as number) || Date.now(),
-    data: {
-      content: (event.content || event.message || event.output) as string | undefined,
-      toolName: (event.tool || event.operation) as string | undefined,
-      // Preserve the complete original event object for full transparency
-      metadata: event,
-    },
-  };
+function extractFilesModified(events: StreamEvent[]): string[] {
+  const files = new Set<string>();
+
+  for (const event of events) {
+    if (event.type === "file.written" || event.type === "file.modified") {
+      const data = event.data as Record<string, unknown>;
+      const filePath = data?.path || data?.file;
+      if (typeof filePath === 'string') {
+        files.add(filePath);
+      }
+    }
+  }
+
+  return Array.from(files);
 }
 
 /**
- * Map Codex event types to our standard event types
+ * Extract token usage from events
+ * Codex uses turn.completed events with usage field
+ * @param events Stream events
+ * @returns Token usage information
  */
-function mapCodexEventType(type: string): StreamEvent['type'] {
-  const mapping: Record<string, StreamEvent['type']> = {
-    'turn.started': 'turn.started',
-    'turn.completed': 'turn.completed',
-    'turn.failed': 'turn.failed',
-    'item.started': 'item.started',
-    'item.updated': 'item.updated',
-    'item.completed': 'item.completed',
-    'tool.started': 'tool.started',
-    'tool.completed': 'tool.completed',
-    message: 'message.chunk',
-    chunk: 'message.chunk',
-  };
+function extractUsage(events: StreamEvent[]): TokenUsage | null {
+  // Look for turn.completed events which contain usage
+  const turnCompleted = events.find((e) => e.type === "turn.completed");
+  if (turnCompleted?.data?.usage) {
+    const usage = turnCompleted.data.usage as Record<string, unknown>;
+    return {
+      inputTokens: Number(usage.input_tokens) || 0,
+      outputTokens: Number(usage.output_tokens) || 0,
+      totalTokens: Number(usage.total_tokens) || (Number(usage.input_tokens) || 0) + (Number(usage.output_tokens) || 0),
+    };
+  }
 
-  return mapping[type] || 'message.chunk';
+  // Fallback for other event types
+  for (const event of events) {
+    if (event.type === "usage" || event.type === "completion") {
+      if (event.data?.usage) {
+        const usage = event.data.usage as Record<string, unknown>;
+        return {
+          inputTokens: Number(usage.input_tokens) || 0,
+          outputTokens: Number(usage.output_tokens) || 0,
+          totalTokens: Number(usage.total_tokens) || (Number(usage.input_tokens) || 0) + (Number(usage.output_tokens) || 0),
+        };
+      }
+    }
+  }
+
+  return null;
 }
 
 /**
- * Map Codex operations to action types
+ * Extract thread ID (session ID) from events
+ * @param events Stream events
+ * @returns Thread ID or null
  */
-function mapOperationToActionType(operation?: string): ActionLog['type'] {
-  if (!operation) return 'think';
+function extractThreadId(events: StreamEvent[]): string | null {
+  const threadStarted = events.find((e) => e.type === "thread.started");
+  if (threadStarted) {
+    const data = threadStarted.data as Record<string, unknown>;
+    const threadId = data?.thread_id;
+    if (typeof threadId === 'string') {
+      return threadId;
+    }
+  }
+  return null;
+}
 
-  const lower = operation.toLowerCase();
-  if (lower.includes('read') || lower.includes('cat')) return 'read';
-  if (lower.includes('write') || lower.includes('create')) return 'write';
-  if (lower.includes('edit') || lower.includes('modify') || lower.includes('patch')) return 'edit';
-  if (lower.includes('bash') || lower.includes('command') || lower.includes('exec')) return 'bash';
-  if (lower.includes('search') || lower.includes('grep') || lower.includes('find')) return 'search';
-  return 'think';
+/**
+ * Generate a session ID
+ * @returns Session ID string
+ */
+function generateSessionId(): string {
+  return `codex-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }

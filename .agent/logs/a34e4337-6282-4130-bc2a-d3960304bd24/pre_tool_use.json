@@ -1,0 +1,44 @@
+[
+  {
+    "session_id": "a34e4337-6282-4130-bc2a-d3960304bd24",
+    "transcript_path": "/Users/jnarowski/.claude/projects/-Users-jnarowski-Dev-sourceborn-src-agent-workflows-monorepo/a34e4337-6282-4130-bc2a-d3960304bd24.jsonl",
+    "cwd": "/Users/jnarowski/Dev/sourceborn/src/agent-workflows-monorepo/packages/agent-cli-sdk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "TodoWrite",
+    "tool_input": {
+      "todos": [
+        {
+          "content": "Fix type errors in src/adapters/claude/parser.ts (10 errors)",
+          "status": "completed",
+          "activeForm": "Fixing type errors in src/adapters/claude/parser.ts"
+        },
+        {
+          "content": "Fix type error in src/adapters/codex/index.ts",
+          "status": "completed",
+          "activeForm": "Fixing type error in src/adapters/codex/index.ts"
+        },
+        {
+          "content": "Fix type errors in src/adapters/codex/parser.ts (3 errors)",
+          "status": "completed",
+          "activeForm": "Fixing type errors in src/adapters/codex/parser.ts"
+        },
+        {
+          "content": "Fix type error in src/client/agent-client.ts",
+          "status": "completed",
+          "activeForm": "Fixing type error in src/client/agent-client.ts"
+        },
+        {
+          "content": "Fix type error in src/client/session.ts",
+          "status": "completed",
+          "activeForm": "Fixing type error in src/client/session.ts"
+        },
+        {
+          "content": "Run pnpm check again to verify all fixes",
+          "status": "completed",
+          "activeForm": "Running pnpm check to verify fixes"
+        }
+      ]
+    }
+  }
+]

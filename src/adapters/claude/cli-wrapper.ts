@@ -1,209 +1,219 @@
-import { spawn, type ChildProcess } from 'child_process';
-import type { ClaudeExecutionOptions } from '../../types/claude';
-import { ExecutionError, TimeoutError } from '../../core/errors';
-import { BOX_STYLES, BORDER_STYLES } from '../../utils/constants';
-import boxen from 'boxen';
-import chalk from 'chalk';
+/**
+ * Claude CLI wrapper for process execution
+ */
 
-export interface CLIResult {
-  stdout: string;
-  stderr: string;
-  exitCode: number;
-  duration: number;
-}
+import type { ClaudeExecutionOptions } from '../../types';
+import type { SpawnResult } from '../../utils';
+import { spawnProcess } from '../../utils';
 
 /**
- * Spawn the Claude CLI process with given arguments
+ * Build Claude CLI arguments from options
  */
-export async function executeClaudeCLI(
-  cliPath: string,
+export function buildClaudeArgs(
   prompt: string,
-  options: ClaudeExecutionOptions = {}
-): Promise<CLIResult> {
-  const args = buildCLIArguments(prompt, options);
-  const startTime = Date.now();
-
-  // Show verbose logging if enabled
-  if (options.verbose) {
-    const debugInfo = [
-      `${chalk.bold('CLI Path:')} ${chalk.cyan(cliPath)}`,
-      `${chalk.bold('Args:')} ${chalk.dim(args.join(' '))}`,
-      `${chalk.bold('Working Dir:')} ${chalk.yellow(options.workingDir || process.cwd())}`,
-      `${chalk.bold('Model:')} ${chalk.green(options.model || 'sonnet')}`,
-    ].join('\n');
-
-    const debugBox = boxen(debugInfo, {
-      title: '🔧 Executing Claude Code CLI',
-      titleAlignment: 'center',
-      ...BOX_STYLES.fullWidth,
-      ...BORDER_STYLES.info,
-    });
-
-    console.log(debugBox);
-  }
-
-  return new Promise((resolve, reject) => {
-    const child: ChildProcess = spawn(cliPath, args, {
-      stdio: ['ignore', 'pipe', 'pipe'], // Ignore stdin since we're in -p mode
-      shell: false,
-      cwd: options.workingDir,
-    });
-
-    let stdout = '';
-    let stderr = '';
-    let timedOut = false;
-
-    // Set up timeout if specified
-    let timeoutId: NodeJS.Timeout | undefined;
-    if (options.timeout) {
-      timeoutId = setTimeout(() => {
-        timedOut = true;
-        child.kill('SIGTERM');
-        reject(
-          new TimeoutError(
-            `Claude CLI execution timed out after ${options.timeout}ms`,
-            options.sessionId,
-            stdout
-          )
-        );
-      }, options.timeout);
-    }
-
-    // Collect stdout
-    if (child.stdout) {
-      child.stdout.on('data', (data: Buffer) => {
-        const chunk = data.toString();
-        stdout += chunk;
-
-        // Call streaming callback if provided
-        if (options.streaming && options.onStream) {
-          try {
-            // Parse JSONL events
-            const lines = chunk.split('\n').filter(line => line.trim());
-            for (const line of lines) {
-              try {
-                const event = JSON.parse(line);
-                options.onStream(event);
-              } catch {
-                // Not a JSON line, skip
-              }
-            }
-          } catch {
-            // Ignore parsing errors during streaming
-          }
-        }
-      });
-    }
-
-    // Collect stderr
-    if (child.stderr) {
-      child.stderr.on('data', (data: Buffer) => {
-        stderr += data.toString();
-      });
-    }
-
-    // Handle process exit
-    child.on('close', (code: number | null) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-
-      if (timedOut) {
-        return; // Already rejected with TimeoutError
-      }
-
-      const duration = Date.now() - startTime;
-      const exitCode = code ?? 1;
-
-      if (exitCode !== 0 && !timedOut) {
-        reject(
-          new ExecutionError(
-            `Claude CLI exited with code ${exitCode}`,
-            { exitCode, stderr, stdout }
-          )
-        );
-      } else {
-        resolve({ stdout, stderr, exitCode, duration });
-      }
-    });
-
-    // Handle spawn errors
-    child.on('error', (error: Error) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      reject(new ExecutionError(`Failed to spawn Claude CLI: ${error.message}`, {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      }));
-    });
-  });
-}
-
-/**
- * Build CLI arguments from execution options
- */
-function buildCLIArguments(prompt: string, options: ClaudeExecutionOptions): string[] {
+  options: ClaudeExecutionOptions
+): string[] {
   const args: string[] = [];
 
-  // Use -p flag with prompt (this is the key difference!)
-  args.push('-p', prompt);
+  // Programmatic mode (non-interactive)
+  args.push('-p');
 
-  // Model
+  // Model selection
   if (options.model) {
     args.push('--model', options.model);
   }
 
-  // Always use project settings
-  args.push('--setting-sources', 'project');
-
-  // Output format - always use stream-json for programmatic usage
-  args.push('--output-format', 'stream-json');
-
-  // Verbose is required when using stream-json output format
-  args.push('--verbose');
-
-  // Fallback model
-  if (options.fallbackModel) {
-    args.push('--fallback-model', options.fallbackModel);
-  }
-
-  // System prompts
-  if (options.systemPrompt) {
-    args.push('--system-prompt', options.systemPrompt);
-  }
-  if (options.appendSystemPrompt) {
-    args.push('--append-system-prompt', options.appendSystemPrompt);
-  }
-
-  // Session management
+  // Session management (sessionId, continue, and resume are mutually exclusive)
+  // When sessionId is provided, use --resume to continue that specific session
   if (options.sessionId) {
-    args.push('--session-id', options.sessionId);
+    args.push('--resume', options.sessionId);
+  } else if (options.continue) {
+    args.push('--continue');
+  } else if (options.resume) {
+    if (typeof options.resume === 'string') {
+      args.push('--resume', options.resume);
+    } else {
+      args.push('--resume');
+    }
   }
 
   // Permission mode
   if (options.permissionMode) {
     args.push('--permission-mode', options.permissionMode);
+  } else if (options.dangerouslySkipPermissions) {
+    args.push('--permission-mode', 'acceptEdits');
   }
 
-  // Skip permissions if enabled
-  if (options.dangerouslySkipPermissions) {
-    args.push('--dangerously-skip-permissions');
+  // Output format (stream-json requires --verbose)
+  const useStreamJson = options.streaming !== false;
+  if (useStreamJson) {
+    args.push('--output-format', 'stream-json');
+    args.push('--verbose'); // Required for stream-json
+  } else if (options.verbose) {
+    args.push('--verbose');
   }
 
-  // Allowed/disallowed tools
-  if (options.allowedTools && options.allowedTools.length > 0) {
-    args.push('--allowed-tools', options.allowedTools.join(' '));
+  // Tool settings
+  if (options.toolSettings?.allowedTools) {
+    args.push('--allowed-tools', options.toolSettings.allowedTools.join(','));
   }
-  if (options.disallowedTools && options.disallowedTools.length > 0) {
-    args.push('--disallowed-tools', options.disallowedTools.join(' '));
+  if (options.toolSettings?.disallowedTools) {
+    args.push(
+      '--disallowed-tools',
+      options.toolSettings.disallowedTools.join(',')
+    );
   }
 
-  // Include partial messages for streaming
-  if (options.streaming && options.includePartialMessages) {
-    args.push('--include-partial-messages');
+  // Images
+  if (options.images && options.images.length > 0) {
+    for (const image of options.images) {
+      args.push('-i', image.path);
+    }
   }
+
+  // Prompt (must be last)
+  args.push(prompt);
 
   return args;
+}
+
+/**
+ * Execute Claude CLI
+ */
+export async function executeClaudeCLI(
+  cliPath: string,
+  prompt: string,
+  options: ClaudeExecutionOptions
+): Promise<SpawnResult> {
+  const args = buildClaudeArgs(prompt, options);
+
+  // Set up environment
+  let env: Record<string, string> | undefined;
+
+  if (options.apiKey || options.oauthToken) {
+    const envVars: Record<string, string> = {};
+    if (typeof options.apiKey === 'string') {
+      envVars['ANTHROPIC_API_KEY'] = options.apiKey;
+    }
+    if (typeof options.oauthToken === 'string') {
+      envVars['CLAUDE_CODE_OAUTH_TOKEN'] = options.oauthToken;
+    }
+    env = envVars;
+  }
+
+  // Set up JSONL parsing for onEvent callback
+  let lineBuffer = '';
+  let onStdout: ((chunk: string) => void) | undefined;
+  let turnStarted = false;
+
+  if (options.onEvent) {
+    onStdout = (chunk: string) => {
+      // Also call onOutput if provided
+      if (options.onOutput) {
+        options.onOutput(chunk);
+      }
+
+      // Parse JSONL and emit events
+      lineBuffer += chunk;
+      const lines = lineBuffer.split('\n');
+      lineBuffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        try {
+          const event = JSON.parse(trimmed);
+
+          // Emit synthetic turn.started event when we see the first assistant message
+          if (!turnStarted && event.type === 'assistant') {
+            turnStarted = true;
+            options.onEvent!({
+              type: 'turn.started',
+              timestamp: event.timestamp || Date.now(),
+            });
+          }
+
+          // Emit the original event
+          options.onEvent!(event);
+
+          // Also emit synthetic 'text' and tool events for assistant message content
+          // This provides backward compatibility with tests expecting these event types
+          if (event.type === 'assistant' && event.message?.content) {
+            const content = event.message.content;
+            if (Array.isArray(content)) {
+              for (const block of content) {
+                // Emit text events
+                if (block.type === 'text' && block.text) {
+                  options.onEvent!({
+                    type: 'text',
+                    data: block.text,
+                    timestamp: event.timestamp || Date.now(),
+                  });
+                }
+                // Emit tool.started events for tool_use blocks
+                if (block.type === 'tool_use' && block.name) {
+                  options.onEvent!({
+                    type: 'tool.started',
+                    data: {
+                      toolName: block.name,
+                      name: block.name,
+                      id: block.id,
+                      input: block.input,
+                    },
+                    timestamp: event.timestamp || Date.now(),
+                  });
+                }
+              }
+            }
+          }
+
+          // Emit tool.completed for user messages (which contain tool_result blocks)
+          if (event.type === 'user' && event.message?.content) {
+            const content = event.message.content;
+            if (Array.isArray(content)) {
+              for (const block of content) {
+                if (block.type === 'tool_result' && block.tool_use_id) {
+                  options.onEvent!({
+                    type: 'tool.completed',
+                    data: {
+                      toolId: block.tool_use_id,
+                      result: block.content,
+                      isError: block.is_error || false,
+                    },
+                    timestamp: event.timestamp || Date.now(),
+                  });
+                }
+              }
+            }
+          }
+
+          // Emit synthetic turn.completed event when we see the result
+          if (event.type === 'result') {
+            options.onEvent!({
+              type: 'turn.completed',
+              timestamp: event.timestamp || Date.now(),
+            });
+          }
+        } catch {
+          // Not valid JSON, skip line
+        }
+      }
+    };
+  } else if (options.onOutput) {
+    onStdout = options.onOutput;
+  }
+
+  return spawnProcess(cliPath, {
+    args,
+    cwd: options.workingDir,
+    env,
+    timeout: options.timeout,
+    onStdout,
+    onStderr: (chunk: string) => {
+      if (options.verbose) {
+        process.stderr.write(chunk);
+      }
+    },
+  });
 }
