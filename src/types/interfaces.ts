@@ -1,42 +1,141 @@
-import type { ExecutionResponse, ExecutionOptions } from './config';
+/**
+ * Core interfaces for the agent-cli-sdk
+ */
 
 /**
- * Adapter capabilities describe what features an adapter supports
+ * Stream event emitted during CLI execution
+ */
+export interface StreamEvent {
+  type: string;
+  timestamp?: number;
+  data?: Record<string, unknown>;
+}
+
+/**
+ * Token usage information
+ */
+export interface TokenUsage {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}
+
+/**
+ * Model-specific usage information
+ */
+export interface ModelUsage extends TokenUsage {
+  model: string;
+  costUSD?: number;
+}
+
+/**
+ * Action log entry
+ */
+export interface ActionLog {
+  type: string;
+  timestamp: number;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Validation result
+ */
+export interface ValidationResult {
+  success: boolean;
+  errors?: string[];
+}
+
+/**
+ * Adapter capabilities
  */
 export interface AdapterCapabilities {
-  /** Whether the adapter supports streaming responses */
   streaming: boolean;
-  /** Whether the adapter supports session management and resuming */
   sessionManagement: boolean;
-  /** Whether the adapter supports tool/function calling */
   toolCalling: boolean;
-  /** Whether the adapter supports multi-modal inputs (images, etc) */
   multiModal: boolean;
 }
 
 /**
- * Simplified interface for CLI execution
- * Use this for simple type annotations when you don't need adapter-specific methods
+ * Standard execution response
+ * @template T Output type (string or structured data)
  */
-export interface Cli {
-  /**
-   * Execute a prompt with the CLI
-   * @template T The expected type of the output (inferred from responseSchema)
-   * @param prompt The prompt/instruction to send to the AI
-   * @param options Execution options (streaming, timeout, CLI-specific options)
-   * @returns Promise resolving to the adapter response
-   */
-  execute<T = string>(prompt: string, options?: ExecutionOptions): Promise<ExecutionResponse<T>>;
+export interface ExecutionResponse<T = string> {
+  output: T;
+  sessionId: string;
+  status: 'success' | 'error' | 'timeout';
+  exitCode: number;
+  duration: number;
+
+  // Optional metadata
+  actions?: ActionLog[];
+  metadata: {
+    model?: string;
+    tokensUsed?: number;
+    toolsUsed?: string[];
+    filesModified?: string[];
+    validation?: ValidationResult;
+  };
+
+  // Token usage details
+  usage?: TokenUsage;
+  modelUsage?: Record<string, ModelUsage>;
+  totalCostUSD?: number;
+
+  // Raw CLI output
+  raw?: {
+    stdout: string;
+    stderr: string;
+    events?: StreamEvent[];
+  };
+
+  // Error details (if status is 'error')
+  error?: {
+    code: string;
+    message: string;
+    details?: Record<string, unknown>;
+  };
 }
 
 /**
- * Common interface that all AI adapters must implement
- * This provides a unified API for interacting with different CLI tools
+ * Common execution options
  */
-export interface AIAdapter extends Cli {
+export interface ExecutionOptions {
+  streaming?: boolean;
+  onStream?: (event: StreamEvent) => void;
+  onEvent?: (event: StreamEvent) => void;
+  onOutput?: (data: string) => void;
+  sessionId?: string;
+  timeout?: number;
+  verbose?: boolean;
+  logPath?: string;
+  responseSchema?: true | { safeParse: (data: unknown) => { success: boolean; data?: unknown; error?: { message: string } } };
+  workingDir?: string;
+
+  // Allow adapter-specific options
+  [key: string]: unknown;
+}
+
+/**
+ * Core interface that all adapters must implement
+ */
+export interface AIAdapter {
   /**
-   * Get the capabilities of this adapter
-   * @returns The capabilities supported by this adapter
+   * Execute a prompt
+   * @template T The expected output type (inferred from responseSchema)
+   */
+  execute<T = string>(
+    prompt: string,
+    options?: ExecutionOptions
+  ): Promise<ExecutionResponse<T>>;
+
+  /**
+   * Get adapter capabilities
    */
   getCapabilities(): AdapterCapabilities;
+
+  /**
+   * Create a multi-turn session (optional - not all adapters support this)
+   */
+  createSession?(options?: unknown): unknown;
 }

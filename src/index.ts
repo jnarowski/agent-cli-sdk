@@ -1,44 +1,80 @@
 /**
- * @sourceborn/agent-cli-sdk
- *
- * TypeScript SDK for orchestrating AI-powered CLI tools (Claude Code, Codex)
- * in development workflows
+ * agent-cli-sdk-three - TypeScript SDK for AI CLI orchestration
+ * @packageDocumentation
  */
 
-// Core interfaces and base classes (for extending the library)
-export type { Cli, AIAdapter, AdapterCapabilities } from './types/interfaces';
+// Core exports
+export { AgentClient } from './client/agent-client';
+export { Session } from './client/session';
+
+// Adapters
+export { ClaudeAdapter } from './adapters/claude/index';
+export { ClaudeSession } from './adapters/claude/session';
+export { CodexAdapter } from './adapters/codex/index';
+
+// Base classes
 export { BaseAdapter } from './core/base-adapter';
 
-// Error classes
+// Factory functions
+export { createClaudeAdapter, createCodexAdapter } from './factories/index';
+
+// Errors
 export {
-  AdapterError,
-  ExecutionError,
+  AgentSDKError,
   ValidationError,
-  TimeoutError,
-  AuthenticationError,
   CLINotFoundError,
+  AuthenticationError,
+  ExecutionError,
+  TimeoutError,
+  ParseError,
+  SessionError,
 } from './core/errors';
 
-// Adapter implementations
-export { ClaudeAdapter } from './adapters/claude';
-export { CodexAdapter } from './adapters/codex';
-
-// Factory functions
-export { createClaudeAdapter, createCodexAdapter } from './utils/factory';
-
-// Utilities
-export { extractJsonFromOutput, validateWithSchema } from './utils/json-parser';
-
-// Types
+// Type exports
 export type {
-  ActionLog,
-  ClaudeConfig,
-  ClaudeExecutionOptions,
-  ClaudeOutputFormat,
-  CodexConfig,
-  CodexExecutionOptions,
+  // Core interfaces
+  AIAdapter,
+  AdapterCapabilities,
   ExecutionOptions,
   ExecutionResponse,
-  ResponseStatus,
   StreamEvent,
-} from './types/index';
+  TokenUsage,
+  ModelUsage,
+  ActionLog,
+  ValidationResult,
+  // Client types
+  AgentClientOptions,
+  ExecuteOptions,
+  SessionOptions,
+  SendOptions,
+  SessionInfo,
+  // Claude-specific types
+  ClaudeConfig,
+  ClaudeExecutionOptions,
+  ImageInput,
+  MCPServer,
+  CLIDetectionResult,
+  // Codex-specific types
+  CodexConfig,
+  CodexExecutionOptions,
+  // Session types
+  SessionEventType,
+  SessionEventData,
+  // Logging types
+  ExecutionLog,
+  LogPaths,
+} from './types';
+
+// Utilities (selective export)
+export {
+  extractJSON,
+  parseJSONL,
+  safeJSONParse,
+  sequential,
+  parallel,
+  retry,
+  sleep,
+} from './utils';
+
+// Version
+export const version = '0.1.19';

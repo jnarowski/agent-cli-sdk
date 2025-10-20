@@ -16,9 +16,10 @@ export default defineConfig({
     ],
     testTimeout: 90000, // 90s for E2E tests
     // Set default CLI paths if not already set
+    // Leave env vars unset to use auto-detection via PATH
     env: {
-      CLAUDE_CLI_PATH: process.env.CLAUDE_CLI_PATH || join(homedir(), '.claude/local/claude'),
-      CODEX_CLI_PATH: process.env.CODEX_CLI_PATH || '/usr/local/bin/codex',
+      CLAUDE_CLI_PATH: process.env.CLAUDE_CLI_PATH,
+      CODEX_CLI_PATH: process.env.CODEX_CLI_PATH,
     },
   },
 });

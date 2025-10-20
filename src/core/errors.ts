@@ -1,95 +1,110 @@
 /**
- * Base error class for all adapter errors
+ * Custom error classes for agent-cli-sdk
  */
-export class AdapterError extends Error {
-  /** Error code for programmatic handling */
-  code: string;
-  /** Additional error details */
-  details?: Record<string, unknown>;
-  /** Recovery suggestion for the user */
-  recovery?: string;
 
-  constructor(message: string, code: string = 'ADAPTER_ERROR', details?: Record<string, unknown>, recovery?: string) {
+/**
+ * Base error class for all SDK errors
+ */
+export class AgentSDKError extends Error {
+  constructor(message: string) {
     super(message);
-    this.name = 'AdapterError';
-    this.code = code;
-    this.details = details;
-    this.recovery = recovery;
-    Object.setPrototypeOf(this, AdapterError.prototype);
-  }
-}
-
-
-/**
- * Error thrown during CLI execution
- */
-export class ExecutionError extends AdapterError {
-  constructor(message: string, details?: Record<string, unknown>) {
-    super(message, 'EXECUTION_ERROR', details);
-    this.name = 'ExecutionError';
-    Object.setPrototypeOf(this, ExecutionError.prototype);
+    this.name = 'AgentSDKError';
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
 /**
- * Error thrown when input validation fails
+ * Validation error - thrown when input validation fails
  */
-export class ValidationError extends AdapterError {
-  constructor(message: string, details?: Record<string, unknown>) {
-    super(message, 'VALIDATION_ERROR');
+export class ValidationError extends AgentSDKError {
+  constructor(message: string) {
+    super(message);
     this.name = 'ValidationError';
-    this.details = details;
-    Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
 /**
- * Error thrown when operation times out
+ * CLI not found error - thrown when CLI binary cannot be located
  */
-export class TimeoutError extends AdapterError {
-  /** Session ID for resuming if available */
-  sessionId?: string;
-  /** Partial output captured before timeout */
-  partialOutput?: string;
+export class CLINotFoundError extends AgentSDKError {
+  public readonly cliName: string;
 
-  constructor(message: string, sessionId?: string, partialOutput?: string) {
-    super(message, 'TIMEOUT');
-    this.name = 'TimeoutError';
-    this.sessionId = sessionId;
-    this.partialOutput = partialOutput;
-    this.recovery = sessionId
-      ? `Resume with: execute(prompt, { sessionId: '${sessionId}' })`
-      : 'Try increasing the timeout value';
-    Object.setPrototypeOf(this, TimeoutError.prototype);
-  }
-}
-
-/**
- * Error thrown when CLI is not authenticated
- */
-export class AuthenticationError extends AdapterError {
-  constructor(adapter: 'claude' | 'codex') {
-    const message = `${adapter} CLI is not authenticated`;
-    super(message, 'AUTH_REQUIRED');
-    this.name = 'AuthenticationError';
-    this.recovery =
-      adapter === 'claude'
-        ? 'Run: claude setup-token'
-        : 'Run: codex login';
-    Object.setPrototypeOf(this, AuthenticationError.prototype);
-  }
-}
-
-/**
- * Error thrown when CLI binary is not found in PATH
- */
-export class CLINotFoundError extends AdapterError {
-  constructor(cliName: string, installationGuide?: string) {
-    const message = `${cliName} CLI not found in PATH`;
-    super(message, 'CLI_NOT_FOUND');
+  constructor(cliName: string, message?: string) {
+    super(
+      message ||
+        `${cliName} CLI not found. Please install it or set the appropriate environment variable.`
+    );
     this.name = 'CLINotFoundError';
-    this.recovery = installationGuide || `Install ${cliName} CLI and ensure it's in your PATH`;
-    Object.setPrototypeOf(this, CLINotFoundError.prototype);
+    this.cliName = cliName;
   }
 }
 
+/**
+ * Authentication error - thrown when authentication fails
+ */
+export class AuthenticationError extends AgentSDKError {
+  public readonly cliName: string;
+
+  constructor(cliName: string, message?: string) {
+    super(
+      message ||
+        `Authentication failed for ${cliName}. Please check your credentials.`
+    );
+    this.name = 'AuthenticationError';
+    this.cliName = cliName;
+  }
+}
+
+/**
+ * Execution error - thrown when CLI execution fails
+ */
+export class ExecutionError extends AgentSDKError {
+  public readonly exitCode?: number;
+  public readonly stderr?: string;
+
+  constructor(message: string, exitCode?: number, stderr?: string) {
+    super(message);
+    this.name = 'ExecutionError';
+    this.exitCode = exitCode;
+    this.stderr = stderr;
+  }
+}
+
+/**
+ * Timeout error - thrown when execution exceeds timeout
+ */
+export class TimeoutError extends AgentSDKError {
+  public readonly timeoutMs: number;
+
+  constructor(timeoutMs: number, message?: string) {
+    super(message || `Execution exceeded timeout of ${timeoutMs}ms`);
+    this.name = 'TimeoutError';
+    this.timeoutMs = timeoutMs;
+  }
+}
+
+/**
+ * Parse error - thrown when output parsing fails
+ */
+export class ParseError extends AgentSDKError {
+  public readonly raw?: string;
+
+  constructor(message: string, raw?: string) {
+    super(message);
+    this.name = 'ParseError';
+    this.raw = raw;
+  }
+}
+
+/**
+ * Session error - thrown when session operations fail
+ */
+export class SessionError extends AgentSDKError {
+  public readonly sessionId?: string;
+
+  constructor(message: string, sessionId?: string) {
+    super(message);
+    this.name = 'SessionError';
+    this.sessionId = sessionId;
+  }
+}
